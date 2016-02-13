@@ -29,7 +29,4 @@ Contributors:
     Olexiy Berjanskii
     Erin Torbiak
     Abram Hindle
-<<<<<<< HEAD
-=======
 
->>>>>>> fdbcbb8ac6a36b4731b8118b33a38991b0da99e3
