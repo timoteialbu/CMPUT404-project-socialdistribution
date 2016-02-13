@@ -12,7 +12,7 @@ class PostAdmin(admin.ModelAdmin):
     ]
     list_display = ('post_text', 'pub_date', 'author')
     list_filter = ['pub_date']
-    search_fields = ['question_text']
+
 
 
 admin.site.register(Post, PostAdmin)
