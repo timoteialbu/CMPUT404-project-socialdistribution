@@ -1,11 +1,16 @@
 from django.http import HttpResponse
+from django.template import loader
+
 from .models import Post
+
 
 def index(request):
     latest_post_list = Post.objects.order_by('pub_date')[:5]
-    output = ', '.join([p.post_text for p in latest_post_list])
-    return HttpResponse(output)
-
+    template = loader.get_template('posts/index.html')
+    context = {
+        'latest_post_list': latest_post_list,
+    }
+    return HttpResponse(template.render(context, request))
 
 ######Copied from django tut1.8, using them as examples
 def detail(request, question_id):
