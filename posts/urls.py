@@ -6,7 +6,7 @@ urlpatterns = [
     
     ##### snagged from django tut1.8, using as example
     # ex: /polls/5/
-    url(r'^(?P<question_id>[0-9]+)/$', views.detail, name='detail'),
+    url(r'^(?P<post_id>[0-9]+)/$', views.detail, name='detail'),
     # ex: /polls/5/results/
     url(r'^(?P<question_id>[0-9]+)/results/$', views.results, name='results'),
     # ex: /polls/5/vote/
