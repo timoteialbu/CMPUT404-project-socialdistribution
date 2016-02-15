@@ -17,3 +17,7 @@ class Post(models.Model):
 		return self.post_text[:20] + "..."
 	
 
+class Image(Post):
+        img = models.ImageField()
+        def __str__(self):
+                return self.pk
