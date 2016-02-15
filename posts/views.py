@@ -25,7 +25,7 @@ def create_post(request):
             return redirect('posts:detail', post_id=post.pk)
     else:
         form = PostForm()
-    return render(request, 'posts/create_post.html', {'form': form})
+    return render(request, 'posts/edit_post.html', {'form': form})
 
 
 def edit_post(request, post_id):
@@ -37,7 +37,8 @@ def edit_post(request, post_id):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            return redirect('posts:detail', pk=post.pk)
+            ####the "post_id" part must be the same as the P<"post_id" in url.py
+            return redirect('posts:detail', post_id=post.pk)
     else:
         form = PostForm(instance=post)
     return render(request, 'posts/edit_post.html', {'form': form})
