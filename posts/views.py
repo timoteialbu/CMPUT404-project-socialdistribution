@@ -6,13 +6,14 @@ from .models import Post
 from .forms import PostForm
 
 def index(request):
+    ##set to show only 5
     latest_post_list = Post.objects.order_by('pub_date')[:5]
     context = {
         'latest_post_list': latest_post_list
     }
     return render(request, 'posts/index.html', context)
 
-def createPost(request):
+def create_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
@@ -20,24 +21,30 @@ def createPost(request):
             post.author = request.user
             post.pub_date = timezone.now()
             post.save()
-            return redirect('detail', pk=post.pk)
+            ###future ref make to add the namespace ie "posts"
+            return redirect('posts:detail', post_id=post.pk)
     else:
         form = PostForm()
-    return render(request, 'posts/createPost.html', {'form': form})
-
-def publish(request):
-    return HttpResponse(request)
+    return render(request, 'posts/create_post.html', {'form': form})
 
 
-######Copied from django tut1.8, using them as examples
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            return redirect('posts:detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'posts/edit_post.html', {'form': form})
+
+
+
 def detail(request, post_id):
     post = get_object_or_404(Post, pk = post_id)
     return render(request, 'posts/detail.html', {'post': post})
 
-# def results(request, question_id):
-#     response = "You're looking at the results of question %s."
-#     return HttpResponse(response % question_id)
-
-# def vote(request, question_id):
-#     return HttpResponse("You're voting on question %s." % question_id)
-########################################################
