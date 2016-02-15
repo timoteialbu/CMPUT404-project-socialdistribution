@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Post(models.Model):
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
-	post_text = models.CharField(max_length=400)
+	post_text = models.TextField(max_length=400)
 	pub_date = models.DateTimeField('date published')
 	PRIVACY_CHOICES = (
 		('ME', 'Private To Me'),

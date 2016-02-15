@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-
+from django.http import HttpResponse ### delete me! should be using render
 from .models import Post
 
 
@@ -10,6 +10,11 @@ def index(request):
     }
     return render(request, 'posts/index.html', context)
 
+def createPost(request):
+    return render(request, 'posts/createPost.html')
+
+def publish(request):
+    return HttpResponse(request)
 ######Copied from django tut1.8, using them as examples
 def detail(request, post_id):
     post = get_object_or_404(Post, pk = post_id)

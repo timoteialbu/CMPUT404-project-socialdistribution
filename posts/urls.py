@@ -3,7 +3,8 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    
+    url(r'^createPost/$', views.createPost, name='createPost'),
+    url(r'^publish/$', views.publish, name='publish'),
     ##### snagged from django tut1.8, using as example
     # ex: /polls/5/
     url(r'^(?P<post_id>[0-9]+)/$', views.detail, name='detail'),
