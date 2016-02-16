@@ -9,7 +9,7 @@ urlpatterns = [
 
 
     url(r'^create_img/$', views.create_img, name='create_img'),
-    url(r'^edit_img/(?P<post_id>[0-9]+)/$', views.edit_img, name='edit_img'),
+    #url(r'^edit_img/(?P<post_id>[0-9]+)/$', views.edit_img, name='edit_img'),
 
 
 ]
