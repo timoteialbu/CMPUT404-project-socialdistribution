@@ -1,9 +1,23 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse ### delete me! should be using render
+from django.http import HttpResponse, HttpResponseRedirect ### delete me! should be using render
 from django.utils import timezone
 
-from .models import Post
-from .forms import PostForm
+
+
+from .models import Post, Image
+from .forms import PostForm, UploadImgForm
+
+##### not a view can be moved elsewhere
+def handle_uploaded_file(f):
+    with open('some/file/name.txt', 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+
+
+
+
+
 
 def index(request):
     ##set to show only 5
@@ -43,9 +57,43 @@ def edit_post(request, post_id):
         form = PostForm(instance=post)
     return render(request, 'posts/edit_post.html', {'form': form})
 
-
-
 def detail(request, post_id):
     post = get_object_or_404(Post, pk = post_id)
     return render(request, 'posts/detail.html', {'post': post})
 
+
+
+
+
+
+
+
+def create_img(request):
+    if request.method == "POST":
+        form = UploadImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            img = form.save(commit=False)
+            img.author = request.user
+            img.pub_date = timezone.now()
+            img.save()
+            ###future ref make to add the namespace ie "posts"
+            return redirect('posts:index')
+    else:
+        form = UploadImgForm()
+    return render(request, 'posts/edit_img.html', {'form': form})
+
+
+def edit_img(request, post_id):
+    img = get_object_or_404(Image, pk=post_id)
+    if request.method == "POST":
+        form = UploadImgForm(request.POST, instance=img)
+        if form.is_valid():
+            img = form.save(commit=False)
+            img.author = request.user
+            img.published_date = timezone.now()
+            post.save()
+            ####the "post_id" part must be the same as the P<"post_id" in url.py
+            return redirect('posts:index')
+    else:
+        form = UploadImgForm(instance=post)
+    return render(request, 'posts/edit_post.html', {'form': form})

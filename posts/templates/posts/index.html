@@ -9,6 +9,11 @@
 {% endif %}
 <form action={% url 'posts:create_post' %} method="get">
 
-        <button type="submit" value=te_post">Create New Post</button>
+        <button type="submit" value="edit_post">Create New Post</button>
+</form>
+
+
+<form action={% url 'posts:create_img' %} method="get">
+		<button type="submit" value="edit_img" >Upload Image</button>
 </form>
 
