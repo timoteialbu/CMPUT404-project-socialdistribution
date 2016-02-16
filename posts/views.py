@@ -23,11 +23,10 @@ def index(request):
     ##set to show only 5
     latest_post_list = Post.objects.order_by('pub_date')[:5]
     latest_img_list = Image.objects.order_by('-pub_date')[:5]
-    print "fuck",latest_img_list,"fuckdddd"
-    for image in latest_img_list:
-        print image.img
-        image = str(image)[7:]
-        print image
+
+    #print "fuck",latest_img_list,"fuckdddd"
+    #latest_img_list = [str(image)[7:] for image in latest_img_list]
+    print latest_img_list
 
     context = {
         'latest_image_list': latest_img_list,

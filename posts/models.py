@@ -18,7 +18,7 @@ class Post(models.Model):
 		return self.post_text[:20] + "..."
 	
 def image_file_name(instance, filename):
-    return '/'.join(['static/images/uploads', str(uuid.uuid4()), filename])
+    return '/'.join(['images/uploads', str(uuid.uuid4()), filename])
 
 
 class Image(models.Model):

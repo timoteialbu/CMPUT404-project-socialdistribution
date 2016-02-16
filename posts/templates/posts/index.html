@@ -10,23 +10,12 @@
 {% if latest_image_list %}
     <ul>
     {% for image in latest_image_list %}
-
-
-	{% block content %}
-    <img src="{{ MEDIA_URL }}{{ image.img }}"/>
-	 {% endblock %}
-
-
-
-
+	<img src={{ image.img.url }} alt="My_image"/>
     {% endfor %}
     </ul>
 {% else %}
     <p>No images are available!</p>
 {% endif %}
-
-
-
 <form action={% url 'posts:create_post' %} method="get">
 
         <button type="submit" value="edit_post">Create New Post</button>

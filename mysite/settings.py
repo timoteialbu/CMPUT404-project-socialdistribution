@@ -54,6 +54,15 @@ ROOT_URLCONF = 'mysite.urls'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+
+
+
+########################## CHANGE MEDIA_ROOT to the /abs/path/disporia/media
+MEDIA_ROOT = '/cshome/kdhaywar/disporia/media/'
+MEDIA_URL = '/media/'
+
+
+
 if ON_PAAS:
     # determine if we are on MySQL or POSTGRESQL
     if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ: 
