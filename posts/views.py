@@ -12,20 +12,10 @@ def handle_uploaded_file(f):
         for chunk in f.chunks():
             destination.write(chunk)
 
-def check_post_permission():
-    print "check"
-    return Post.objects.order_by('pub_date')[:5]
-            
 
 def index(request):
     # set to show only 5
-    latest_post_list = check_post_permission()
-    
-
-
-
-    # latest_post_list = Post.objects.order_by('pub_date')[:5]
-    
+    latest_post_list = Post.objects.order_by('pub_date')[:5]
     latest_img_list = Image.objects.order_by('-pub_date')[:5]
     context = {
         'latest_image_list': latest_img_list,
