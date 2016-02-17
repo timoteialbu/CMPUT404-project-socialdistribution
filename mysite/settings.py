@@ -31,7 +31,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = (
-	'posts',
+    'posts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -119,6 +119,15 @@ AUTHENTICATION_BACKENDS = (
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+
+
+
+
+######CHANGE!!! Run my_setup.py
+MEDIA_ROOT = '/home/kyle/Desktop/CMPUT404-project-socialdistribution/media/'
+MEDIA_URL = '/media/'
+
+
 
 if ON_PAAS:
     # determine if we are on MySQL or POSTGRESQL
