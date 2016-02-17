@@ -31,7 +31,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = (
-	'posts',
+    'posts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,8 +57,8 @@ ROOT_URLCONF = 'mysite.urls'
 
 
 
-########################## CHANGE MEDIA_ROOT to the /abs/path/disporia/media
-MEDIA_ROOT = '/cshome/kdhaywar/disporia/media/'
+######CHANGE!!! Run my_setup.py
+MEDIA_ROOT = '/run/my_setup.py/orupload/img/doesnt/work/'
 MEDIA_URL = '/media/'
 
 
