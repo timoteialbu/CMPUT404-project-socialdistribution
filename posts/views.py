@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-
+from django.db.models import Q
 
 from .models import Post, Image
 from .forms import PostForm, UploadImgForm
@@ -13,9 +13,30 @@ def handle_uploaded_file(f):
             destination.write(chunk)
 
 
+
+# def get_posts():
+#    return Post.objects.order_by('pub_date')[:1]
+
+
+
+            
 def index(request):
     # set to show only 5
-    latest_post_list = Post.objects.order_by('pub_date')[:5]
+
+    #latest_post_list = get_posts()
+    
+    
+
+    latest_post_list = Post.objects.filter(
+        Q(privacy='PU') |
+        (Q(privacy='ME') & Q(author=request.user))
+    )
+    print request.user
+    print latest_post_list[0].author
+
+    #latest_post_list = Post.objects.order_by('pub_date')[:5]
+
+
     latest_img_list = Image.objects.order_by('-pub_date')[:5]
     context = {
         'latest_image_list': latest_img_list,
