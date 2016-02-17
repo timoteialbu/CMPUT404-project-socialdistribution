@@ -17,6 +17,7 @@ After Cloning
 5) python manage.py migrate; python manage.py collectstatic; python manage.py runserver 
 6) then in browser "http://127.0.0.1:8000/"
 
+Or run my_setup.py which does 3 and 5
 Contributors / Licensing
 ========================
 

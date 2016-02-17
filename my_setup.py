@@ -20,11 +20,17 @@ def replace(file_path, pattern, subst):
     # Move new file
     move(abs_path, file_path)
 
-
-# Changes MEDIA ROOT path
-print "Changing MEDIA_ROOT in settings.py"
-pattern = 'MEDIA_ROOT =.+'
-current_dir = os.path.dirname(os.path.abspath(__file__))
-setting_dir = current_dir+"/mysite/settings.py"
-replace_with = "MEDIA_ROOT = '"+current_dir+"/media/'"
-replace(setting_dir, pattern, replace_with)
+if __name__ == '__main__':
+    # Changes MEDIA ROOT path
+    print "Changing MEDIA_ROOT in settings.py"
+    pattern = 'MEDIA_ROOT =.+'
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    setting_dir = current_dir+"/mysite/settings.py"
+    replace_with = "MEDIA_ROOT = '"+current_dir+"/media/'"
+    replace(setting_dir, pattern, replace_with)
+    user_answer = raw_input("would you like to allow full setup(y n):")
+    if (user_answer is "y"):
+        os.system("source venv/bin/activate")
+        os.system("python manage.py migrate")
+        os.system("python manage.py collectstatic")
+        os.system("python manage.py runserver")

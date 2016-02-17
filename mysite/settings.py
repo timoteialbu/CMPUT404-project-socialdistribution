@@ -58,7 +58,7 @@ ROOT_URLCONF = 'mysite.urls'
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = '/run/my_setup.py/orupload/img/doesnt/work/'
+MEDIA_ROOT = '/home/kyle/Desktop/CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 
