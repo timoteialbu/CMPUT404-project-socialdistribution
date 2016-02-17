@@ -53,7 +53,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.dropbox_oauth2',
     #'allauth.socialaccount.providers.edmodo',
     #'allauth.socialaccount.providers.evernote',
-    'allauth.socialaccount.providers.facebook',
+    #'allauth.socialaccount.providers.facebook',
     #'allauth.socialaccount.providers.flickr',
     #'allauth.socialaccount.providers.feedly',
     #'allauth.socialaccount.providers.fxa',
