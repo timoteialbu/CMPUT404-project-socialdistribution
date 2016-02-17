@@ -72,3 +72,5 @@ def create_img(request):
     else:
         form = UploadImgForm()
     return render(request, 'posts/edit_img.html', {'form': form})
+
+
