@@ -2,41 +2,47 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.db.models import Q
 
-from .models import Post, Image
-from .forms import PostForm, UploadImgForm
+from .models import Post, Image, Friend
+from .forms import PostForm, UploadImgForm, FriendForm
 
 
 # not a view can be moved elsewhere
+#####################################################
 def handle_uploaded_file(f):
     with open('some/file/name.txt', 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
 
-
-# def get_posts():
-#    return Post.objects.order_by('pub_date')[:1]
-
-
-
-            
-def index(request):
-    # set to show only 5
-
-    #latest_post_list = get_posts()
-    
-    
-
+def get_posts(request):
     latest_post_list = Post.objects.filter(
         Q(privacy='PU') |
-        (Q(privacy='ME') & Q(author=request.user))
-    )
-    print request.user
-    print latest_post_list[0].author
+        (Q(privacy='ME') & Q(author=request.user)))# |
+#        (Q(friend__user=request.user) & Q(privacy='FR'))
+ #   )
+    return latest_post_list
+#####################################################
 
-    #latest_post_list = Post.objects.order_by('pub_date')[:5]
+
+def create_friend(request):
+    if request.method == 'POST':
+        form = FriendForm(request.POST)
+        if form.is_valid():
+            friend = form.save(commit=False)
+            friend.user = request.user
+            friend.save()
+            return redirect('posts:index')
+    else:
+        form = FriendForm()
+    return render(request, 'posts/edit_img.html', {'form': form})
 
 
+
+
+
+
+def index(request):
+    latest_post_list = get_posts(request)
     latest_img_list = Image.objects.order_by('-pub_date')[:5]
     context = {
         'latest_image_list': latest_img_list,
@@ -57,6 +63,7 @@ def create_post(request):
             return redirect('posts:detail', post_id=post.pk)
     else:
         form = PostForm()
+    # this is forsure broken but doesnt get reached
     return render(request, 'posts/edit_post.html', {'form': form})
 
 
@@ -92,6 +99,7 @@ def create_img(request):
             return redirect('posts:index')
     else:
         form = UploadImgForm()
+    # this is prob broken but doesnt get reached
     return render(request, 'posts/edit_img.html', {'form': form})
 
 
