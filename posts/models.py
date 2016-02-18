@@ -36,5 +36,8 @@ class Image(models.Model):
 
 
 class Friend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    friend_with = models.ForeignKey(User, related_name='accepted_friend')
+        users_friends = models.ForeignKey(User,
+                                 on_delete=models.CASCADE,
+                                 related_name='friend_request'
+        )
+        friend_with = models.ForeignKey(User, related_name='accepted_friend')

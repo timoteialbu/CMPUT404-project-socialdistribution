@@ -16,8 +16,11 @@ def handle_uploaded_file(f):
 
 def get_posts(request):
     latest_post_list = Post.objects.filter(
-        Q(privacy='PU') |
-        (Q(privacy='ME') & Q(author=request.user)))# |
+        #Q(privacy='PU') |
+        #Q(author=request.user) |
+        #Q(author__accepted_friends__users_friends=request.user)) 
+        Q(author__friend_requests__friend_with=request.user))
+    # |
 #        (Q(friend__user=request.user) & Q(privacy='FR'))
  #   )
     return latest_post_list
@@ -29,7 +32,7 @@ def create_friend(request):
         form = FriendForm(request.POST)
         if form.is_valid():
             friend = form.save(commit=False)
-            friend.user = request.user
+            friend.users_friends = request.user
             friend.save()
             return redirect('posts:index')
     else:
