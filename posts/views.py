@@ -16,13 +16,11 @@ def handle_uploaded_file(f):
 
 def get_posts(request):
     latest_post_list = Post.objects.filter(
-        #Q(privacy='PU') |
-        #Q(author=request.user) |
-        #Q(author__accepted_friends__users_friends=request.user)) 
-        Q(author__friend_requests__friend_with=request.user))
-    # |
-#        (Q(friend__user=request.user) & Q(privacy='FR'))
- #   )
+        Q(privacy='PU') |
+        Q(author=request.user))# |
+        # Q(author__accepted_friends__users_friends=request.user) |
+        # Q(author__friend_requests__friend_with=request.user)
+        #)
     return latest_post_list
 #####################################################
 
