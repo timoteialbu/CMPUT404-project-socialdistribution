@@ -76,6 +76,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.vk',
     #'allauth.socialaccount.providers.weibo',
     #'allauth.socialaccount.providers.xing'
+    'friendship',
 )
 
 SITE_ID = 1

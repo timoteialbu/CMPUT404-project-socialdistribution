@@ -1,6 +1,6 @@
 from django import forms
-
-from .models import Post, Image, Friend
+from django.contrib.auth.models import User
+from .models import Post, Image
 
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
@@ -17,8 +17,7 @@ class UploadImgForm(forms.ModelForm):
         # )
         fields = ('title', 'img')
 
-
-class FriendForm(forms.ModelForm):
-    class Meta:
-        model = Friend
-        fields = ('friend_with',)
+        
+class UserChoiceForm(forms.Form):
+    user_choice_field = forms.ModelChoiceField(queryset=User.objects.all())
+    fields = ('username',)

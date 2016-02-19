@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.db.models import Q
-
-from .models import Post, Image, Friend
-from .forms import PostForm, UploadImgForm, FriendForm
+from django.contrib.auth.models import User # added for friendship
+from friendship.models import Friend, Follow
+from .models import Post, Image
+from .forms import PostForm, UploadImgForm, UserChoiceForm
 
 
 # not a view can be moved elsewhere
@@ -17,32 +18,86 @@ def handle_uploaded_file(f):
 def get_posts(request):
     latest_post_list = Post.objects.filter(
         Q(privacy='PU') |
-        Q(author=request.user))# |
-        # Q(author__accepted_friends__users_friends=request.user) |
-        # Q(author__friend_requests__friend_with=request.user)
-        #)
+        Q(author=request.user))
     return latest_post_list
 #####################################################
 
 
+#################DELETE ME JUST FOR REF#####################
+def my_view(request):
+    # List of this user's friends
+    all_friends = Friend.objects.friends(request.user)
+
+    # List all unread friendship requests
+    requests = Friend.objects.unread_requests(user=request.user)
+
+    # List all rejected friendship requests
+    rejects = Friend.objects.rejected_requests(user=request.user)
+
+    # Count of all rejected friendship requests
+    reject_count = Friend.objects.rejected_request_count(user=request.user)
+
+    # List all unrejected friendship requests
+    unrejects = Friend.objects.unrejected_requests(user=request.user)
+
+    # Count of all unrejected friendship requests
+    unreject_count = Friend.objects.unrejected_request_count(user=request.user)
+
+    # List all sent friendship requests
+    sent = Friend.objects.sent_requests(user=request.user)
+
+    # List of this user's followers
+    all_followers = Follow.objects.followers(request.user)
+
+    # List of who this user is following
+    following = Follow.objects.following(request.user)
+
+    ### Managing friendship relationships
+
+    # Create a friendship request
+    other_user = User.objects.get(pk=1)
+    new_relationship = Friend.objects.add_friend(request.user, other_user)
+
+    # Can optionally save a message when creating friend requests
+    message_relationship = Friend.objects.add_friend(
+        from_user=request.user,
+        to_user=some_other_user,
+        message='Hi, I would like to be your friend',
+    )
+
+    # And immediately accept it, normally you would give this option to the user
+    new_relationship.accept()
+
+    # Now the users are friends
+    Friend.objects.are_friends(request.user, other_user) == True
+
+    # Remove the friendship
+    Friend.objects.remove_friend(other_user, request.user)
+
+    # Create request.user follows other_user relationship
+    following_created = Follow.objects.add_follower(request.user, other_user)
+#######################################################################
+
+
 def create_friend(request):
-    if request.method == 'POST':
-        form = FriendForm(request.POST)
+    if request.method == "POST":
+        form = UserChoiceForm(request.POST)
         if form.is_valid():
-            friend = form.save(commit=False)
-            friend.users_friends = request.user
-            friend.save()
+            friend = form.cleaned_data['user_choice_field']
+            Friend.objects.add_friend(request.user, friend)
+            Follow.objects.add_follower(request.user, friend)
             return redirect('posts:index')
     else:
-        form = FriendForm()
-    return render(request, 'posts/edit_img.html', {'form': form})
+        form = UserChoiceForm()
+    return render(request, 'posts/friend_mgnt.html', {'form': form})
 
 
 
 
 
-
+# prob should change this to a form view
 def index(request):
+    print Follow.objects.following(request.user)
     latest_post_list = get_posts(request)
     latest_img_list = Image.objects.order_by('-pub_date')[:5]
     context = {
@@ -64,7 +119,6 @@ def create_post(request):
             return redirect('posts:detail', post_id=post.pk)
     else:
         form = PostForm()
-    # this is forsure broken but doesnt get reached
     return render(request, 'posts/edit_post.html', {'form': form})
 
 
@@ -100,7 +154,6 @@ def create_img(request):
             return redirect('posts:index')
     else:
         form = UploadImgForm()
-    # this is prob broken but doesnt get reached
     return render(request, 'posts/edit_img.html', {'form': form})
 
 

@@ -34,10 +34,3 @@ class Image(models.Model):
         def __unicode__(self):
                 return '%s' % (self.img)
 
-
-class Friend(models.Model):
-        users_friends = models.ForeignKey(User,
-                                 on_delete=models.CASCADE,
-                                 related_name='friend_request'
-        )
-        friend_with = models.ForeignKey(User, related_name='accepted_friend')

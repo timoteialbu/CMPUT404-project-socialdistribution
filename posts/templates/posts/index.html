@@ -23,6 +23,8 @@
 
 
 <form action={% url 'posts:create_img' %} method="get">
-		<button type="submit" value="edit_img" >Upload Image</button>
+		<button type="submit" value="create_img" >Upload Image</button>
 </form>
-
+<form action={% url 'posts:create_friend' %} method="get">
+		<button type="submit" value="new_friend" >Add Friend</button>
+</form>
