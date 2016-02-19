@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from friendship.models import Friend, Follow
 from .models import Post, Image
 
 # i dont know what meta does ?
@@ -18,6 +19,14 @@ class UploadImgForm(forms.ModelForm):
         fields = ('title', 'img')
 
         
-class UserChoiceForm(forms.Form):
-    user_choice_field = forms.ModelChoiceField(queryset=User.objects.all())
+class AddFriendForm(forms.Form):
+    user_choice_field = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+    )
     fields = ('username',)
+
+# add checks if user exists
+class UnFriendUserForm(forms.Form):
+    username = forms.CharField(label='username', required=False)
+

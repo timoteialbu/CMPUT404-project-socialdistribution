@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow
 from .models import Post, Image
-from .forms import PostForm, UploadImgForm, UserChoiceForm
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm
 
 
 # not a view can be moved elsewhere
@@ -79,17 +79,86 @@ def my_view(request):
 #######################################################################
 
 
+def tempFriendDebug(user, friend):
+
+    print "List of this user's friends"
+    print Friend.objects.friends(user)
+
+    print " List all unread friendship requests"
+    print Friend.objects.unread_requests(user=user)
+
+    print " List all rejected friendship requests"
+    print Friend.objects.rejected_requests(user=user)
+
+
+    print " List all unrejected friendship requests"
+    print Friend.objects.unrejected_requests(user=user)
+
+    
+    print " List all sent friendship requests"
+    print Friend.objects.sent_requests(user=user)
+            
+    print " List of this user's followers"
+    print Follow.objects.followers(user)
+            
+    print " List of who this user is following"
+    print Follow.objects.following(user)
+
+# broken    
+def try_making_friend(user, friend):
+    try:
+        Friend.objects.add_friend(user, friend)
+        Follow.objects.add_follower(user, friend)
+        return True
+    except ValueError:
+        return False
+
+#broken
+def try_unfriend(user, friend):
+    try:
+        Friend.objects.remove_friend(friend, user)
+        return True
+    except ValueError:
+        return False
+    
+
 def friend_mgnt(request):
     if request.method == "POST":
-        form = UserChoiceForm(request.POST)
-        if form.is_valid():
-            friend = form.cleaned_data['user_choice_field']
-            Friend.objects.add_friend(request.user, friend)
-            Follow.objects.add_follower(request.user, friend)
-            return redirect('posts:index')
+        print "dick"
+        context = {
+            'addform': AddFriendForm(request.POST),
+            'unfrienduserform': UnFriendUserForm(request.POST),
+            'valid_add': None,
+            'valid_unfriend': None,
+        }
+        context.update({
+            'addform_valid': context['addform'].is_valid(),
+            'unfrienduserform_valid': context['unfrienduserform'].is_valid(),
+        })
+        if context['addform_valid']:
+            print "fuck"
+            friend = context['addform'].cleaned_data['user_choice_field']
+            context['valid_add'] = try_making_friend(request.user, friend)
+        else:
+            context['addform'] = AddFriendForm()
+        if context['unfrienduserform_valid']:
+            print "duck"
+            friend = context['unfrienduserform'].cleaned_data['username']
+            context['valid_unfriend'] = try_unfriend(request.user, friend)
+        else:
+            context['unfrienduserform'] = UnFriendUserForm
+        for k, v in context.items():
+            print(k, '-->', v)
+        return render(request, 'posts/friend_mgnt.html', context)
+ 
+        #return redirect('posts:index')
     else:
-        form = UserChoiceForm()
-    return render(request, 'posts/friend_mgnt.html', {'form': form})
+        addform = AddFriendForm()
+        unfollowform = UnFriendUserForm()
+    return render(request, 'posts/friend_mgnt.html', {
+        'addform': addform,
+        'unfrienduserform': unfollowform,
+    })
 
 
 
@@ -97,7 +166,6 @@ def friend_mgnt(request):
 
 # prob should change this to a form view
 def index(request):
-    print Follow.objects.following(request.user)
     latest_post_list = get_posts(request)
     latest_img_list = Image.objects.order_by('-pub_date')[:5]
     context = {

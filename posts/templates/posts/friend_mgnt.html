@@ -1,7 +1,24 @@
-<form role="form" action="/posts/create_friend/" method="POST">{% csrf_token %}
+<form role="form" action="/posts/friend_mgnt/" method="POST">{% csrf_token %}
   <label>Choose someone to be friends with.</label>
   <p>
-	{{ form.user_choice_field }}
+	{{ addform.user_choice_field }}
   </p>
-    <button type="submit" class="btn btn-default">Make Friend!</button>
+  {% if not addform_valid and addform_valid != None %}
+  <p>Invalid input, please try again.</p>
+  {% elif not valid_add and valid_add != None %}
+  <p>You are already a friend with them or still waiting for a response</p>
+  {% elif valid_add %}
+  <p>You are now a following them and a friendship request was sent</p>
+  {% endif %}
+  <p></p>
+  <p><label>Unfriend Someone</label></p>
+  <p>{{ unfrienduserform.username}}</p>
+  {% if not unfrienduserform_valid and unfrienduserform != None %}
+  <p>Invalid input, please try again.</p>
+  {% elif not valid_unfriend and valid_unfriend != None %}
+  <p>You are not a friend with them, so you can't unfriend them</p>
+  {% elif valid_unfriend %}
+  <p>You are no longers friends</p>
+  {% endif %}
+  <button type="submit" class="btn btn-default">Apply Changes</button>
 </form>
