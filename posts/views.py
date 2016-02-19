@@ -103,14 +103,18 @@ def tempFriendDebug(user, friend):
             
     print " List of who this user is following"
     print Follow.objects.following(user)
+ 
 
+    
 # broken    
 def try_making_friend(user, friend):
     try:
-        Friend.objects.add_friend(user, friend)
         Follow.objects.add_follower(user, friend)
+        Friend.objects.add_friend(user, friend)
+        print "true"
         return True
     except ValueError:
+        print "false"
         return False
 
 #broken
@@ -120,9 +124,11 @@ def try_unfriend(user, friend):
         return True
     except ValueError:
         return False
+
     
 
 def friend_mgnt(request):
+    tempFriendDebug(request.user,'butt')
     if request.method == "POST":
         print "dick"
         context = {
@@ -138,13 +144,16 @@ def friend_mgnt(request):
         if context['addform_valid']:
             print "fuck"
             friend = context['addform'].cleaned_data['user_choice_field']
-            context['valid_add'] = try_making_friend(request.user, friend)
+            print "sdddsf",friend
+            if friend is not None:
+                print "shouldn be her"
+                context['valid_add'] = try_making_friend(request.user, friend)
         else:
             context['addform'] = AddFriendForm()
         if context['unfrienduserform_valid']:
-            print "duck"
             friend = context['unfrienduserform'].cleaned_data['username']
-            context['valid_unfriend'] = try_unfriend(request.user, friend)
+            if friend is not None:
+                context['valid_unfriend'] = try_unfriend(request.user, friend)
         else:
             context['unfrienduserform'] = UnFriendUserForm
         for k, v in context.items():
