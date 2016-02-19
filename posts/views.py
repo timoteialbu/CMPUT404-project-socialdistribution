@@ -113,7 +113,7 @@ def try_making_friend(user, friend):
         Friend.objects.add_friend(user, friend)
         print "true"
         return True
-    except ValueError:
+    except Exception:
         print "false"
         return False
 
@@ -122,7 +122,7 @@ def try_unfriend(user, friend):
     try:
         Friend.objects.remove_friend(friend, user)
         return True
-    except ValueError:
+    except Exception:
         return False
 
     
@@ -130,7 +130,6 @@ def try_unfriend(user, friend):
 def friend_mgnt(request):
     tempFriendDebug(request.user,'butt')
     if request.method == "POST":
-        print "dick"
         context = {
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
@@ -141,23 +140,25 @@ def friend_mgnt(request):
             'addform_valid': context['addform'].is_valid(),
             'unfrienduserform_valid': context['unfrienduserform'].is_valid(),
         })
+        ###############################################################
         if context['addform_valid']:
-            print "fuck"
             friend = context['addform'].cleaned_data['user_choice_field']
-            print "sdddsf",friend
+            context['addfriend'] = friend
             if friend is not None:
-                print "shouldn be her"
-                context['valid_add'] = try_making_friend(request.user, friend)
-        else:
+                Friend.objects.remove_friend(friend, user)
+                #context['valid_add'] = try_making_friend(request.user, friend)
+        if not context['addform_valid'] or context['valid_add']:
             context['addform'] = AddFriendForm()
+        ###############################################################
         if context['unfrienduserform_valid']:
             friend = context['unfrienduserform'].cleaned_data['username']
-            if friend is not None:
+            friend = friend.strip()
+            context['unaddfriend'] = friend
+            if str(friend) is not '':
                 context['valid_unfriend'] = try_unfriend(request.user, friend)
-        else:
+        if not context['unfrienduserform_valid'] or context['valid_unfriend']:
             context['unfrienduserform'] = UnFriendUserForm
-        for k, v in context.items():
-            print(k, '-->', v)
+        ###############################################################
         return render(request, 'posts/friend_mgnt.html', context)
  
         #return redirect('posts:index')
