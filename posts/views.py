@@ -105,7 +105,7 @@ def tempFriendDebug(user, friend):
     print Follow.objects.following(user)
  
 
-   
+# add more logic in here to deal with (waiting for requests/unfolled) state
 def try_adding_friend(user, friend):
     msg = ""
     try:
@@ -118,7 +118,8 @@ def try_adding_friend(user, friend):
     except Exception:
         msg += "You are already following %s" % friend
     try:
-        Friend.objects.add_friend(user, friend)
+        ##################################################
+        #Friend.objects.add_friend(user, friend)
         msg += " and waiting for them to accept your request." % friend
     except Exception:
         msg += " and already waiting for a response to your request"
@@ -130,15 +131,16 @@ def try_remove_relationship(user, friend):
         friend_id = int(User.objects.get(username=friend).id)
     except Exception:
         return "Not a valid user, please try again."
-    try:
-        Follow.objects.remove_follower(user, friend_id)
-    except Exception:
-        return "You are not following %s, so you can't unfollow them." % friend
-    try:
-        Friend.objects.remove_friend(friend_id, user)
-    except Exception:
-        return "You are unfollowing %s now." % friend
-    return "You are no longer friends with %s." % friend
+    msg = ""
+    if Follow.objects.remove_follower(user, friend_id):
+        msg += "You are no longer following %s" % friend
+    else:
+        msg += "You are not following %s, so you can't unfollow them." % friend
+    if Friend.objects.remove_friend(friend_id, user):
+        msg += " You are no longer friends with %s" % friend
+    else:
+        msg += " You were never friends with %s, I'm sorry :(" % friend
+    return msg
 
 
 def friend_mgnt(request):
@@ -148,16 +150,7 @@ def friend_mgnt(request):
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
         }
-        ###############################################################
-        addform_valid = context['addform'].is_valid(),
-        if addform_valid:
-            friend = context['addform'].cleaned_data['user_choice_field']
-            context['addfriend'] = friend
-            if friend is not None:
-                context['add_msg'] = try_adding_friend(request.user, friend)
-        elif not addform_valid:
-            context['add_msg'] = "Invalid input"
-            context['addform'] = AddFriendForm()
+
         ###############################################################
         unfrienduserform_valid = context['unfrienduserform'].is_valid()
         if unfrienduserform_valid:
@@ -171,6 +164,16 @@ def friend_mgnt(request):
         elif not unfrienduserform_valid:
             context['unfriend_msg'] = "Invalid input."
             context['unfrienduserform'] = UnFriendUserForm
+        ###############################################################
+        addform_valid = context['addform'].is_valid(),
+        if addform_valid:
+            friend = context['addform'].cleaned_data['user_choice_field']
+            context['addfriend'] = friend
+            if friend is not None:
+                context['add_msg'] = try_adding_friend(request.user, friend)
+        elif not addform_valid:
+            context['add_msg'] = "Invalid input"
+            context['addform'] = AddFriendForm()
         ###############################################################
         return render(request, 'posts/friend_mgnt.html', context)
  
