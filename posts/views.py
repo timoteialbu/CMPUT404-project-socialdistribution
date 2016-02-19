@@ -79,7 +79,7 @@ def my_view(request):
 #######################################################################
 
 
-def create_friend(request):
+def friend_mgnt(request):
     if request.method == "POST":
         form = UserChoiceForm(request.POST)
         if form.is_valid():
