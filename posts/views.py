@@ -164,6 +164,7 @@ def remove_relationship(request, context):
     ###############################################################
 
 
+# breaks when add and remove are the same cant find the relationship
 def friend_mgnt(request):
     tempFriendDebug(request.user, 'butt')
     if request.method == "POST":
@@ -171,7 +172,6 @@ def friend_mgnt(request):
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
         }
-        # order of remove and add are important or it breaks
         remove_relationship(request, context)
         add_friend(request, context)
         return render(request, 'posts/friend_mgnt.html', context) 
