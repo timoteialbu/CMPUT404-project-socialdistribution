@@ -36,7 +36,7 @@ def try_adding_friend(user, friend):
         msg += "You are already following %s" % friend
     try:
         ##################################################
-        #Friend.objects.add_friend(user, friend)
+        # Friend.objects.add_friend(user, friend)
         msg += " and waiting for them to accept your request." % friend
     except Exception:
         msg += " and already waiting for a response to your request"
@@ -118,33 +118,23 @@ def my_view(request):
 
 
 def tempFriendDebug(user, friend):
-
     print "List of this user's friends"
     print Friend.objects.friends(user)
-
     print " List all unread friendship requests"
     print Friend.objects.unread_requests(user=user)
-
     print " List all rejected friendship requests"
     print Friend.objects.rejected_requests(user=user)
-
-
     print " List all unrejected friendship requests"
     print Friend.objects.unrejected_requests(user=user)
-
-    
     print " List all sent friendship requests"
     print Friend.objects.sent_requests(user=user)
-            
     print " List of this user's followers"
     print Follow.objects.followers(user)
-            
     print " List of who this user is following"
     print Follow.objects.following(user)
- 
+
 
 def add_friend(request, context):
-
     ###############################################################
     unfrienduserform_valid = context['unfrienduserform'].is_valid()
     if unfrienduserform_valid:
@@ -160,7 +150,7 @@ def add_friend(request, context):
         context['unfrienduserform'] = UnFriendUserForm
     ###############################################################
 
-    
+
 def remove_relationship(request, context):
     addform_valid = context['addform'].is_valid(),
     if addform_valid:
@@ -172,7 +162,7 @@ def remove_relationship(request, context):
         context['add_msg'] = "Invalid input"
         context['addform'] = AddFriendForm()
     ###############################################################
-    
+
 
 def friend_mgnt(request):
     tempFriendDebug(request.user, 'butt')
@@ -184,9 +174,7 @@ def friend_mgnt(request):
         # order of remove and add are important or it breaks
         remove_relationship(request, context)
         add_friend(request, context)
-        return render(request, 'posts/friend_mgnt.html', context)
- 
-        #return redirect('posts:index')
+        return render(request, 'posts/friend_mgnt.html', context) 
     else:
         addform = AddFriendForm()
         unfollowform = UnFriendUserForm()
@@ -194,9 +182,6 @@ def friend_mgnt(request):
         'addform': addform,
         'unfrienduserform': unfollowform,
     })
-
-
-
 
 
 # prob should change this to a form view
@@ -258,5 +243,3 @@ def create_img(request):
     else:
         form = UploadImgForm()
     return render(request, 'posts/edit_img.html', {'form': form})
-
-
