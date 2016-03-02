@@ -1,0 +1,16 @@
+{% block content %}
+    <div class="post">
+        {% if post.pub_date %}
+            <div class="date">
+                {{ post.pub_date }}
+            </div>
+        {% endif %}
+		<p>{{ post.post_text|urlize|linebreaks }}</p>
+		<p>{{ post.get_privacy_display }}</p>
+		<form action={% url 'posts:edit_post' post.pk %} method="get">
+		  <button type="submit" value="edit_post">Edit Post</button>
+		</form>
+    </div>
+{% endblock %}
+
+	

@@ -1,5 +1,10 @@
 db.sqlite3
+*~
 *.pyc
 .project
 .pydevproject
 vpython27
+venv
+passwords.txt
+media/images/uploads/*
+*/migrations/
