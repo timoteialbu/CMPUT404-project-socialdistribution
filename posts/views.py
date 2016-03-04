@@ -174,7 +174,7 @@ def friend_mgnt(request):
         }
         remove_relationship(request, context)
         add_friend(request, context)
-        return render(request, 'posts/friend_mgnt.html', context) 
+        return render(request, 'posts/friend_mgnt.html', context)
     else:
         addform = AddFriendForm()
         unfollowform = UnFriendUserForm()
