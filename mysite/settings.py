@@ -125,7 +125,7 @@ AUTHENTICATION_BACKENDS = (
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = '/home/kyle/Desktop/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 
