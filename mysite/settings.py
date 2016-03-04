@@ -100,6 +100,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'mysite.urls'
 
+ACCOUNT_SIGNUP_FORM_CLASS = "mysite.forms.SignupForm"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
