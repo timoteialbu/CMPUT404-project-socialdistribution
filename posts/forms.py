@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from friendship.models import Friend, Follow
+from friendship.models import Friend, Follow, FriendshipRequest
 from .models import Post, Image
 
 # i dont know what meta does ?
@@ -13,9 +13,6 @@ class PostForm(forms.ModelForm):
 class UploadImgForm(forms.ModelForm):
     class Meta:
         model = Image
-        # img = forms.ImageField(
-        #    label = 'Select a Image',
-        # )
         fields = ('title', 'img')
 
         
@@ -31,34 +28,31 @@ class UnFriendUserForm(forms.Form):
     username = forms.CharField(label='username', required=False)
 
 
-class FriendRequestForm(forms.Form):
-    users = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        label="Notify and subscribe users to this post:")
+#class FriendRequestForm(forms.Form):
+#    users = forms.MultipleChoiceField(
+#        widget=forms.CheckboxSelectMultiple,
+#        label="Notify and subscribe users to this post:")
+
+    
+class FriendRequestForm(forms.Form):    
+    def __init__(self, dynamic_field_names, *args, **kwargs):
+        super(FriendRequestForm, self).__init__(*args, **kwargs)
+        CHOICES = (
+            ('A', 'Accept'),
+            ('R', 'Reject'),
+        )
+        for field_name in dynamic_field_names:
+            self.fields[field_name] = forms.CharField(max_length=32) 
+            self.fields[field_name] = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect())
 
 
+class MyForm(forms.Form):
+    static_field_a = forms.CharField(max_length=32)
+    static_field_b = forms.CharField(max_length=32)
+    static_field_c = forms.CharField(max_length=32)
 
-# class DivisionRemovalForm(forms.Form):
-#     class MultipleDivisionField(forms.ModelMultipleChoiceField):
-#         def label_from_instance(self, obj):
-#             url = reverse('organizer_division_view', kwargs={'div_pk': obj.pk})
-#             label = '<a href="%s">%s</a>' % (url, obj.__unicode__())
-#             return mark_safe(label)
+    def __init__(self, dynamic_field_names, *args, **kwargs):
+        super(MyForm, self).__init__(*args, **kwargs)
 
-#     divisions = MultipleDivisionField(queryset=[],
-#                 widget=forms.CheckboxSelectMultiple())
-
-#     def __init__(self, competition, *args, **kwargs):
-#         self.competition = competition
-#         super(DivisionRemovalForm, self).__init__(*args, **kwargs)
-#         self.fields['divisions'].queryset = self.competition.divisions.all()
-
-#     def save(self):
-#         for div in self.cleaned_data['divisions']:
-#             units = div.units.all()
-#             if units:
-#                 for unit in units:
-#                     unit.in_division = False
-#                     unit.save()
-#         divisions = self.cleaned_data['divisions']
-#         divisions.delete()
+        for field_name in dynamic_field_names:
+            self.fields[field_name] = forms.CharField(max_legth=32) 

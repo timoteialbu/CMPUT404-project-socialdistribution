@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow
 from .models import Post, Image
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm
 
 
 # not a view can be moved elsewhere
@@ -158,7 +158,14 @@ def remove_relationship(request, context):
 
 
 def friend_mgnt(request):
-    context = {'requests': Friend.objects.unread_requests(request.user)}
+    #context = {'requests': Friend.objects.unread_requests(request.user)}
+    
+    dynamic_fields = ('first_name', 'last_name', 'company', 'title')
+    my_form = FriendRequestForm(dynamic_field_names=dynamic_fields)
+    #my_form.as_ul()
+    context = {'requests': my_form}
+
+    
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
@@ -166,6 +173,7 @@ def friend_mgnt(request):
         })
         remove_relationship(request, context)
         add_friend(request, context)
+        print "|",request.POST,"|"
     else:
         context.update({
             'addform': AddFriendForm(),

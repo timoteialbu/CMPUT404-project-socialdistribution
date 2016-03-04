@@ -4,7 +4,12 @@
   <p>{{ add_msg }}</p>
   <p><label>Unfriend Someone</label></p>
   <p>{{ unfrienduserform.username}}</p>
-  <p>{{ unfriend_msg }}</p>
+  <p>{{ unfriend_msg }}</p> 
+
+
+  {{ requests }}
+
+  
   <button type="submit" class="btn btn-default">Apply Changes</button>
 </form>
 <form action={% url 'posts:index' %} method="get">
