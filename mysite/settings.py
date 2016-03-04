@@ -139,11 +139,11 @@ MEDIA_URL = '/media/'
 
 if ON_PAAS:
     # determine if we are on MySQL or POSTGRESQL
-    if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ: 
-    
+    if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ:
+
         DATABASES = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',  
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
                 'NAME':     os.environ['OPENSHIFT_APP_NAME'],
                 'USER':     os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
                 'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
@@ -151,9 +151,9 @@ if ON_PAAS:
                 'PORT':     os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
             }
         }
-        
-    elif "OPENSHIFT_MYSQL_DB_USERNAME" in os.environ: 
-    
+
+    elif "OPENSHIFT_MYSQL_DB_USERNAME" in os.environ:
+
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql',
@@ -165,7 +165,7 @@ if ON_PAAS:
             }
         }
 
-        
+
 else:
     # stock django, local development.
     DATABASES = {

@@ -5,6 +5,7 @@ import uuid
 
 class Post(models.Model):
         author = models.ForeignKey(User, on_delete=models.CASCADE)
+        # TODO post_text as markdown (auto-detect)
         post_text = models.TextField(max_length=400)
         pub_date = models.DateTimeField('date published')
         PRIVACY_CHOICES = (
@@ -33,4 +34,3 @@ class Image(models.Model):
 
         def __unicode__(self):
                 return '%s' % (self.img)
-
