@@ -79,7 +79,15 @@ INSTALLED_APPS = (
     'friendship',
 )
 
-SITE_ID = 1
+# This ID comes from the Django admin page
+# After adding a new site, click on it. Look in the browsers
+# address space and there will be '/#/' where # is an int
+# Set this # to the SITE_ID variable below
+SITE_ID = 2
+
+# After log in go to this webpage
+LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/account/login"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -91,6 +99,8 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'mysite.urls'
+
+ACCOUNT_SIGNUP_FORM_CLASS = "mysite.forms.SignupForm"
 
 TEMPLATES = [
     {
@@ -125,18 +135,20 @@ AUTHENTICATION_BACKENDS = (
 
 
 ######CHANGE!!! Run my_setup.py
+
 MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
+
 MEDIA_URL = '/media/'
 
 
 
 if ON_PAAS:
     # determine if we are on MySQL or POSTGRESQL
-    if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ: 
-    
+    if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ:
+
         DATABASES = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',  
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
                 'NAME':     os.environ['OPENSHIFT_APP_NAME'],
                 'USER':     os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
                 'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
@@ -144,9 +156,9 @@ if ON_PAAS:
                 'PORT':     os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
             }
         }
-        
-    elif "OPENSHIFT_MYSQL_DB_USERNAME" in os.environ: 
-    
+
+    elif "OPENSHIFT_MYSQL_DB_USERNAME" in os.environ:
+
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql',
@@ -158,7 +170,7 @@ if ON_PAAS:
             }
         }
 
-        
+
 else:
     # stock django, local development.
     DATABASES = {
