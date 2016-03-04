@@ -87,6 +87,7 @@ SITE_ID = 2
 
 # After log in go to this webpage
 LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/account/login"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -98,6 +99,8 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'mysite.urls'
+
+ACCOUNT_SIGNUP_FORM_CLASS = "mysite.forms.SignupForm"
 
 TEMPLATES = [
     {

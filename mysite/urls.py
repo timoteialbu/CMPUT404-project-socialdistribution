@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     # url(r'^$', 'mysite.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', Index.as_view(), name='index'),
-                       url(r'^posts/', include('posts.urls', namespace="posts")),
+    url(r'^posts/', include('posts.urls', namespace="posts")),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('allauth.urls')),
 
