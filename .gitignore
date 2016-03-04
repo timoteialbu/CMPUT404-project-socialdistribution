@@ -9,6 +9,10 @@ venv
 passwords.txt
 media/images/uploads/*
 */migrations/
+<<<<<<< HEAD
 =======
 venv
 >>>>>>> origin/master
+=======
+timotei-project
+>>>>>>> kdhaywar/develop
