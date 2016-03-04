@@ -228,7 +228,18 @@ def edit_post(request, post_id):
 
 def detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    return render(request, 'posts/detail.html', {'post': post})
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            # the "post_id" part must be the same as the P<"post_id" in url.py
+            return redirect('posts:detail', post_id=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'posts/detail.html', {'post': post, 'form': form})
 
 
 def create_img(request):
