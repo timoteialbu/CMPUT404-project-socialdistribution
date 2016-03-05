@@ -23,36 +23,21 @@ class AddFriendForm(forms.Form):
     )
     fields = ('username',)
 
-# add checks if user exists
+
 class UnFriendUserForm(forms.Form):
     username = forms.CharField(label='username', required=False)
 
 
-#class FriendRequestForm(forms.Form):
-#    users = forms.MultipleChoiceField(
-#        widget=forms.CheckboxSelectMultiple,
-#        label="Notify and subscribe users to this post:")
-
-    
-class FriendRequestForm(forms.Form):    
-    def __init__(self, dynamic_field_names, *args, **kwargs):
+class FriendRequestForm(forms.Form):
+    def __init__(self, names, *args, **kwargs):
         super(FriendRequestForm, self).__init__(*args, **kwargs)
         CHOICES = (
             ('A', 'Accept'),
             ('R', 'Reject'),
         )
-        for field_name in dynamic_field_names:
-            self.fields[field_name] = forms.CharField(max_length=32) 
-            self.fields[field_name] = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect())
-
-
-class MyForm(forms.Form):
-    static_field_a = forms.CharField(max_length=32)
-    static_field_b = forms.CharField(max_length=32)
-    static_field_c = forms.CharField(max_length=32)
-
-    def __init__(self, dynamic_field_names, *args, **kwargs):
-        super(MyForm, self).__init__(*args, **kwargs)
-
-        for field_name in dynamic_field_names:
-            self.fields[field_name] = forms.CharField(max_legth=32) 
+        for field_name in names:
+            self.fields[field_name] = forms.CharField(max_length=32)
+            self.fields[field_name] = forms.ChoiceField(
+                choices=CHOICES,
+                widget=forms.RadioSelect()
+            )

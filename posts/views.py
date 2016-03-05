@@ -156,16 +156,18 @@ def remove_relationship(request, context):
         context['add_msg'] = "Invalid input"
         context['addform'] = AddFriendForm()
 
+def friend_requests(request, context):
+    requests_valid = context['friendrequestform'].is_valid(),
+    if requests_valid:
+        #friend = context['addform'].cleaned_data['user_choice_field']
+        #context['addfriend'] = friend
+
 
 def friend_mgnt(request):
-    #context = {'requests': Friend.objects.unread_requests(request.user)}
-    
-    dynamic_fields = ('first_name', 'last_name', 'company', 'title')
-    my_form = FriendRequestForm(dynamic_field_names=dynamic_fields)
-    #my_form.as_ul()
-    context = {'requests': my_form}
-
-    
+    users = list(map(lambda x:
+                     str(x.from_user),
+                     Friend.objects.unread_requests(request.user)))
+    context = {'friendrequestform': FriendRequestForm(names=users)}
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
@@ -173,7 +175,7 @@ def friend_mgnt(request):
         })
         remove_relationship(request, context)
         add_friend(request, context)
-        print "|",request.POST,"|"
+        friend_requests(request, context)
     else:
         context.update({
             'addform': AddFriendForm(),
