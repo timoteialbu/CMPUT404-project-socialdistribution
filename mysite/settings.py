@@ -135,15 +135,13 @@ AUTHENTICATION_BACKENDS = (
 
 
 ######CHANGE!!! Run my_setup.py
-<<<<<<< HEAD
-<<<<<<< HEAD
 MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
-=======
-MEDIA_ROOT = '/Users/alain/workspace/csvm/~4/project/CMPUT404-project-socialdistribution/media/'
->>>>>>> kdhaywar/develop
-=======
-MEDIA_ROOT = '/root/Desktop/c404project/media/'
->>>>>>> kdhaywar/develop
+
+#MEDIA_ROOT = '/Users/alain/workspace/csvm/~4/project/CMPUT404-project-socialdistribution/media/'
+#kdhaywar/develop
+
+#MEDIA_ROOT = '/root/Desktop/c404project/media/'
+
 MEDIA_URL = '/media/'
 
 
