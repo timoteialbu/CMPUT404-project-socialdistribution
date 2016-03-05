@@ -131,19 +131,9 @@ AUTHENTICATION_BACKENDS = (
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-
-
-
 ######CHANGE!!! Run my_setup.py
 MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
-
-#MEDIA_ROOT = '/Users/alain/workspace/csvm/~4/project/CMPUT404-project-socialdistribution/media/'
-#kdhaywar/develop
-
-#MEDIA_ROOT = '/root/Desktop/c404project/media/'
-
 MEDIA_URL = '/media/'
-
 
 
 if ON_PAAS:
