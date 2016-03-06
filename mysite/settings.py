@@ -76,7 +76,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.vk',
     #'allauth.socialaccount.providers.weibo',
     #'allauth.socialaccount.providers.xing'
-    'friendship',
+    'friendship'
 )
 
 # This ID comes from the Django admin page
