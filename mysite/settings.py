@@ -31,13 +31,63 @@ else:
 # Application definition
 
 INSTALLED_APPS = (
+    'posts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	# The Django sites framework is required
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+	# ... include the providers you want to enable:
+    #'allauth.socialaccount.providers.amazon',
+    #'allauth.socialaccount.providers.angellist',
+    #'allauth.socialaccount.providers.bitbucket',
+    #'allauth.socialaccount.providers.bitly',
+    #'allauth.socialaccount.providers.coinbase',
+    #'allauth.socialaccount.providers.dropbox',
+    #'allauth.socialaccount.providers.dropbox_oauth2',
+    #'allauth.socialaccount.providers.edmodo',
+    #'allauth.socialaccount.providers.evernote',
+    #'allauth.socialaccount.providers.facebook',
+    #'allauth.socialaccount.providers.flickr',
+    #'allauth.socialaccount.providers.feedly',
+    #'allauth.socialaccount.providers.fxa',
+    #'allauth.socialaccount.providers.github',
+    #'allauth.socialaccount.providers.google',
+    #'allauth.socialaccount.providers.hubic',
+    #'allauth.socialaccount.providers.instagram',
+    #'allauth.socialaccount.providers.linkedin',
+    #'allauth.socialaccount.providers.linkedin_oauth2',
+    #'allauth.socialaccount.providers.odnoklassniki',
+    #'allauth.socialaccount.providers.openid',
+    #'allauth.socialaccount.providers.persona',
+    #'allauth.socialaccount.providers.soundcloud',
+    #'allauth.socialaccount.providers.spotify',
+    #'allauth.socialaccount.providers.stackexchange',
+    #'allauth.socialaccount.providers.tumblr',
+    #'allauth.socialaccount.providers.twitch',
+    #'allauth.socialaccount.providers.twitter',
+    #'allauth.socialaccount.providers.vimeo',
+    #'allauth.socialaccount.providers.vk',
+    #'allauth.socialaccount.providers.weibo',
+    #'allauth.socialaccount.providers.xing'
+    'friendship',
 )
+
+# This ID comes from the Django admin page
+# After adding a new site, click on it. Look in the browsers
+# address space and there will be '/#/' where # is an int
+# Set this # to the SITE_ID variable below
+SITE_ID = 2
+
+# After log in go to this webpage
+LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/account/login"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -50,16 +100,55 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'mysite.urls'
 
+ACCOUNT_SIGNUP_FORM_CLASS = "mysite.forms.SignupForm"
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Already defined Django-related contexts here
+
+                # `allauth` needs this from django
+                'django.template.context_processors.request',
+				'django.contrib.auth.context_processors.auth',
+            ],
+        },
+    },
+]
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend'
+)
+
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+
+
+
+######CHANGE!!! Run my_setup.py
+
+MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
+
+MEDIA_URL = '/media/'
+
+
+
 if ON_PAAS:
     # determine if we are on MySQL or POSTGRESQL
-    if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ: 
-    
+    if "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ:
+
         DATABASES = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',  
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
                 'NAME':     os.environ['OPENSHIFT_APP_NAME'],
                 'USER':     os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
                 'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
@@ -67,9 +156,9 @@ if ON_PAAS:
                 'PORT':     os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
             }
         }
-        
-    elif "OPENSHIFT_MYSQL_DB_USERNAME" in os.environ: 
-    
+
+    elif "OPENSHIFT_MYSQL_DB_USERNAME" in os.environ:
+
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql',
@@ -81,7 +170,7 @@ if ON_PAAS:
             }
         }
 
-        
+
 else:
     # stock django, local development.
     DATABASES = {
@@ -95,7 +184,7 @@ else:
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'MST'
 
 USE_I18N = True
 
