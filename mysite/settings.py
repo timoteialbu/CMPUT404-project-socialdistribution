@@ -76,14 +76,14 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.vk',
     #'allauth.socialaccount.providers.weibo',
     #'allauth.socialaccount.providers.xing'
-    'friendship'
+    'friendship',
 )
 
 # This ID comes from the Django admin page
 # After adding a new site, click on it. Look in the browsers
 # address space and there will be '/#/' where # is an int
 # Set this # to the SITE_ID variable below
-SITE_ID = 2
+SITE_ID = 3
 
 # After log in go to this webpage
 LOGIN_REDIRECT_URL = "/"
@@ -131,9 +131,15 @@ AUTHENTICATION_BACKENDS = (
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+
+
+
 ######CHANGE!!! Run my_setup.py
+
 MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
+
 MEDIA_URL = '/media/'
+
 
 
 if ON_PAAS:
