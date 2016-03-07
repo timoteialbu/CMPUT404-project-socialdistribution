@@ -211,6 +211,7 @@ def create_post(request):
 
 
 def edit_post(request, post_id):
+    print("call edit_post in views.py")
     post = get_object_or_404(Post, pk=post_id)
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)

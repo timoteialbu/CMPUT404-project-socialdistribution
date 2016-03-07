@@ -1,6 +1,7 @@
-
+<h2>In socialdistribution/posts/templates/posts/detail.html</h2>
 {% block content %}
     <div class="post">
+    <!-- post.xxx is in models.py -->
         {% if post.pub_date %}
             <div class="date">
                 {{ post.pub_date }}
@@ -8,8 +9,31 @@
         {% endif %}
 		<p>{{ post.post_text|urlize|linebreaks }}</p>
 		<p>{{ post.get_privacy_display }}</p>
-		<button type=button id = f1 onclick="next();">Edit</button>
+
+		<p>login as: {{ user.username }}</p>
+		<p>author: {{ post.author}}</p>
+
+		{% if post.author%}
+			<button type=button id = "check" name = {{post.author}} value = {{user.username}} onclick="check();">Edit</button>
+		{% endif %}
+
+		<button type=button id = "add_comment" onclick="addComment();">Add Comment</button>
+
 		<script>
+		function check() {
+			var author_name = document.getElementById("check").name;
+			var poster_name = document.getElementById("check").value;
+			if (author_name === poster_name) {
+				next();
+			} else {
+				alert("you are not allowed to modify this post!")
+			}
+		}
+
+		function addComment() {
+			alert("We will do this later."); 
+		}
+
 		function edit(){
 			var n = 0;
 			var flip = function(){
@@ -25,8 +49,10 @@
 		}
 		var next = edit();
 		</script>
+
 		<div id="edit" style="display: none;">
 			<h1>New Content</h1>
+			<h2>In socialdistribution/posts/templates/posts/detail.html</h2>
 			<form method="POST" class="post-form">{% csrf_token %}
 				{{ form.as_p }}
 				{{ form.get_privacy_display}}
