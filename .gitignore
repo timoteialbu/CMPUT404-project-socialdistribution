@@ -9,3 +9,4 @@ passwords.txt
 media/images/uploads/*
 */migrations/
 timotei-project
+.idea
