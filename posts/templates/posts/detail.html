@@ -1,4 +1,4 @@
-
+<h2>In socialdistribution/posts/templates/posts/detail.html</h2>
 {% block content %}
     <div class="post">
         {% if post.pub_date %}
@@ -27,6 +27,7 @@
 		</script>
 		<div id="edit" style="display: none;">
 			<h1>New Content</h1>
+			<h2>In socialdistribution/posts/templates/posts/detail.html</h2>
 			<form method="POST" class="post-form">{% csrf_token %}
 				{{ form.as_p }}
 				{{ form.get_privacy_display}}
