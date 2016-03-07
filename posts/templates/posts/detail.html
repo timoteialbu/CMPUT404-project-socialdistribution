@@ -1,6 +1,7 @@
 <h2>In socialdistribution/posts/templates/posts/detail.html</h2>
 {% block content %}
     <div class="post">
+    <!-- post.xxx is in models.py -->
         {% if post.pub_date %}
             <div class="date">
                 {{ post.pub_date }}
@@ -8,7 +9,16 @@
         {% endif %}
 		<p>{{ post.post_text|urlize|linebreaks }}</p>
 		<p>{{ post.get_privacy_display }}</p>
-		<button type=button id = f1 onclick="next();">Edit</button>
+
+		<p>login as: {{ user.username }}</p>
+		<p>author: {{ post.author }}</p>
+
+		{% if post.author == user.username %}
+			<button type=button id = f1 onclick="next();">Edit</button>
+		{% endif %}
+
+		<button type=button id = add_comment onclick="next();">Add Comment</button>
+
 		<script>
 		function edit(){
 			var n = 0;
@@ -25,6 +35,7 @@
 		}
 		var next = edit();
 		</script>
+
 		<div id="edit" style="display: none;">
 			<h1>New Content</h1>
 			<h2>In socialdistribution/posts/templates/posts/detail.html</h2>
