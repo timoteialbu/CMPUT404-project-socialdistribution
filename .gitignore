@@ -4,15 +4,9 @@ db.sqlite3
 .project
 .pydevproject
 vpython27
-<<<<<<< HEAD
 venv
 passwords.txt
 media/images/uploads/*
 */migrations/
-<<<<<<< HEAD
-=======
-venv
->>>>>>> origin/master
-=======
 timotei-project
->>>>>>> kdhaywar/develop
+*#
