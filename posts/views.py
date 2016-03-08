@@ -3,13 +3,9 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow
-<<<<<<< HEAD
 from .models import Post, Image, Comment
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, CommentForm
-=======
-from .models import Post, Image
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm
->>>>>>> 6e875ce06f3fcc5beabd65aa1ffb1cc647cf8dfb
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
+
 
 
 # not a view can be moved elsewhere
@@ -28,25 +24,7 @@ def get_posts(request):
 
 
 def try_adding_friend(user, friend):
-<<<<<<< HEAD
-	msg = ""
-	try:
-		User.objects.get(username=friend)
-	except Exception:
-		return "Not a valid user, please try again."
-	try:
-		Follow.objects.add_follower(user, friend)
-		msg += "You are now following %s" % friend
-	except Exception:
-		msg += "You are already following %s" % friend
-	try:
-		##################################################
-		# Friend.objects.add_friend(user, friend)
-		msg += " and waiting for them to accept your request." % friend
-	except Exception:
-		msg += " and already waiting for a response to your request"
-	return msg
-=======
+
     msg = ""
     try:
         User.objects.get(username=friend)
@@ -62,7 +40,7 @@ def try_adding_friend(user, friend):
     except Exception:
         msg += " and already waiting for a response to your request"
     return msg
->>>>>>> 6e875ce06f3fcc5beabd65aa1ffb1cc647cf8dfb
+
 
 
 def try_remove_relationship(user, friend):
@@ -134,58 +112,7 @@ def my_view(request):
 	# Remove the friendship
 	Friend.objects.remove_friend(other_user, request.user)
 
-<<<<<<< HEAD
-	# Create request.user follows other_user relationship
-	following_created = Follow.objects.add_follower(request.user, other_user)
-#######################################################################
 
-
-def tempFriendDebug(user, friend):
-	print "List of this user's friends"
-	print Friend.objects.friends(user)
-	print " List all unread friendship requests"
-	print Friend.objects.unread_requests(user=user)
-	print " List all rejected friendship requests"
-	print Friend.objects.rejected_requests(user=user)
-	print " List all unrejected friendship requests"
-	print Friend.objects.unrejected_requests(user=user)
-	print " List all sent friendship requests"
-	print Friend.objects.sent_requests(user=user)
-	print " List of this user's followers"
-	print Follow.objects.followers(user)
-	print " List of who this user is following"
-	print Follow.objects.following(user)
-
-
-def add_friend(request, context):
-	###############################################################
-	unfrienduserform_valid = context['unfrienduserform'].is_valid()
-	if unfrienduserform_valid:
-		friend = context['unfrienduserform'].cleaned_data['username']
-		friend = friend.strip()
-		if str(friend) is not '':
-			context['unfriend_msg'] = try_remove_relationship(
-				request.user,
-				friend,
-			)
-	elif not unfrienduserform_valid:
-		context['unfriend_msg'] = "Invalid input."
-		context['unfrienduserform'] = UnFriendUserForm
-	###############################################################
-
-
-def remove_relationship(request, context):
-	addform_valid = context['addform'].is_valid(),
-	if addform_valid:
-		friend = context['addform'].cleaned_data['user_choice_field']
-		context['addfriend'] = friend
-		if friend is not None:
-			context['add_msg'] = try_adding_friend(request.user, friend)
-	elif not addform_valid:
-		context['add_msg'] = "Invalid input"
-		context['addform'] = AddFriendForm()
-	###############################################################
-=======
     # Create request.user follows other_user relationship
     following_created = Follow.objects.add_follower(request.user, other_user)
 
@@ -240,28 +167,11 @@ def friend_requests(request, context):
         #friend = context['friendrequestform'].cleaned_data['user_choice_field']
         print context
         #context['addfriend'] = friend
->>>>>>> 6e875ce06f3fcc5beabd65aa1ffb1cc647cf8dfb
+
 
 
 def friend_mgnt(request):
-<<<<<<< HEAD
-	tempFriendDebug(request.user, 'butt')
-	if request.method == "POST":
-		context = {
-			'addform': AddFriendForm(request.POST),
-			'unfrienduserform': UnFriendUserForm(request.POST),
-		}
-		remove_relationship(request, context)
-		add_friend(request, context)
-		return render(request, 'posts/friend_mgnt.html', context)
-	else:
-		addform = AddFriendForm()
-		unfollowform = UnFriendUserForm()
-	return render(request, 'posts/friend_mgnt.html', {
-		'addform': addform,
-		'unfrienduserform': unfollowform,
-	})
-=======
+
     users = list(map(lambda x:
                      str(x.from_user),
                      Friend.objects.unread_requests(request.user)))
@@ -280,7 +190,7 @@ def friend_mgnt(request):
             'unfrienduserform': UnFriendUserForm(),
         })
     return render(request, 'posts/friend_mgnt.html', context)
->>>>>>> 6e875ce06f3fcc5beabd65aa1ffb1cc647cf8dfb
+
 
 
 # prob should change this to a form view
