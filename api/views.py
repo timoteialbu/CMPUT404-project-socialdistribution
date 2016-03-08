@@ -1,17 +1,29 @@
 from api.models import Post
 from api.post_serializers import PostSerializer, UserSerializer
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, pagination
 from django.contrib.auth.models import User
 
 
-class PostList(generics.ListCreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    # TODO change to something more approp
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+#class pagination(PageNumberPagination):
+#    page_size = 50
+#    page_size_query_param = 'size'
+    # max_page_size = 1000
 
+
+class PostList(generics.ListCreateAPIView):
+    """
+    List all Public Posts, or create a new post if Authenticated.
+    """
+    queryset = Post.objects.filter(visibility='PUBLIC')
+    serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    print 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        print 
+        return Post.objects.all()
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
