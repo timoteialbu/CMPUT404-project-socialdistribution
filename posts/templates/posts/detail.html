@@ -1,4 +1,7 @@
+
 <h2>In socialdistribution/posts/templates/posts/detail.html</h2>
+
+
 {% block content %}
     <div class="post">
     <!-- post.xxx is in models.py -->
@@ -6,9 +9,10 @@
             <div class="date">
                 {{ post.pub_date }}
             </div>
-        {% endif %}
+		{% endif %}
 		<p>{{ post.post_text|urlize|linebreaks }}</p>
 		<p>{{ post.get_privacy_display }}</p>
+
 
 		<p>login as: {{ user.username }}</p>
 		<p>author: {{ post.author}}</p>
@@ -55,9 +59,29 @@
 					document.getElementById('edit').style.display="block";	
 				}
 				++n;
+
+    </div>
+	<div class="comments">
+		{% for comment in comments %}
+			<p>{{ comment.comment_text|urlize|linebreaks }}</p>
+		{% endfor %}
+	</div>
+	<button type=button id = f1 onclick="nextE();">Edit</button>
+	<button type=button id = f2 onclick="nextC();">Comment</button>
+	<script>
+	function edit(){
+		var n = 0;
+		var flip = function(){
+			if(n % 2){
+				document.getElementById('edit').style.display="none";	
+
 			}
-			return flip;
+			else{
+				document.getElementById('edit').style.display="block";	
+			}
+			++n;
 		}
+
 		var next = edit();
 		</script>
 
@@ -71,6 +95,43 @@
 			</form>
 		</div>
     </div>
+
+		return flip;
+	}
+	function comment(){
+		var n = 0;
+		var flip = function(){
+			if(n % 2){
+				document.getElementById('comment').style.display="none";	
+			}
+			else{
+				document.getElementById('comment').style.display="block";	
+			}
+			++n;
+		}
+		return flip;
+	}
+	var nextE = edit();
+	var nextC = comment();
+	</script>
+	<div id="edit" style="display: none;">
+		<h1>New Content</h1>
+		<form method="POST" class="post-form">{% csrf_token %}
+			{{ form.as_p }}
+			{{ form.get_privacy_display}}
+			<input type="hidden" name="formType" value="post"></input>
+			<button type="submit" value="save">Save</button>
+		</form>
+	</div>
+	<div id="comment" style="display: none;">
+		<h1>New Comment</h1>
+		<form method="POST" class="comment-form">{% csrf_token %}
+			{{ cform.as_p }}
+			<input type="hidden" name="formType" value="comment"></input>
+			<button type="submit" value="save">Save</button>
+		</form>
+	</div>
+
 {% endblock %}
 
 	
