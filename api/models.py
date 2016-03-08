@@ -19,7 +19,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     # TODO categories
     categories = ["web", "tutorial"]
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     PRIVACY_CHOICES = (
         ('PUBLIC', 'Public'),
         ('FOAF', 'Friend of a Friend'),

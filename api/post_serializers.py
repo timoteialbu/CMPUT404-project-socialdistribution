@@ -10,20 +10,18 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
+        
         fields = (
             'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
-            'published', 'id', 'visibility'
+            'published', 'identity', 'visibility'
         )
 
 
 class UserSerializer(serializers.ModelSerializer):
     posts = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Post.objects.all())
-    #id = serializers.PrimaryKeyRelatedField(
-    #    many=False, queryset=UserInfo.objects.get(user=User))
-    
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'posts')
-
+        fields = ('identity', 'username', 'posts')

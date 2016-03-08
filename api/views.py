@@ -22,7 +22,7 @@ class UserPostList(generics.ListAPIView):
         """
         # TODO add friend logic
         posts = Post.objects.filter(
-            Q(visibility='PU') |
+            Q(visibility='PUBLIC') |
             Q(author=self.request.user))
         return posts
 
@@ -40,7 +40,7 @@ class PostList(generics.ListCreateAPIView):
         serializer.save(author=self.request.user)
 
 
-# TODO FINISH  all (get UUID working with User)
+# TODO FINISH  all, doesnt work (get UUID working with User)
 class AuthorPostList(generics.ListAPIView):
     """
     all posts made by {AUTHOR_ID} visible to the currently authenticated user (GET)
@@ -70,7 +70,8 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
-        post = Post.objects.get(uuid=requestId)
+        post = Post.objects.get(identity=requestId)
+        print requestId
         return post
 
 
