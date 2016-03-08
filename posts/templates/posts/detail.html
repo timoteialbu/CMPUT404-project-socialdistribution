@@ -17,9 +17,11 @@
 
 	<button type=button id = "check_edit" name = {{post.author}} value = {{user.username}} onclick="check_edit();">Edit</button>
 
-	<button type=button id = "check_delete" name = {{post.author}} value = {{user.username}} onclick="check_delete();">Delete</button>
-
 	<button type=button id = f2 onclick="nextC();">Comment</button>
+
+	<br><br>
+
+	<button type=button id = "check_delete" name = {{post.author}} value = {{user.username}} onclick="check_delete();">Delete</button>
 
 	<script>
 	function check_edit() {
@@ -28,7 +30,7 @@
 		if (author_name === poster_name) {
 			nextE();
 		} else {
-			alert("you are not allowed to modify this post!")
+			alert("You are not allowed to modify this post!")
 		}
 	}
 
@@ -36,13 +38,11 @@
 		var author_name = document.getElementById("check_delete").name;
 		var poster_name = document.getElementById("check_delete").value;
 		if (author_name === poster_name) {
-			nextE();
+			delete_post();
 		} else {
 			alert("you are not allowed to modify this post!")
 		}
 	}
-
-
 
 	function edit(){
 		var n = 0;
@@ -72,8 +72,12 @@
 		return flip;
 	}
 
-	var nextE = edit();
+	function delete_post() {
+		alert("I am working on this function.");
+	}
+
 	var nextC = comment();
+	var nextE = edit();
 	</script>
 
 	<div id="edit" style="display: none;">
@@ -85,6 +89,7 @@
 			<button type="submit" value="save">Save</button>
 		</form>
 	</div>
+
 	<div id="comment" style="display: none;">
 		<h1>New Comment</h1>
 		<form method="POST" class="comment-form">{% csrf_token %}
@@ -93,6 +98,7 @@
 			<button type="submit" value="save">Save</button>
 		</form>
 	</div>
+	
 {% endblock %}
 
 	
