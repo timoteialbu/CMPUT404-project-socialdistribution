@@ -38,12 +38,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	# The Django sites framework is required
+    # The Django sites framework is required
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-	# ... include the providers you want to enable:
+    # ... include the providers you want to enable:
     #'allauth.socialaccount.providers.amazon',
     #'allauth.socialaccount.providers.angellist',
     #'allauth.socialaccount.providers.bitbucket',
@@ -77,6 +77,8 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.weibo',
     #'allauth.socialaccount.providers.xing'
     'friendship',
+    'rest_framework',
+    'api',
 )
 
 # This ID comes from the Django admin page
@@ -128,6 +130,27 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    #'DEFAULT_PAGINATION_CLASS':
+    #    'CMPUT404-project-socialdistribution.api.pagination.CustomPagination',
+    #'PAGE_SIZE': 100,
+
+    #'DEFAULT_PAGINATION_CLASS':
+    #    'CMPUT404-project-socialdistribution.api.pagination.CustomPagination',
+    #'PAGE_SIZE': 100
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+
+
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -136,7 +159,7 @@ AUTHENTICATION_BACKENDS = (
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/home/kyle/Desktop/CMPUT404-project-socialdistribution/media/'
 
 MEDIA_URL = '/media/'
 

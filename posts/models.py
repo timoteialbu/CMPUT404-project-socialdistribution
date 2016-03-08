@@ -4,7 +4,8 @@ import uuid
 
 
 class Post(models.Model):
-        author = models.ForeignKey(User, on_delete=models.CASCADE)
+        author = models.ForeignKey(User, related_name='posts_old',
+                                   on_delete=models.CASCADE)
         # TODO post_text as markdown (auto-detect)
         post_text = models.TextField(max_length=400)
         pub_date = models.DateTimeField('date published')
@@ -37,7 +38,8 @@ class Comment(models.Model):
 
 class Image(models.Model):
         title = models.CharField(max_length=100)
-        author = models.ForeignKey(User, on_delete=models.CASCADE)
+        author = models.ForeignKey(User, related_name='images',
+                                   on_delete=models.CASCADE)
         pub_date = models.DateTimeField('date published')
         img = models.ImageField(upload_to=image_file_name)
 
