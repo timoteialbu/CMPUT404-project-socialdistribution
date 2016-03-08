@@ -6,7 +6,7 @@ import uuid
 class Post(models.Model):
         author = models.ForeignKey(User, on_delete=models.CASCADE)
         post_text = models.TextField(max_length=400)
-        pub_date = models.DateTimeField('date published')
+        pub_date = models.DateTimeField(auto_now_add=True)
         PRIVACY_CHOICES = (
             ('ME', 'Private To Me'),
             ('AU', 'Private To Another Author'),
