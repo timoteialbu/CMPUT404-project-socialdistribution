@@ -100,7 +100,7 @@ def my_view(request):
         message_relationship = Friend.objects.add_friend(
                 from_user=request.user,
                 to_user=some_other_user,
-                message='Hi, I would like to be your friend',
+sssssssssssssss                message='Hi, I would like to be your friend',
         )
 
         # And immediately accept it, normally you would give this option to the user
