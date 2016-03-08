@@ -218,6 +218,7 @@ def create_post(request):
                 form = PostForm()
         return render(request, 'posts/edit_post.html', {'form': form})
 
+
 def delete_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -232,36 +233,20 @@ def delete_post(request):
         form = PostForm()
     return render(request, 'posts/edit_post.html', {'form': form})
 
+
 def edit_post(request, post_id):
-
-    print("call edit_post in views.py")
-    post = get_object_or_404(Post, pk=post_id)
-    if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = timezone.now()
-            post.save()
-            # the "post_id" part must be the same as the P<"post_id" in url.py
-            return redirect('posts:detail', post_id=post.pk)
-    else:
-        form = PostForm(instance=post)
-    return render(request, 'posts/edit_post.html', {'form': form})
-
-
         post = get_object_or_404(Post, pk=post_id)
         if request.method == "POST":
-                form = PostForm(request.POST, instance=post)
-                if form.is_valid():
-                        post = form.save(commit=False)
-                        post.author = request.user
-                        post.published_date = timezone.now()
-                        post.save()
-                        # the "post_id" part must be the same as the P<"post_id" in url.py
-                        return redirect('posts:detail', post_id=post.pk)
+            form = PostForm(request.POST, instance=post)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.author = request.user
+                post.published_date = timezone.now()
+                post.save()
+                # the "post_id" part must be the same as the P<"post_id" in url.py
+                return redirect('posts:detail', post_id=post.pk)
         else:
-                form = PostForm(instance=post)
+            form = PostForm(instance=post)
         return render(request, 'posts/edit_post.html', {'form': form})
 
 
