@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.weibo',
     #'allauth.socialaccount.providers.xing'
     'friendship',
+    'rest_framework'
 )
 
 # This ID comes from the Django admin page
@@ -128,6 +129,15 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -136,7 +146,7 @@ AUTHENTICATION_BACKENDS = (
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/home/kyle/Desktop/CMPUT404-project-socialdistribution/media/'
 
 MEDIA_URL = '/media/'
 

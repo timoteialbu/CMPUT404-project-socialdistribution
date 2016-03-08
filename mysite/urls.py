@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^posts/', include('posts.urls', namespace="posts")),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^api/', include('api.urls')),
 )
 
 

@@ -2,3 +2,6 @@ django >= 1.8, < 1.9
 django-allauth
 pillow
 django-friendship
+djangorestframework
+
+
