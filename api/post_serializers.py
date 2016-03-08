@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Post
+from api.models import Post, UserInfo
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -20,7 +20,10 @@ class PostSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     posts = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Post.objects.all())
-
+    #id = serializers.PrimaryKeyRelatedField(
+    #    many=False, queryset=UserInfo.objects.get(user=User))
+    
     class Meta:
         model = User
         fields = ('id', 'username', 'posts')
+

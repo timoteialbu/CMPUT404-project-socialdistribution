@@ -1,38 +1,82 @@
 from api.models import Post
-from api.post_serializers import PostSerializer, UserSerializer
+from api.post_serializers import PostSerializer
+from api.post_serializers import UserSerializer
 from rest_framework import generics, permissions, pagination
+from rest_framework.response import Response
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
-#class pagination(PageNumberPagination):
-#    page_size = 50
-#    page_size_query_param = 'size'
-    # max_page_size = 1000
+class UserPostList(generics.ListAPIView):
+    """
+    posts that are visible to the currently authenticated user (GET)
+    http://service/author/posts 
+    """
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the posts
+        that are visible to the currently authenticated user
+        """
+        # TODO add friend logic
+        posts = Post.objects.filter(
+            Q(visibility='PU') |
+            Q(author=self.request.user))
+        return posts
 
 
 class PostList(generics.ListCreateAPIView):
     """
-    List all Public Posts, or create a new post if Authenticated.
+    List all Public Posts, or create a new post if Authenticated (GET,POST)
+    http://service/posts
     """
     queryset = Post.objects.filter(visibility='PUBLIC')
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    print 
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+
+# TODO FINISH  all (get UUID working with User)
+class AuthorPostList(generics.ListAPIView):
+    """
+    all posts made by {AUTHOR_ID} visible to the currently authenticated user (GET)
+    http://service/author/{AUTHOR_ID}/posts 
+    """
+    serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    lookup_url_kwarg = 'uuid'
+
     def get_queryset(self):
-        print 
-        return Post.objects.all()
+        uid = self.kwargs.get(self.lookup_url_kwarg)
+        #comments = UserInfo.objects.get(=)
+        return uid
+
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
+    """
+    access to a single post with id = {POST_ID}
+    http://service/posts/{POST_ID} 
+    """
     serializer_class = PostSerializer
     # TODO change to something more approp
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    lookup_url_kwarg = 'uuid'
 
+    def get_queryset(self):
+        requestId = self.kwargs.get(self.lookup_url_kwarg)
+        post = Post.objects.get(uuid=requestId)
+        return post
+
+
+
+
+    
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -42,7 +86,7 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-
+#####################
 # from api.models import Post
 # from api.post_serializers import PostSerializer
 # from rest_framework import generics
