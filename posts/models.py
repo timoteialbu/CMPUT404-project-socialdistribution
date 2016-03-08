@@ -4,7 +4,7 @@ import uuid
 
 
 class Post(models.Model):
-        author = models.ForeignKey(User, related_name='posts',
+        author = models.ForeignKey(User, related_name='posts_old',
                                    on_delete=models.CASCADE)
         # TODO post_text as markdown (auto-detect)
         post_text = models.TextField(max_length=400)
