@@ -38,12 +38,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	# The Django sites framework is required
+    # The Django sites framework is required
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-	# ... include the providers you want to enable:
+    # ... include the providers you want to enable:
     #'allauth.socialaccount.providers.amazon',
     #'allauth.socialaccount.providers.angellist',
     #'allauth.socialaccount.providers.bitbucket',
@@ -77,7 +77,8 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.weibo',
     #'allauth.socialaccount.providers.xing'
     'friendship',
-    'rest_framework'
+    'rest_framework',
+    'api',
 )
 
 # This ID comes from the Django admin page
