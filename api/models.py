@@ -4,25 +4,40 @@ import uuid
 
 
 class Post(models.Model):
-        author = models.ForeignKey(User, on_delete=models.CASCADE)
-        post_text = models.TextField(max_length=400)
-        pub_date = models.DateTimeField(auto_now_add=True)
-        PRIVACY_CHOICES = (
-            ('ME', 'Private To Me'),
-            ('AU', 'Private To Another Author'),
-            ('FR', 'Private To My Friends'),
-            ('HO', 'Private To Friends On My Host'),
-            ('PU', 'Public'),
-        )
-        privacy = models.CharField(
-            max_length=2, choices=PRIVACY_CHOICES, default='ME')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.TextField(max_length=100)
+    source = models.URLField(max_length=200, blank=True)
+    origin = models.URLField(max_length=200, blank=True)
+    description = models.TextField(max_length=100, blank=True)
+    content = models.TextField(max_length=4000)
+    published = models.DateTimeField(auto_now_add=True)
+    # TODO categories
+    categories = ["web", "tutorial"]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    PRIVACY_CHOICES = (
+        ('PUBLIC', 'Public'),
+        ('FOAF', 'Friend of a Friend'),
+        ('FRIENDS', 'Private To My Friends'),
+        ('PRIVATE', 'Private To Me'),
+        ('SERVERONLY', 'Private To Friends On My Host'),
+    )
+    CONTENT_CHOICES = (
+        ('text/plain', 'Plain text'),
+        ('text/x-markdown', 'Markdown'),
+    )
+    contentType = models.CharField(
+        max_length=16, choices=CONTENT_CHOICES, default='text/plain')
+    visibility = models.CharField(
+        max_length=10, choices=PRIVACY_CHOICES, default='ME')
 
-        def __unicode__(self):
-                return self.post_text[:20] + "..."
+    # def save(self, *args, **kwargs):
+    # mights be handy for setting publish and such
+    def __unicode__(self):
+        return self.post_text[:20] + "..."
 
 
 def image_file_name(instance, filename):
-        return '/'.join(['images/uploads', str(uuid.uuid4()), filename])
+    return '/'.join(['images/uploads', str(uuid.uuid4()), filename])
 
 
 class Comment(models.Model):
@@ -35,10 +50,10 @@ class Comment(models.Model):
 
 
 class Image(models.Model):
-        title = models.CharField(max_length=100)
-        author = models.ForeignKey(User, on_delete=models.CASCADE)
-        pub_date = models.DateTimeField('date published')
-        img = models.ImageField(upload_to=image_file_name)
+    title = models.CharField(max_length=100)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    pub_date = models.DateTimeField('date published')
+    img = models.ImageField(upload_to=image_file_name)
 
-        def __unicode__(self):
-                return '%s' % (self.img)
+    def __unicode__(self):
+        return '%s' % (self.img)
