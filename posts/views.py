@@ -220,19 +220,18 @@ def create_post(request):
 
 
 def delete_post(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.pub_date = timezone.now()
-            post.save()
-            # future ref make to add the namespace ie "posts"
-            return redirect('posts:detail', post_id=post.pk)
-    else:
-        form = PostForm()
-    return render(request, 'posts/edit_post.html', {'form': form})
-
+        if request.method == "POST":
+                form = PostForm(request.POST)
+                if form.is_valid():
+                        post = form.save(commit=False)
+                        post.author = request.user
+                        post.pub_date = timezone.now()
+                        post.save()
+                        # future ref make to add the namespace ie "posts"
+                        return redirect('posts:detail', post_id=post.pk)
+        else:
+                form = PostForm()
+        return render(request, 'posts/edit_post.html', {'form': form})
 
 
 def edit_post(request, post_id):

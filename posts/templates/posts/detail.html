@@ -30,7 +30,7 @@
 		if (author_name === poster_name) {
 			nextE();
 		} else {
-			alert("You are not allowed to modify this post!")
+			alert("This is nor our post. You are not allowed to modify this post!")
 		}
 	}
 
@@ -38,7 +38,7 @@
 		var author_name = document.getElementById("check_delete").name;
 		var poster_name = document.getElementById("check_delete").value;
 		if (author_name === poster_name) {
-			delete_post();
+			nextD();
 		} else {
 			alert("you are not allowed to modify this post!")
 		}
@@ -73,10 +73,21 @@
 	}
 
 	function delete_post() {
-		alert("I am working on this function.");
+		var n = 0;
+		var flip = function(){
+			if(n % 2){
+				document.getElementById('delete').style.display="none";	
+			}
+			else{
+				document.getElementById('delete').style.display="block";	
+			}
+			++n;
+		}
+		return flip;
 	}
 
 	var nextC = comment();
+	var nextD = delete_post();
 	var nextE = edit();
 	</script>
 
@@ -98,6 +109,20 @@
 			<input type="hidden" name="formType" value="comment"></input>
 			<button type="submit" value="save">Save</button>
 		</form>
+	</div>
+
+	<div id="delete" style="display: none;">
+		<h3>Are you sure that you want to delete this post?</h3>
+		
+		
+		<!-- I need to edit this to delete the current post -->
+		<button type="submit" value="delete_yes">Yes</button>
+
+
+
+		<button type="submit" value="delete_no" onclick="nextD();"> No</button>
+
+		<a href="{% url 'posts:detail' 1 %}">Back to http://127.0.0.1:8000/posts</a>
 	</div>
 	
 {% endblock %}
