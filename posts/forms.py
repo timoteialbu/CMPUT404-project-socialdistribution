@@ -1,13 +1,18 @@
 from django import forms
 from django.contrib.auth.models import User
 from friendship.models import Friend, Follow
-from .models import Post, Image
+from .models import Post, Image, Comment
 
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ('post_text', 'privacy')
+
+class CommentForm(forms.ModelForm):
+	class Meta:
+		model = Comment
+		fields = ('comment_text',)
 
 
 class UploadImgForm(forms.ModelForm):
