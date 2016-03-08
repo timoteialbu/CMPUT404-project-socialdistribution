@@ -112,6 +112,7 @@ def my_view(request):
     # Create request.user follows other_user relationship
     following_created = Follow.objects.add_follower(request.user, other_user)
 
+
 def tempFriendDebug(user, friend):
     print "List of this user's friends"
     print Friend.objects.friends(user)
@@ -159,7 +160,8 @@ def remove_relationship(request, context):
 def friend_requests(request, context):
     requests_valid = context['friendrequestform'].is_valid(),
     if requests_valid:
-        #friend = context['addform'].cleaned_data['user_choice_field']
+        #friend = context['friendrequestform'].cleaned_data['user_choice_field']
+        print context
         #context['addfriend'] = friend
 
 
