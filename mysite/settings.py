@@ -83,7 +83,7 @@ INSTALLED_APPS = (
 # After adding a new site, click on it. Look in the browsers
 # address space and there will be '/#/' where # is an int
 # Set this # to the SITE_ID variable below
-SITE_ID = 2
+SITE_ID = 3
 
 # After log in go to this webpage
 LOGIN_REDIRECT_URL = "/"
@@ -136,7 +136,7 @@ AUTHENTICATION_BACKENDS = (
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
 
 MEDIA_URL = '/media/'
 
