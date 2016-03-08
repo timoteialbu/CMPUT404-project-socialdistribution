@@ -31,6 +31,10 @@ urlpatterns = [
         'rest_framework.urls',
         namespace='rest_framework')
         ),
-    url(r'^post/$', views.post_list),
-    url(r'^post/(?P<pk>[0-9]+)/$', views.post_detail),
+    url(r'^posts/$', views.PostList.as_view()),
+    url(r'^posts/(?P<pk>[0-9]+)/$', views.PostDetail.as_view()),
 ]
+
+
+# adds extra suffix patterns to urls might be good for pagination
+# urlpatterns = format_suffix_patterns(urlpatterns)
