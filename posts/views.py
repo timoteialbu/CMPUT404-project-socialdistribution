@@ -193,25 +193,13 @@ def friend_mgnt(request):
 
 
 def post_mgnt(request):
-
-    users = list(map(lambda x:
-                     str(x.from_user),
-                     Friend.objects.unread_requests(request.user)))
-    context = {'friendrequestform': FriendRequestForm(names=users)}
-    if request.method == "POST":
-        context.update({
-            'addform': AddFriendForm(request.POST),
-            'unfrienduserform': UnFriendUserForm(request.POST),
-        })
-        remove_relationship(request, context)
-        add_friend(request, context)
-        friend_requests(request, context)
-    else:
-        context.update({
-            'addform': AddFriendForm(),
-            'unfrienduserform': UnFriendUserForm(),
-        })
-    return render(request, 'posts/friend_mgnt.html', context)
+        latest_post_list = get_posts(request)
+        latest_img_list = Image.objects.order_by('-pub_date')[:5]
+        context = {
+                'latest_image_list': latest_img_list,
+                'latest_post_list': latest_post_list
+        }
+        return render(request, 'posts/post_mgnt.html', context)
 
 
 # prob should change this to a form view
