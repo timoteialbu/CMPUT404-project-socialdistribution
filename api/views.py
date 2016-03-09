@@ -12,7 +12,8 @@ class UserPostList(generics.ListAPIView):
     posts that are visible to the currently authenticated user (GET)
     http://service/author/posts 
     """
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PostSerializer
 
     def get_queryset(self):
@@ -27,17 +28,17 @@ class UserPostList(generics.ListAPIView):
         return posts
 
 
-class PostList(generics.ListCreateAPIView):
+class PostList(generics.ListAPIView):
     """
-    List all Public Posts, or create a new post if Authenticated (GET,POST)
+    List all Public Posts on the server(GET)
     http://service/posts
     """
     queryset = Post.objects.filter(visibility='PUBLIC')
     serializer_class = PostSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    #def perform_create(self, serializer):
+    #    serializer.save(author=self.request.user)
 
 
 # TODO FINISH  all, doesnt work (get UUID working with User)
@@ -47,13 +48,14 @@ class AuthorPostList(generics.ListAPIView):
     http://service/author/{AUTHOR_ID}/posts 
     """
     serializer_class = PostSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
-        uid = self.kwargs.get(self.lookup_url_kwarg)
-        #comments = UserInfo.objects.get(=)
-        return uid
+        requestId = self.kwargs.get(self.lookup_url_kwarg)
+        user = User.objects.filter(UserInfo__uuid=requestId)
+        posts = Post.objects.filter(User__pk=user.pk)
+        return uuid
 
 
 

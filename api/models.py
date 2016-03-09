@@ -1,11 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 import uuid
+def create_uuid(sender, **kw):
+	user = kw["instance"]
+	if kw["created"]:
+		userinfo = UserInfo(user=user)
+		userinfo.save()
+post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
 
 # TODO add UUID to User
 class UserInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 
 class Post(models.Model):

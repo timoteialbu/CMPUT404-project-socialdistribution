@@ -33,7 +33,7 @@ urlpatterns = [
         ),
     url(r'^author/posts/$', views.UserPostList.as_view()),
     url(r'^posts/$', views.PostList.as_view()),
-    url(r'^author/(?P<uuid>[^/]+)/$', views.AuthorPostList.as_view()),
+    url(r'^author/(?P<uuid>[^/]+)/posts$', views.AuthorPostList.as_view()),
     url(r'^posts/(?P<uuid>[^/]+)/$', views.PostDetail.as_view()),
     # url(r'^author/$', views.UserList.as_view()),
     # url(r'^author/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
