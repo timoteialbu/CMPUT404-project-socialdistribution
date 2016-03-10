@@ -116,7 +116,7 @@ def my_view(request):
 
 
         # Create request.user follows other_user relationship
-        following_created = Follow.objects.add_follower(request.user, other_user)
+    following_created = Follow.objects.add_follower(request.user, other_user)
 
 
 def tempFriendDebug(user, friend):
