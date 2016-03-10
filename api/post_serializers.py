@@ -1,16 +1,16 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Post, UserInfo
+from api.models import Post, Author
 
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserInfo
+        model = Author
         fields = ('uuid', 'host', 'displayName', 'url', 'github')
 
 class UserSerializer(serializers.ModelSerializer):
     #userinfo = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
-    author = UserInfoSerializer(source='author')
+    author = AuthorSerializer(source='author')
     class Meta:
         model = User
         fields = ('author')
@@ -27,7 +27,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class TrackListingField(serializers.RelatedField):
     def to_representation(self, value):
-        author = UserInfo.objects.get(user=value.author)
+        author = Author.objects.get(user=value.author)
         return author
 
 class AlbumSerializer(serializers.ModelSerializer):

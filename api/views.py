@@ -1,4 +1,4 @@
-from api.models import Post, UserInfo
+from api.models import Post, Author
 from api.post_serializers import PostSerializer
 from api.post_serializers import AuthorSerializer
 from rest_framework import generics, permissions, pagination
@@ -38,7 +38,7 @@ class PostList(generics.ListCreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
-        serializer.save(author=UserInfo.objects.get(user=self.request.user))
+        serializer.save(author=Author.objects.get(user=self.request.user))
 
 
 # TODO FINISH  all, doesnt work (get UUID working with User)
@@ -53,7 +53,7 @@ class AuthorPostList(generics.ListAPIView):
 
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
-        user = User.objects.filter(UserInfo__uuid=requestId)
+        user = User.objects.filter(Author__uuid=requestId)
         posts = Post.objects.filter(User__pk=user.pk)
         return uuid
 

@@ -7,13 +7,13 @@ import uuid
 def create_uuid(sender, **kw):
         user = kw["instance"]
         if kw["created"]:
-                userinfo = UserInfo(user=user)
+                userinfo = Author(user=user)
                 userinfo.save()
 post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
 
 
 # TODO add UUID to User
-class UserInfo(models.Model):
+class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     host = models.URLField()
@@ -23,7 +23,7 @@ class UserInfo(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(
-        UserInfo, related_name='posts', on_delete=models.CASCADE)
+        Author, related_name='posts', on_delete=models.CASCADE)
     title = models.TextField(max_length=100)
     source = models.URLField(max_length=200, blank=True)
     origin = models.URLField(max_length=200, blank=True)
