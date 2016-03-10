@@ -3,9 +3,8 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow
-from api.models import Post, Image, Comment
+from api.models import Post, Image, Comment, UserInfo
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
-
 
 
 # not a view can be moved elsewhere
@@ -19,7 +18,7 @@ def handle_uploaded_file(f):
 def get_posts(request):
     latest_post_list = Post.objects.filter(
         Q(visibility='PU') |
-        Q(author=request.user))
+        Q(author=UserInfo.objects.get(user=request.user)))
     return latest_post_list
 
 
@@ -209,7 +208,7 @@ def create_post(request):
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
+            post.author = UserInfo.objects.get(user=request.user)
             post.pub_date = timezone.now()
             post.save()
             # future ref make to add the namespace ie "posts"
@@ -225,7 +224,7 @@ def edit_post(request, identity):
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
+            post.author = UserInfo.objects.get(user=request.user)
             post.published_date = timezone.now()
             post.save()
             # the "identity" part must be the same as the P<"identity" in url.py
@@ -243,7 +242,7 @@ def detail(request, identity):
         cform = CommentForm(request.POST, instance=comment)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
+            post.author = UserInfo.objects.get(user=request.user)
             post.published_date = timezone.now()
             post.save()
             # the "identity" part must be the same as the P<"identity" in url.py
@@ -265,7 +264,7 @@ def create_img(request):
         form = UploadImgForm(request.POST, request.FILES)
         if form.is_valid():
             img = form.save(commit=False)
-            img.author = request.user
+            img.author = UserInfo.objects.get(user=request.user)
             img.pub_date = timezone.now()
             img.save()
             return redirect('posts:index')

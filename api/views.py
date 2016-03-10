@@ -1,4 +1,4 @@
-from api.models import Post
+from api.models import Post, UserInfo
 from api.post_serializers import PostSerializer
 from api.post_serializers import AuthorSerializer
 from rest_framework import generics, permissions, pagination
@@ -38,7 +38,7 @@ class PostList(generics.ListCreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(author=UserInfo.objects.get(user=self.request.user))
 
 
 # TODO FINISH  all, doesnt work (get UUID working with User)

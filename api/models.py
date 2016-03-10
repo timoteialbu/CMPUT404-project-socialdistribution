@@ -23,7 +23,7 @@ class UserInfo(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(
-        User, related_name='posts', on_delete=models.CASCADE)
+        UserInfo, related_name='posts', on_delete=models.CASCADE)
     title = models.TextField(max_length=100)
     source = models.URLField(max_length=200, blank=True)
     origin = models.URLField(max_length=200, blank=True)
