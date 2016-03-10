@@ -1,6 +1,6 @@
 from api.models import Post
 from api.post_serializers import PostSerializer
-from api.post_serializers import UserSerializer
+from api.post_serializers import AuthorSerializer
 from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -82,12 +82,12 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AuthorSerializer
 
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AuthorSerializer
 
 #####################
 # from api.models import Post
