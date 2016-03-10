@@ -2,12 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 import uuid
+
+
 def create_uuid(sender, **kw):
-	user = kw["instance"]
-	if kw["created"]:
-		userinfo = UserInfo(user=user)
-		userinfo.save()
+        user = kw["instance"]
+        if kw["created"]:
+                userinfo = UserInfo(user=user)
+                userinfo.save()
 post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
+
 
 # TODO add UUID to User
 class UserInfo(models.Model):
@@ -28,15 +31,15 @@ class Post(models.Model):
     categories = ["web", "tutorial"]
     identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     PRIVACY_CHOICES = (
-        ('PUBLIC', 'Public'),
-        ('FOAF', 'Friend of a Friend'),
-        ('FRIENDS', 'Private To My Friends'),
-        ('PRIVATE', 'Private To Me'),
-        ('SERVERONLY', 'Private To Friends On My Host'),
+                      ('PUBLIC', 'Public'),
+                      ('FOAF', 'Friend of a Friend'),
+                      ('FRIENDS', 'Private To My Friends'),
+                      ('PRIVATE', 'Private To Me'),
+                      ('SERVERONLY', 'Private To Friends On My Host'),
     )
     CONTENT_CHOICES = (
-        ('text/plain', 'Plain text'),
-        ('text/x-markdown', 'Markdown'),
+                      ('text/plain', 'Plain text'),
+                      ('text/x-markdown', 'Markdown'),
     )
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
@@ -46,7 +49,7 @@ class Post(models.Model):
     # def save(self, *args, **kwargs):
     # mights be handy for setting publish and such
     def __unicode__(self):
-        return self.post_text[:20] + "..."
+        return self.content[:20] + "..."
 
 
 def image_file_name(instance, filename):

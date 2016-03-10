@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow
-from .models import Post, Image, Comment
+from api.models import Post, Image, Comment
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
 
 
@@ -18,7 +18,7 @@ def handle_uploaded_file(f):
 
 def get_posts(request):
     latest_post_list = Post.objects.filter(
-        Q(privacy='PU') |
+        Q(visibility='PU') |
         Q(author=request.user))
     return latest_post_list
 
@@ -213,14 +213,14 @@ def create_post(request):
             post.pub_date = timezone.now()
             post.save()
             # future ref make to add the namespace ie "posts"
-            return redirect('posts:detail', post_id=post.pk)
+            return redirect('posts:detail', identity=post.pk)
     else:
         form = PostForm()
     return render(request, 'posts/edit_post.html', {'form': form})
 
 
-def edit_post(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
+def edit_post(request, identity):
+    post = get_object_or_404(Post, pk=identity)
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
@@ -228,16 +228,16 @@ def edit_post(request, post_id):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            # the "post_id" part must be the same as the P<"post_id" in url.py
-            return redirect('posts:detail', post_id=post.pk)
+            # the "identity" part must be the same as the P<"identity" in url.py
+            return redirect('posts:detail', identity=post.pk)
     else:
         form = PostForm(instance=post)
     return render(request, 'posts/edit_post.html', {'form': form})
 
-def detail(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
+def detail(request, identity):
+    post = get_object_or_404(Post, pk=identity)
     comment = Comment.objects.create(post=post, pub_date=timezone.now())
-    comments = Comment.objects.select_related().filter(post=post_id)
+    comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         cform = CommentForm(request.POST, instance=comment)
@@ -246,14 +246,14 @@ def detail(request, post_id):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            # the "post_id" part must be the same as the P<"post_id" in url.py
-            return redirect('posts:detail', post_id=post.pk)
+            # the "identity" part must be the same as the P<"identity" in url.py
+            return redirect('posts:detail', identity=post.pk)
         elif cform.is_valid():
             comment = cform.save(commit=False)
             comment.pub_date = timezone.now()
             comment.post=post
             comment.save()
-            return redirect('posts:detail', post_id=post.pk)                
+            return redirect('posts:detail', identity=post.pk)                
     else:
         form = PostForm(instance=post)
         cform = CommentForm(instance=comment)
