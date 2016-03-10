@@ -1,12 +1,11 @@
 {% if latest_post_list %}
-    <ul>
+<ul>
     {% for post in latest_post_list %}
-    
 	<li>
-    <a href="{% url 'posts:detail' post.id %}">{{ post.post_text|linebreaks }}</a></li>
-
+	<a href="{% url 'posts:detail' post.identity %}">{{ post.content|linebreaks }}</a>
+    </li>
     {% endfor %}
-    </ul>
+</ul>
 
 {% else %}
     <p>No posts are available!</p>

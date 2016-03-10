@@ -6,7 +6,7 @@ This file specifies what posts look like:
 #
 # http://service/author/posts (posts that are visible to the currently authenticated user)
 # or
-# http://service/posts (all posts marked as public on the server)
+#DONE http://service/posts (all posts marked as public on the server)
 # or
 # http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
 # or
