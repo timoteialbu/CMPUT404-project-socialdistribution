@@ -1,17 +1,17 @@
 <script type="text/javascript">
 	function delete_posts() {
-		var post_list = {};
-		post_list = document.getElementsByName("select_post");
-
-		if (post_list.length==0) {
-			alert("Select at least one post to delete.");
-		}
+		var post_list = document.getElementsByName("select_post");
 
 		for (var i = post_list.length - 1; i >= 0; i--) {
 			if (post_list[i].checked == true) {
-				alert(post_list[i].value);
+				delete_post(post_list[i].value);
 			}
 		}
+	}
+
+	function delete_post(post_id) {
+		<!-- I will finish this part later -->
+		alert(post_id);
 	}
 	
 </script>
