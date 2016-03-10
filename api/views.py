@@ -28,7 +28,7 @@ class UserPostList(generics.ListAPIView):
         return posts
 
 
-class PostList(generics.ListAPIView):
+class PostList(generics.ListCreateAPIView):
     """
     List all Public Posts on the server(GET)
     http://service/posts
@@ -37,8 +37,8 @@ class PostList(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.AllowAny,)
 
-    #def perform_create(self, serializer):
-    #    serializer.save(author=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 # TODO FINISH  all, doesnt work (get UUID working with User)

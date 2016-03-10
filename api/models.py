@@ -16,7 +16,10 @@ post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-sig
 class UserInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+    host = models.URLField()
+    displayname = models.CharField(max_length=30)
+    url = models.URLField()
+    github = models.URLField()
 
 class Post(models.Model):
     author = models.ForeignKey(
