@@ -244,18 +244,19 @@ def edit_post(request, identity):
         form = PostForm(instance=post)
     return render(request, 'posts/edit_post.html', {'form': form})
 
-def delete_post(request):
+def delete_post(request, identity):
+    post = get_object_or_404(Post, pk=identity)
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-            post.pub_date = timezone.now()
+            post.published_date = timezone.now()
             post.save()
-            # future ref make to add the namespace ie "posts"
+            # the "identity" part must be the same as the P<"identity" in url.py
             return redirect('posts:detail', identity=post.pk)
     else:
-        form = PostForm()
+        form = PostForm(instance=post)
     return render(request, 'posts/edit_post.html', {'form': form})
 
 def detail(request, identity):
