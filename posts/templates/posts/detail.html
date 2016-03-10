@@ -86,6 +86,10 @@
 		return flip;
 	}
 
+	function delete_posts() {
+		alert("call this");
+	}
+
 	var nextC = comment();
 	var nextD = delete_post();
 	var nextE = edit();
@@ -116,13 +120,12 @@
 		
 		
 		<!-- I need to edit this to delete the current post -->
-		<button type="submit" value="delete_yes">Yes</button>
-
-
+		<form action={% url 'posts:index' %}>
+			<button type="submit" value="delete_yes" onclick="delete_posts();">Yes</button>
+		</form>
+		
 
 		<button type="submit" value="delete_no" onclick="nextD();"> No</button>
-
-		<a href="{% url 'posts:detail' 1 %}">Back to http://127.0.0.1:8000/posts</a>
 	</div>
 	
 {% endblock %}

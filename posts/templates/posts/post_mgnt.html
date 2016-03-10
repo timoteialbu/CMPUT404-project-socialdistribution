@@ -1,0 +1,43 @@
+<script type="text/javascript">
+	function delete_posts() {
+		var post_list = document.getElementsByName("select_post");
+
+		for (var i = post_list.length - 1; i >= 0; i--) {
+			if (post_list[i].checked == true) {
+				delete_post(post_list[i].value);
+			}
+		}
+	}
+
+	function delete_post(post_id) {
+		<!-- I will finish this part later -->
+		alert(post_id);
+	}
+	
+</script>
+
+
+
+<form role="form" action="/posts/post_mgnt/" method="POST">{% csrf_token %}
+<label>Select Posts That You Want to Delete</label>
+
+<br>
+
+<!-- Add a table to get all of the posts which belongs to the author -->
+<table sytle = "width:100%">
+{% for post in latest_post_list %}
+<tr>
+	<td><input type="checkbox" name="select_post" value = {{post.id}}></td>
+	<td>{{ post.post_text}}</td>
+</tr>
+{% endfor %}
+</table>
+
+<button type="submit" onclick="delete_posts();">Delete Selected Posts</button>
+
+</form>
+
+<form action={% url 'posts:index' %} method="get">
+		<button type="submit">Back</button>
+</form>
+

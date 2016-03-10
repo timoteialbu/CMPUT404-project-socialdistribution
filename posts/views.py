@@ -194,6 +194,15 @@ def friend_mgnt(request):
     return render(request, 'posts/friend_mgnt.html', context)
 
 
+def post_mgnt(request):
+        latest_post_list = get_posts(request)
+        latest_img_list = Image.objects.order_by('-pub_date')[:5]
+        context = {
+                'latest_image_list': latest_img_list,
+                'latest_post_list': latest_post_list
+        }
+        return render(request, 'posts/post_mgnt.html', context)
+
 
 # prob should change this to a form view
 def index(request):
