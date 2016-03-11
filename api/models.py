@@ -7,20 +7,23 @@ import uuid
 def create_uuid(sender, **kw):
         user = kw["instance"]
         if kw["created"]:
-                userinfo = UserInfo(user=user)
+                userinfo = Author(user=user)
                 userinfo.save()
 post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
 
 
 # TODO add UUID to User
-class UserInfo(models.Model):
+class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+    host = models.URLField()
+    displayName = models.CharField(max_length=30)
+    url = models.URLField()
+    github = models.URLField()
 
 class Post(models.Model):
     author = models.ForeignKey(
-        User, related_name='posts', on_delete=models.CASCADE)
+        Author, related_name='posts', on_delete=models.CASCADE)
     title = models.TextField(max_length=100)
     source = models.URLField(max_length=200, blank=True)
     origin = models.URLField(max_length=200, blank=True)
@@ -58,17 +61,25 @@ def image_file_name(instance, filename):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    comment_text = models.TextField(max_length=400)
-    pub_date = models.DateTimeField('date published')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    comment = models.TextField(max_length=400)
+    published = models.DateTimeField('date published')
+    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    CONTENT_CHOICES = (
+                      ('text/plain', 'Plain text'),
+                      ('text/x-markdown', 'Markdown'),
+    )
+    contentType = models.CharField(
+        max_length=16, choices=CONTENT_CHOICES, default='text/plain')
 
     def __unicode__(self):
-        return self.comment_text[:20] + "..."
+        return self.comment[:20] + "..."
 
 
 class Image(models.Model):
     title = models.CharField(max_length=100)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    pub_date = models.DateTimeField('date published')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    published = models.DateTimeField('date published')
     img = models.ImageField(upload_to=image_file_name)
 
     def __unicode__(self):

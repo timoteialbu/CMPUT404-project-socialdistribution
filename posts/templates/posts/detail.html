@@ -1,3 +1,22 @@
+{%comment%}
+{% block content %}
+    <div class="post">
+        {% if post.published %}
+            <div class="date">
+                {{ post.published }}
+            </div>
+		{% endif %}
+		<p>{{ post.content|urlize|linebreaks }}</p>
+		<p>{{ post.get_privacy_display }}</p>
+    </div>
+	<div class="comments">
+		{% for comment in comments %}
+			<p>{{ comment.comment|urlize|linebreaks }}</p>
+		{% endfor %}
+	</div>
+	<button type=button id = f1 onclick="nextE();">Edit</button>
+	<button type=button id = f2 onclick="nextC();">Comment</button>
+{%endcomment%}
 	<script>
 	function check_edit() {
 		var author_name = document.getElementById("check_edit").name;

@@ -11,8 +11,8 @@ urlpatterns = [
 
     url(r'^friend_mgnt/$', views.friend_mgnt, name='friend_mgnt'),
 
-    url(r'^(?P<identity>[^/]+)/$', views.detail, name='detail'),
-    
+    url(r'^(?P<identity>[^/]+)/$', views.post_detail, name='detail'),
+
     url(r'^edit_post/(?P<identity>[^/]+)/$',
         views.edit_post, name='edit_post'),
 
