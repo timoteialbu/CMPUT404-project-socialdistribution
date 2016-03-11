@@ -5,6 +5,8 @@ from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow
 from api.models import Post, Image, Comment, Author
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
+from rest_framework.decorators import api_view
+
 
 
 # not a view can be moved elsewhere
