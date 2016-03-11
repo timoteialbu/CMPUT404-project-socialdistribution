@@ -9,6 +9,7 @@
 		}
 	}
 
+
 	function check_delete() {
 		var author_name = document.getElementById("check_delete").name;
 		var poster_name = document.getElementById("check_delete").value;
@@ -18,6 +19,7 @@
 			alert("you are not allowed to modify this post!")
 		}
 	}
+
 
 	function edit(){
 		var n = 0;
@@ -33,6 +35,7 @@
 		return flip;
 	}
 
+
 	function comment(){
 		var n = 0;
 		var flip = function(){
@@ -46,6 +49,7 @@
 		}
 		return flip;
 	}
+
 
 	function delete_post() {
 		var n = 0;
@@ -61,19 +65,10 @@
 		return flip;
 	}
 
-	function delete_posts(a,b) {
-		alert(a);
-		alert(b);
-
-
-	}
-
 	var nextC = comment();
 	var nextD = delete_post();
 	var nextE = edit();
 	</script>
-
-
 
 
 {% block content %}
@@ -101,9 +96,6 @@
 
 	<button type=button id = "check_delete" name = {{post.author}} value = {{user.username}} onclick="check_delete();">Delete</button>
 
-
-
-
 	<div id="edit" style="display: none;">
 		<h1>New Content</h1>
 		<form method="POST" class="post-form">{% csrf_token %}
@@ -126,14 +118,9 @@
 	<div id="delete" style="display: none;">
 		<h3>Are you sure that you want to delete this post?</h3>
 
-		<form method="DELETE" class="delete-form" %}>
-		<!--
-		<form method="DELETE" class="delete-form" action={% url 'posts:index' %}>
-		-->
-			{{latest_post_list}}
+		<form action= "{% url 'posts:delete_post' post.identity %}" method="DELETE" class="delete-form" %}>
 			<br>
-			<button type="submit" value="save" 
-			onclick="delete_posts(1, 2);">Yes</button>
+			<button type="submit" value="save">Yes</button>
 		</form>
 		
 		<button type="submit" value="delete_no" onclick="nextD();"> No</button>
