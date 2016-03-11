@@ -195,7 +195,6 @@ def friend_mgnt(request):
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
-        #latest_img_list = Image.objects.order_by('-pub_date')[:5]
         context = {
             'latest_post_list': latest_post_list
         }

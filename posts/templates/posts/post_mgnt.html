@@ -11,6 +11,7 @@
 				if (targets[i].checked) {
 					alert("I want to delete post with identity = " + targets[i].value);
 
+
 				}
 			}
 		}
@@ -20,8 +21,8 @@
 	}
 </script>
 
-<form>
 
+<form action = {% url 'posts:post_mgnt' %} method="get">
 <label>You want to delete or authorize posts?</label>
 <br>
 
