@@ -8,9 +8,9 @@ urlpatterns = [
     url(r'^edit_post/(?P<identity>[^/]+)/$',
         views.edit_post, name='edit_post'),
 
-
     #url(r'^(?P<post_id>[0-9]+)/$', views.delete_post, name='delete_post'),
-    url(r'^(?P<identity>[^/]+)/$', views.delete_post, name='delete_post'),
+    url(r'^delete_post/(?P<identity>[^/]+)/$',
+     views.delete_post, name='delete_post'),
 
     # I added this function and it locates in views line 195
     url(r'^post_mgnt/$', views.post_mgnt, name='post_mgnt'),
@@ -19,5 +19,4 @@ urlpatterns = [
     # url(r'^edit_img/(?P<post_id>[0-9]+)/$', views.edit_img, name='edit_img'),
 
     url(r'^friend_mgnt/$', views.friend_mgnt, name='friend_mgnt'),
-
 ]
