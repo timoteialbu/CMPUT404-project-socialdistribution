@@ -1,10 +1,11 @@
-from api.models import Post
+from api.models import Post, Author
 from api.post_serializers import PostSerializer
-from api.post_serializers import UserSerializer
+from api.post_serializers import AuthorSerializer
 from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.db.models import Q
+import uuid
 
 
 class UserPostList(generics.ListAPIView):
@@ -24,11 +25,11 @@ class UserPostList(generics.ListAPIView):
         # TODO add friend logic
         posts = Post.objects.filter(
             Q(visibility='PUBLIC') |
-            Q(author=self.request.user))
+            Q(author=Author.objects.get(user=self.request.user)))
         return posts
 
 
-class PostList(generics.ListAPIView):
+class PostList(generics.ListCreateAPIView):
     """
     List all Public Posts on the server(GET)
     http://service/posts
@@ -37,8 +38,8 @@ class PostList(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.AllowAny,)
 
-    #def perform_create(self, serializer):
-    #    serializer.save(author=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(author=Author.objects.get(user=self.request.user))
 
 
 # TODO FINISH  all, doesnt work (get UUID working with User)
@@ -53,7 +54,7 @@ class AuthorPostList(generics.ListAPIView):
 
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
-        user = User.objects.filter(UserInfo__uuid=requestId)
+        user = User.objects.filter(Author__uuid=requestId)
         posts = Post.objects.filter(User__pk=user.pk)
         return uuid
 
@@ -62,32 +63,31 @@ class AuthorPostList(generics.ListAPIView):
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     access to a single post with id = {POST_ID}
-    http://service/posts/{POST_ID} 
+    http://service/posts/{POST_ID}
     """
     serializer_class = PostSerializer
     # TODO change to something more approp
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     lookup_url_kwarg = 'uuid'
-
+    # add visibility logic
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
-        post = Post.objects.get(identity=requestId)
-        print requestId
-        return post
-
-
+        # TODO Should be a .get but w/e
+        return Post.objects.filter(identity=uuid.UUID(requestId))
 
 
     
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AuthorSerializer
 
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AuthorSerializer
+
+
 
 #####################
 # from api.models import Post
