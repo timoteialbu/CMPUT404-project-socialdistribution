@@ -15,7 +15,6 @@ class CommentForm(forms.ModelForm):
 		model = Comment
 		fields = ('comment_text',)
 
-
 class UploadImgForm(forms.ModelForm):
     class Meta:
         model = Image
