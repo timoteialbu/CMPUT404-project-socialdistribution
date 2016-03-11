@@ -5,6 +5,7 @@ from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.db.models import Q
+import uuid
 
 
 class UserPostList(generics.ListAPIView):
@@ -72,9 +73,9 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
-        post = Post.objects.get(identity=requestId)
-        print type(requestId)
-        print type(Post.objects.values_list('identity', flat=True)[0])
+        post = Post.objects.get(identity=uuid.UUID(requestId))
+        print Post.objects.values_list('identity', flat=True)[0] == uuid.UUID(requestId)
+        print type(Post.objects.values_list('identity', flat=True)[0].hex)
         return post
 
 
