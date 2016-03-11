@@ -1,38 +1,4 @@
-<script type="text/javascript">
-	function delete_posts(id) {
-		alert("d -> " + id);
-	}
-
-	function authorize_posts(id) {
-		alert("a -> " + id);
-	}
-
-	function doa() {
-		var action  = document.getElementById("selection");
-		var targets = document.getElementsByTagName("input");
-
-		if (action.value != "none") { 
-			if (targets.length == 0) {
-				alert("You cannot delete or authorize anything.");
-			}
-			for (var i = 0; i < targets.length; i++) {
-				if (targets[i].checked) {
-					if (action.value == "delete_posts") {
-						delete_posts(targets[i].value);
-					} else {
-						authorize_posts(targets[i].value);
-					}
-				}
-			}
-		}
-		else {
-			alert("do nothing!");
-		}
-	}
-</script>
-
-
-<form>
+<form action {% url 'posts:post_mgnt' %} method = "get">
 <label>You want to delete or authorize posts?</label>
 <br>
 
@@ -47,10 +13,9 @@
 {% if latest_post_list %}
 
 <table sytle = "width:100%">
-
 {% for post in latest_post_list %}
 	<tr>
-		<td><input type="checkbox" value = {{post.identity}}></td>
+		<td><input type="checkbox" name = {{post.identity}} value = {{post.identity}}></td>
 		<td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
     </tr>
     {% endfor %}

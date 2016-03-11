@@ -198,6 +198,9 @@ def post_mgnt(request):
         context = {
             'latest_post_list': latest_post_list
         }
+
+
+
         return render(request, 'posts/post_mgnt.html', context)
 
 
@@ -244,11 +247,14 @@ def edit_post(request, identity):
 
 
 def delete_post(request, identity):
+    print "call this"
     latest_post_list = get_posts(request)
+    print "thiiiifsafjsalfjklasjfdkdaj;lfjas;jf;lasjf;lj"
     for post in latest_post_list:
         print post.identity 
         if str(post.identity) == str(identity):
             post.delete()
+
     return redirect('posts:index')
 
 
