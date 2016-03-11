@@ -1,41 +1,60 @@
 <script type="text/javascript">
-	function delete_posts() {
-		var post_list = document.getElementsByName("select_post");
+	function doa() {
+		var action  = document.getElementById("selection");
+		var targets = document.getElementsByTagName("input");
 
-		for (var i = post_list.length - 1; i >= 0; i--) {
-			if (post_list[i].checked == true) {
-				delete_post(post_list[i].value);
+		if (action.value != "none") { 
+			if (targets.length == 0) {
+				alert("You cannot delete or authorize anything.");
+			}
+			for (var i = 0; i < targets.length; i++) {
+				if (targets[i].checked) {
+					alert("I want to delete post with identity = " + targets[i].value);
+
+				}
 			}
 		}
+		else {
+			alert("do nothing!");
+		}
 	}
-
-	function delete_post(post_id) {
-		<!-- I will finish this part later -->
-		alert(post_id);
-	}
-	
 </script>
 
+<form>
 
-
-<form role="form" action="/posts/post_mgnt" method="POST">{% csrf_token %}
-<label>Select Posts That You Want to Delete</label>
-
+<label>You want to delete or authorize posts?</label>
 <br>
 
-<!-- Add a table to get all of the posts which belongs to the author -->
+<select id = "selection">
+  <option value="none">----------------</option>
+  <option value="delete_posts">Delete Posts</option>
+  <option value="authorize_posts">Authorize Posts</option>
+</select>
+
+<br><br>
+
+{% if latest_post_list %}
+
 <table sytle = "width:100%">
+
 {% for post in latest_post_list %}
-<tr>
-	<td><input type="checkbox" name="select_post" value = {{post.id}}></td>
-	<td>{{ post.post_text}}</td>
-</tr>
-{% endfor %}
+	<tr>
+		<td><input type="checkbox" value = {{post.identity}}></td>
+		<td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
+    </tr>
+    {% endfor %}
 </table>
 
-<button type="submit" onclick="delete_posts();">Delete Selected Posts</button>
+{% else %}
+    <p>No posts are available!</p>
+{% endif %}
 
+	<br>
+
+	<button type="submit" value = "confirm" onclick="doa();">Confirm</button>
 </form>
+
+<br><br>
 
 <form action={% url 'posts:index' %} method="get">
 		<button type="submit">Back</button>
