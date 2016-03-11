@@ -64,7 +64,7 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.TextField(max_length=400)
     published = models.DateTimeField('date published')
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     CONTENT_CHOICES = (
                       ('text/plain', 'Plain text'),
                       ('text/x-markdown', 'Markdown'),

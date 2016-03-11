@@ -1,6 +1,6 @@
 from api.models import Post, Author
-from api.post_serializers import PostSerializer
-from api.post_serializers import AuthorSerializer
+from api.serializers import PostSerializer
+from api.serializers import AuthorSerializer
 from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from django.contrib.auth.models import User
