@@ -6,6 +6,11 @@ from friendship.models import Friend, Follow
 from api.models import Post, Image, Comment, Author
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
 from rest_framework.decorators import api_view
+from django.http import HttpResponse
+from api.serializers import PostSerializer
+from rest_framework.response import Response
+
+
 
 
 
@@ -281,9 +286,9 @@ def delete_post(request, identity):
 
 
 @api_view(['GET'])
-def post_detail(request, pk):
+def post_detail(request, identity):
     try:
-        post = Post.objects.get(pk=pk)
+        post = Post.objects.get(identity=identity)
     except Post.DoesNotExist:
         return HttpResponse(status=404)
 
