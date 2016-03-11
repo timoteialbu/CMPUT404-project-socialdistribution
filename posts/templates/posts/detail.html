@@ -96,6 +96,13 @@
 
 	<button type=button id = "check_delete" name = {{post.author}} value = {{user.username}} onclick="check_delete();">Delete</button>
 
+	<br><br>
+
+	<form action={% url 'posts:index' %} method="get">
+			<button type="submit">Back</button>
+	</form>
+
+
 	<div id="edit" style="display: none;">
 		<h1>New Content</h1>
 		<form method="POST" class="post-form">

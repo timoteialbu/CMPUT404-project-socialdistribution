@@ -195,9 +195,7 @@ def friend_mgnt(request):
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
-        latest_img_list = Image.objects.order_by('-pub_date')[:5]
         context = {
-            'latest_image_list': latest_img_list,
             'latest_post_list': latest_post_list
         }
         return render(request, 'posts/post_mgnt.html', context)
@@ -255,7 +253,6 @@ def delete_post(request, identity):
 
 
 def detail(request, identity):
-    latest_post_list = get_posts(request)
     post = get_object_or_404(Post, pk=identity)
     comment = Comment.objects.create(post=post, pub_date=timezone.now())
     comments = Comment.objects.select_related().filter(post=identity)
@@ -278,7 +275,7 @@ def detail(request, identity):
     else:
         form = PostForm(instance=post)
         cform = CommentForm(instance=comment)
-    return render(request, 'posts/detail.html', {'latest_post_list': latest_post_list, 'post': post, 'comments': comments, 'form': form, 'cform': cform})
+    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
 
 
 def create_img(request):
