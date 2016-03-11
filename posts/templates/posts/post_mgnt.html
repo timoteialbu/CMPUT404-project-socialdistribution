@@ -1,4 +1,12 @@
 <script type="text/javascript">
+	function delete_posts(id) {
+		alert("d -> " + id);
+	}
+
+	function authorize_posts(id) {
+		alert("a -> " + id);
+	}
+
 	function doa() {
 		var action  = document.getElementById("selection");
 		var targets = document.getElementsByTagName("input");
@@ -9,9 +17,11 @@
 			}
 			for (var i = 0; i < targets.length; i++) {
 				if (targets[i].checked) {
-					alert("I want to delete post with identity = " + targets[i].value);
-
-
+					if (action.value == "delete_posts") {
+						delete_posts(targets[i].value);
+					} else {
+						authorize_posts(targets[i].value);
+					}
 				}
 			}
 		}
@@ -22,7 +32,7 @@
 </script>
 
 
-<form action = {% url 'posts:post_mgnt' %} method="get">
+<form>
 <label>You want to delete or authorize posts?</label>
 <br>
 
