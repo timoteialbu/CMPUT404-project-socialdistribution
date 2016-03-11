@@ -1,28 +1,3 @@
-{% block content %}
-    <div class="post">
-        {% if post.pub_date %}
-            <div class="date">
-                {{ post.pub_date }}
-            </div>
-		{% endif %}
-		<p>{{ post.content|urlize|linebreaks }}</p>
-		<p>{{ post.get_privacy_display }}</p>
-    </div>
-
-	<div class="comments">
-		{% for comment in comments %}
-			<p>{{ comment.comment_text|urlize|linebreaks }}</p>
-		{% endfor %}
-	</div>
-
-	<button type=button id = "check_edit" name = {{post.author}} value = {{user.username}} onclick="check_edit();">Edit</button>
-
-	<button type=button id = f2 onclick="nextC();">Comment</button>
-
-	<br><br>
-
-	<button type=button id = "check_delete" name = {{post.author}} value = {{user.username}} onclick="check_delete();">Delete</button>
-
 	<script>
 	function check_edit() {
 		var author_name = document.getElementById("check_edit").name;
@@ -86,14 +61,47 @@
 		return flip;
 	}
 
-	function delete_posts() {
-		alert("call this");
+	function delete_posts(a,b) {
+		alert(a);
+		alert(b);
+
+
 	}
 
 	var nextC = comment();
 	var nextD = delete_post();
 	var nextE = edit();
 	</script>
+
+
+
+
+{% block content %}
+    <div class="post">
+        {% if post.pub_date %}
+            <div class="date">
+                {{ post.pub_date }}
+            </div>
+		{% endif %}
+		<p>{{ post.content|urlize|linebreaks }}</p>
+		<p>{{ post.get_privacy_display }}</p>
+    </div>
+
+	<div class="comments">
+		{% for comment in comments %}
+			<p>{{ comment.comment_text|urlize|linebreaks }}</p>
+		{% endfor %}
+	</div>
+
+	<button type=button id = "check_edit" name = {{post.author}} value = {{user.username}} onclick="check_edit();">Edit</button>
+
+	<button type=button id = f2 onclick="nextC();">Comment</button>
+
+	<br><br>
+
+	<button type=button id = "check_delete" name = {{post.author}} value = {{user.username}} onclick="check_delete();">Delete</button>
+
+
 
 
 	<div id="edit" style="display: none;">
@@ -117,14 +125,17 @@
 
 	<div id="delete" style="display: none;">
 		<h3>Are you sure that you want to delete this post?</h3>
-		
-		
-		<!-- I need to edit this to delete the current post -->
-		<form action={% url 'posts:index' %}>
-			<button type="submit" value="delete_yes" onclick="delete_posts();">Yes</button>
+
+		<form method="DELETE" class="delete-form" %}>
+		<!--
+		<form method="DELETE" class="delete-form" action={% url 'posts:index' %}>
+		-->
+			{{latest_post_list}}
+			<br>
+			<button type="submit" value="save" 
+			onclick="delete_posts(1, 2);">Yes</button>
 		</form>
 		
-
 		<button type="submit" value="delete_no" onclick="nextD();"> No</button>
 	</div>
 	
