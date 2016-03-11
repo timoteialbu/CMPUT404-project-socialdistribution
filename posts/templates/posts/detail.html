@@ -1,8 +1,8 @@
 {% block content %}
     <div class="post">
-        {% if post.pub_date %}
+        {% if post.published %}
             <div class="date">
-                {{ post.pub_date }}
+                {{ post.published }}
             </div>
 		{% endif %}
 		<p>{{ post.content|urlize|linebreaks }}</p>

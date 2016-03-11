@@ -63,22 +63,18 @@ class AuthorPostList(generics.ListAPIView):
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     access to a single post with id = {POST_ID}
-    http://service/posts/{POST_ID} 
+    http://service/posts/{POST_ID}
     """
     serializer_class = PostSerializer
     # TODO change to something more approp
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     lookup_url_kwarg = 'uuid'
-
+    # add visibility logic
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
-        post = Post.objects.get(identity=uuid.UUID(requestId))
-        print Post.objects.values_list('identity', flat=True)[0] == uuid.UUID(requestId)
-        print type(Post.objects.values_list('identity', flat=True)[0].hex)
-        return post
-
-
+        # TODO Should be a .get but w/e
+        return Post.objects.filter(identity=uuid.UUID(requestId))
 
 
     
@@ -90,6 +86,8 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = AuthorSerializer
+
+
 
 #####################
 # from api.models import Post

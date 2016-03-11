@@ -195,7 +195,7 @@ def friend_mgnt(request):
 # prob should change this to a form view
 def index(request):
     latest_post_list = get_posts(request)
-    latest_img_list = Image.objects.order_by('-pub_date')[:5]
+    latest_img_list = Image.objects.order_by('-published')[:5]
     context = {
         'latest_image_list': latest_img_list,
         'latest_post_list': latest_post_list
@@ -209,7 +209,7 @@ def create_post(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
-            post.pub_date = timezone.now()
+            post.published = timezone.now()
             post.save()
             # future ref make to add the namespace ie "posts"
             return redirect('posts:detail', identity=post.pk)
@@ -235,7 +235,7 @@ def edit_post(request, identity):
 
 def detail(request, identity):
     post = get_object_or_404(Post, pk=identity)
-    comment = Comment.objects.create(post=post, pub_date=timezone.now())
+    comment = Comment.objects.create(post=post, published=timezone.now())
     comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
@@ -249,7 +249,7 @@ def detail(request, identity):
             return redirect('posts:detail', identity=post.pk)
         elif cform.is_valid():
             comment = cform.save(commit=False)
-            comment.pub_date = timezone.now()
+            comment.published = timezone.now()
             comment.post=post
             comment.save()
             return redirect('posts:detail', identity=post.pk)                
@@ -265,7 +265,7 @@ def create_img(request):
         if form.is_valid():
             img = form.save(commit=False)
             img.author = Author.objects.get(user=request.user)
-            img.pub_date = timezone.now()
+            img.published = timezone.now()
             img.save()
             return redirect('posts:index')
     else:

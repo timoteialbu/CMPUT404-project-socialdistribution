@@ -31,9 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
 #         model = User
 #         fields = ('identity', 'username', 'posts')
 
-
-        
-        
+     
 class PostSerializer(serializers.ModelSerializer):
     # TODO change source to = some user serializer with ID, host,displayname
     # url and github (see api protocols)

@@ -79,7 +79,7 @@ class Comment(models.Model):
 class Image(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    pub_date = models.DateTimeField('date published')
+    published = models.DateTimeField('date published')
     img = models.ImageField(upload_to=image_file_name)
 
     def __unicode__(self):
