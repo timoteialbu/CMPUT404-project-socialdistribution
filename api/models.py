@@ -61,16 +61,24 @@ def image_file_name(instance, filename):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    comment_text = models.TextField(max_length=400)
-    pub_date = models.DateTimeField('date published')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    comment = models.TextField(max_length=400)
+    published = models.DateTimeField('date published')
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    CONTENT_CHOICES = (
+                      ('text/plain', 'Plain text'),
+                      ('text/x-markdown', 'Markdown'),
+    )
+    contentType = models.CharField(
+        max_length=16, choices=CONTENT_CHOICES, default='text/plain')
 
     def __unicode__(self):
-        return self.comment_text[:20] + "..."
+        return self.comment[:20] + "..."
 
 
 class Image(models.Model):
     title = models.CharField(max_length=100)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     pub_date = models.DateTimeField('date published')
     img = models.ImageField(upload_to=image_file_name)
 

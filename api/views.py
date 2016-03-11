@@ -24,7 +24,7 @@ class UserPostList(generics.ListAPIView):
         # TODO add friend logic
         posts = Post.objects.filter(
             Q(visibility='PUBLIC') |
-            Q(author=self.request.user))
+            Q(author=Author.objects.get(user=self.request.user)))
         return posts
 
 
@@ -73,7 +73,8 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
         post = Post.objects.get(identity=requestId)
-        print requestId
+        print type(requestId)
+        print type(Post.objects.values_list('identity', flat=True)[0])
         return post
 
 
