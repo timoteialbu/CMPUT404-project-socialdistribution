@@ -4,4 +4,5 @@ pillow
 django-friendship
 djangorestframework
 django-markdown-deux
+docutils
 

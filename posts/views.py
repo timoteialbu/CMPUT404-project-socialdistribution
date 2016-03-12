@@ -27,10 +27,10 @@ def get_posts(request):
     print request.user
     if request.user.is_anonymous():
         latest_post_list = Post.objects.filter(
-            Q(visibility='PU'))
+            Q(visibility='PUBLIC'))
     else:
         latest_post_list = Post.objects.filter(
-            Q(visibility='PU') |
+            Q(visibility='PUBLIC') |
             Q(author=Author.objects.get(user=request.user)))
     return latest_post_list
 
