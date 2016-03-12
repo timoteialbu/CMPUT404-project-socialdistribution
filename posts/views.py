@@ -218,6 +218,17 @@ def index(request):
     return render(request, 'posts/index.html', context)
 
 
+# api stuff for the future
+# # post_collection
+# @api_view(['GET'])
+# def index(request):
+#     if request.method == 'GET':
+#         posts = Post.objects.all()
+#         serializer = PostSerializer(posts, many=True)
+#         return Response(serializer.data)
+
+
+
 def create_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -258,43 +269,43 @@ def delete_post(request, identity):
     return redirect('posts:index')
 
 
-# def detail(request, identity):
-#     post = get_object_or_404(Post, pk=identity)
-#     comment = Comment.objects.create(post=post, published=timezone.now())
-#     comments = Comment.objects.select_related().filter(post=identity)
-#     if request.method == "POST":
-#         form = PostForm(request.POST, instance=post)
-#         cform = CommentForm(request.POST, instance=comment)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.author = Author.objects.get(user=request.user)
-#             post.published_date = timezone.now()
-#             post.save()
-#             # the "identity" part must be the same as the P<"identity" in url.py
-#             return redirect('posts:detail', identity=post.pk)
-#         elif cform.is_valid():
-#             comment = cform.save(commit=False)
-#             comment.published = timezone.now()
-#             comment.post=post
-#             comment.save()
-#             return redirect('posts:detail', identity=post.pk)                
-#     else:
-#         form = PostForm(instance=post)
-#         cform = CommentForm(instance=comment)
-#     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
-
-
-
-@api_view(['GET'])
 def post_detail(request, identity):
-    try:
-        post = Post.objects.get(identity=identity)
-    except Post.DoesNotExist:
-        return HttpResponse(status=404)
+    post = get_object_or_404(Post, pk=identity)
+    comment = Comment.objects.create(post=post, published=timezone.now())
+    comments = Comment.objects.select_related().filter(post=identity)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        cform = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = Author.objects.get(user=request.user)
+            post.published_date = timezone.now()
+            post.save()
+            # the "identity" part must be the same as the P<"identity" in url.py
+            return redirect('posts:detail', identity=post.pk)
+        elif cform.is_valid():
+            comment = cform.save(commit=False)
+            comment.published = timezone.now()
+            comment.post=post
+            comment.save()
+            return redirect('posts:detail', identity=post.pk)                
+    else:
+        form = PostForm(instance=post)
+        cform = CommentForm(instance=comment)
+    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
 
-    if request.method == 'GET':
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
+
+
+# @api_view(['GET'])
+# def post_detail(request, identity):
+#     try:
+#         post = Post.objects.get(identity=identity)
+#     except Post.DoesNotExist:
+#         return HttpResponse(status=404)
+
+#     if request.method == 'GET':
+#         serializer = PostSerializer(post)
+#         return Response(serializer.data)
 
 
 
