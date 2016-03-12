@@ -8,13 +8,20 @@
     <p>{{ post.content|urlize|linebreaks }}</p>
     <p>{{ post.get_privacy_display }}</p>
 </div>
+
 <div class="comments">
     {% for comment in comments %}
     <p>{{ comment.comment|urlize|linebreaks }}</p>
     {% endfor %}
 </div>
+{% if isAuthor %}
 <button type=button id = f1 onclick="nextE();">Edit</button>
+{% endif %}
+{% if isAuthenticated %}
 <button type=button id = f2 onclick="nextC();">Comment</button>
+{% else %}
+<h2>Login to comment!
+{% endif %}
 <script>
  function edit(){
      var n = 0;
@@ -63,11 +70,14 @@
     </form>
 </div>
 <br><br>
+
+{%if isAuthor %}
 <form action = {% url 'posts:delete_post' post.identity %} method = "POST">{% csrf_token %}
     <button type="submit" name = "identity" value = {{post.identity}}>
     Delete Selected Post
     </button>
 </form>
+{% endif %}
 
 <form action={% url 'posts:index' %} method="get">
         <button type="submit">Back</button>
