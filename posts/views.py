@@ -206,11 +206,13 @@ def edit_post(request, identity):
 
 def delete_post(request, identity):
     latest_post_list = get_posts(request)
-    for post in latest_post_list:
-        print post.identity 
-        if str(post.identity) == str(identity):
-            post.delete()
-    return redirect('posts:index')
+
+    if request.method == 'POST':
+        for post in latest_post_list:
+            if str(post.identity) == str(identity):
+                post.delete()
+        return redirect('posts:index')
+    return render(request, 'posts/index.html', context)
 
 
 def post_detail(request, identity):
