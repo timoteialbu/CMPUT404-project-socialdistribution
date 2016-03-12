@@ -50,4 +50,5 @@ Contributors:
     Olexiy Berjanskii
     Erin Torbiak
     Abram Hindle
+    Kyle Hayward
 
