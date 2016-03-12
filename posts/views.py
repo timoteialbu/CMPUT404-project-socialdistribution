@@ -222,9 +222,6 @@ def delete_post(request, identity):
 
 def post_detail(request, identity):
     #print identity
-
-
-
     post = get_object_or_404(Post, identity=identity)
     #comment = Comment.objects.create(post=post, published=timezone.now())
     comments = Comment.objects.select_related().filter(post=identity)
@@ -250,7 +247,11 @@ def post_detail(request, identity):
         print post
         form = PostForm(initial={'content': post.content})
         cform = CommentForm()
-    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
+    isAuthenticated = request.user.is_authenticated()
+    isAuthor = False
+    if(isAuthenticated):
+        isAuthor = Author.objects.select_related().filter(user=request.user) == post.author
+    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 # @api_view(['GET'])
 # def post_detail(request, identity):
