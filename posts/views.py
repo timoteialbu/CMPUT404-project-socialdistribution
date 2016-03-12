@@ -227,6 +227,7 @@ def post_detail(request, identity):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
+            print post.author
             post.published_date = timezone.now()
             post.save()
             # the "identity" part must be the same as the P<"identity" in url.py
@@ -234,6 +235,7 @@ def post_detail(request, identity):
         elif cform.is_valid():
             comment = cform.save(commit=False)
             comment.published = timezone.now()
+            comment.author = Author.objects.get(user=request.user)
             comment.post=post
             comment.save()
             #return redirect('posts:detail', identity=post.pk)                
