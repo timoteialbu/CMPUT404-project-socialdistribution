@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
-from .models import Post
+from api.models import Post
 
 
 # def new_user(username="john",email="dd@dsd.ca",password="123454"):
@@ -92,6 +92,3 @@ from .models import Post
 #             response.context['latest_post_list'],
 #             ['<Post: Past post 2.>', '<Post: Past post 1.>']
 #         )
-
-
-
