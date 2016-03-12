@@ -1,21 +1,23 @@
 from django import forms
 from django.contrib.auth.models import User
-from friendship.models import Friend, Follow
-from .models import Post, Image
+from friendship.models import Friend, Follow, FriendshipRequest
+from api.models import Post, Image, Comment
+
 
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('post_text', 'privacy')
+        fields = ('content', 'visibility', 'contentType')
 
+class CommentForm(forms.ModelForm):
+	class Meta:
+		model = Comment
+		fields = ('comment', 'contentType')
 
 class UploadImgForm(forms.ModelForm):
     class Meta:
         model = Image
-        # img = forms.ImageField(
-        #    label = 'Select a Image',
-        # )
         fields = ('title', 'img')
 
         
@@ -26,7 +28,21 @@ class AddFriendForm(forms.Form):
     )
     fields = ('username',)
 
-# add checks if user exists
+
 class UnFriendUserForm(forms.Form):
     username = forms.CharField(label='username', required=False)
 
+
+class FriendRequestForm(forms.Form):
+    def __init__(self, names, *args, **kwargs):
+        super(FriendRequestForm, self).__init__(*args, **kwargs)
+        CHOICES = (
+            ('A', 'Accept'),
+            ('R', 'Reject'),
+        )
+        for field_name in names:
+            self.fields[field_name] = forms.CharField(max_length=32)
+            self.fields[field_name] = forms.ChoiceField(
+                choices=CHOICES,
+                widget=forms.RadioSelect()
+            )

@@ -8,3 +8,7 @@ venv
 passwords.txt
 media/images/uploads/*
 */migrations/
+timotei-project
+project
+*#
+
