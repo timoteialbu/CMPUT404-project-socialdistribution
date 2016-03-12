@@ -27,10 +27,10 @@ def get_posts(request):
     print request.user
     if request.user.is_anonymous():
         latest_post_list = Post.objects.filter(
-            Q(visibility='PU'))
+            Q(visibility='PUBLIC'))
     else:
         latest_post_list = Post.objects.filter(
-            Q(visibility='PU') |
+            Q(visibility='PUBLIC') |
             Q(author=Author.objects.get(user=request.user)))
     return latest_post_list
 
@@ -211,18 +211,17 @@ def edit_post(request, identity):
 
 def delete_post(request, identity):
     latest_post_list = get_posts(request)
-    for post in latest_post_list:
-        print post.identity 
-        if str(post.identity) == str(identity):
-            post.delete()
-    return redirect('posts:index')
+
+    if request.method == 'POST':
+        for post in latest_post_list:
+            if str(post.identity) == str(identity):
+                post.delete()
+        return redirect('posts:index')
+    return render(request, 'posts/index.html', context)
 
 
 def post_detail(request, identity):
     #print identity
-
-
-
     post = get_object_or_404(Post, identity=identity)
     #comment = Comment.objects.create(post=post, published=timezone.now())
     comments = Comment.objects.select_related().filter(post=identity)
@@ -248,7 +247,12 @@ def post_detail(request, identity):
         print post
         form = PostForm(initial={'content': post.content})
         cform = CommentForm()
-    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
+    isAuthenticated = request.user.is_authenticated()
+    isAuthor = False
+    if(isAuthenticated):
+        isAuthor = Author.objects.get(user=request.user).user == post.author.user
+        print isAuthor
+    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 # @api_view(['GET'])
 # def post_detail(request, identity):
