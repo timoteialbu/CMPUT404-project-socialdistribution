@@ -200,36 +200,34 @@ def delete_post(request, identity):
 
 
 def post_detail(request, identity):
-    print identity
-    #identity = Post.objects.get(identity=identity).identity
-    print identity
-    
-    post = get_object_or_404(Post, identity='047f6a63-0174-4c69-ac50-633ea1207766')
-    print post
-    comment = Comment.objects.create(post=post, published=timezone.now())
-    comments = Comment.objects.select_related().filter(post=identity)
+    #print identity
+
+
+
+    post = get_object_or_404(Post, identity=identity)
+    #comment = Comment.objects.create(post=post, published=timezone.now())
+    #comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
-        cform = CommentForm(request.POST, instance=comment)
+        form = PostForm(request.POST)
+        cform = CommentForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
             post.published_date = timezone.now()
             post.save()
             # the "identity" part must be the same as the P<"identity" in url.py
-            return redirect('posts:detail', identity=post.pk)
+            #return redirect('posts:detail', identity=post.pk)
         elif cform.is_valid():
             comment = cform.save(commit=False)
             comment.published = timezone.now()
             comment.post=post
             comment.save()
-            return redirect('posts:detail', identity=post.pk)                
+            #return redirect('posts:detail', identity=post.pk)                
     else:
-        form = PostForm(instance=post)
-        cform = CommentForm(instance=comment)
-    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
-
-
+        print post
+        form = PostForm(initial={'content': post.content})
+        cform = CommentForm()
+    return render(request, 'posts/detail.html', {'post': post, 'comments': cform, 'form': form, 'cform': cform})
 
 # @api_view(['GET'])
 # def post_detail(request, identity):
