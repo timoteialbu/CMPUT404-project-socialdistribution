@@ -69,6 +69,16 @@
 	<button type="submit" value="save">Save</button>
     </form>
 </div>
+<br><br>
+<form action = {% url 'posts:delete_post' post.identity %} method = "POST">{% csrf_token %}
+    <button type="submit" name = "identity" value = {{post.identity}}>
+    Delete Selected Post
+    </button>
+</form>
+
+<form action={% url 'posts:index' %} method="get">
+        <button type="submit">Back</button>
+</form>
 {% endblock %}
 
 
