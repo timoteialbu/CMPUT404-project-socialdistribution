@@ -1,5 +1,8 @@
 from rest_framework.test import APIRequestFactory
 from rest_framework.test import APIClient
+from django.test import TestCase
+from .models import *
+from django.contrib.auth.models import User
 
 import urllib2
 import unittest
@@ -7,6 +10,14 @@ import unittest
 BASEURL = "http://127.0.0.1:8000/api"
 factory = APIRequestFactory()
 client = APIClient()
+
+class DBTests(TestCase):
+    def setUp(self):
+        user   = User.objects.create()
+        author = Author.objects.create(user=user, displayName="stephen")
+        post   = Post.objects.create(author=author, title="cool post", content="cool content")
+    def test
+        
 
 class TestYourWebserver(unittest.TestCase):
     
