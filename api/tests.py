@@ -1,30 +1,41 @@
+from django.test import TestCase
+from django.test import Client
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory
 from rest_framework.test import APIClient
-from django.test import TestCase
 from api.models import *
-from django.contrib.auth.models import User
-
 import urllib2
-#import unittest
+import unittest
 import json
 
+
 BASEURL = "http://127.0.0.1:8000/api"
+
+# factory generates request instances
 factory = APIRequestFactory()
+# client acts as a dummy web browser
 client = APIClient()
 
+
+#===============================================================================
+#============================= ABSTRACT TEST CLASSES ===========================
+#===============================================================================
+
 class TestDatabase(TestCase):
-    def setUp(self):
+    def setup(self):
         user   = User.objects.create()
         author = Author.objects.create(user=user, displayName="stephen")
         post   = Post.objects.create(author=author, title="cool post", content="cool content")
 
 class TestGenericUsecase(TestCase):
     """GENERIC"""
-    def setUp(self,baseurl=BASEURL):
+    def setup(self,baseurl=BASEURL):
         self.baseurl = baseurl
-    def generic_json_content(self):
+    def generic_json(self):
+        """{Returns Generic JSON}"""
         template=json.dumps({
-            "title": "TITLE",
+            "title": "LOREM IPSUM",
             "source": "any",
             "origin": "any",
             "description": "none",
@@ -32,10 +43,22 @@ class TestGenericUsecase(TestCase):
             "content": "FILLER CONTENT",
             "visibility": None})
         return template
-    def generic_usecase(self, target='/', data=" "):
+    def generic_get(self, target='/', expected_code=200):
+        """{Sends generic (GET) request to target or webroot}"""
         url = (target)
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_202_OK)
+        response = self.factory.get(url)
+        self.assertEqual(response.status_code, expected_code)
+        #self.assertEqual(Account.objects.count(), 1)
+        #self.assertEqual(Account.objects.get().name, 'DabApps')
+        #request = factory.post(url, fill_json_test(),format='json');
+        #self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        #self.assertTrue( req.info().gettype() == "text/css", ("Bad mimetype for css! %s" % req.info().gettype()))
+
+    def generic_post(self, target='/', data="TEST", expected_code=202):
+        """{Sends generic (POST) request with JSON to target or webroot}"""
+        url = (target)
+        response = self.factory.post(url, data, format='json')
+        self.assertEqual(response.status_code, expected_code)
         #self.assertEqual(Account.objects.count(), 1)
         #self.assertEqual(Account.objects.get().name, 'DabApps')
         #request = factory.post(url, fill_json_test(),format='json');
@@ -43,30 +66,14 @@ class TestGenericUsecase(TestCase):
         #self.assertTrue( req.info().gettype() == "text/css", ("Bad mimetype for css! %s" % req.info().gettype()))
 
 
-    def test_author_post_list(self):
-        url = ('/author/posts')
-        data = {"title": "Author Posts",
-        "source": "any",
-        "origin": "any",
-        "description": "none",
-        "contentType": "text/json",
-        "content": "IMPORTANT STUFF HERE",
-        "visibility": None}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        #self.assertEqual(Account.objects.count(), 1)
-        #self.assertEqual(Account.objects.get().name, 'DabApps')
-        #request = factory.post(url, fill_json_test(),format='json');
-        #self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
-        #self.assertTrue( req.info().gettype() == "text/css", ("Bad mimetype for css! %s" % req.info().gettype()))
-
 
 #===============================================================================
-#=============================== TEST CLASSES ==================================
+#============================ CONCRETE TEST CLASSES ============================
 #===============================================================================
+
 class TestContentCreation(TestCase):
     """CONTENT CREATION"""
-    def setUp(self,baseurl=BASEURL):
+    def setup(self,baseurl=BASEURL):
         self.baseurl = baseurl
     def test_author_make_post(self):    # TODO Create and view own
         """- As an author I want to make posts."""
@@ -79,7 +86,7 @@ class TestContentCreation(TestCase):
         "content": "IMPORTANT STUFF HERE",
         "visibility": None}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, 201)
         #self.assertEqual(Account.objects.count(), 1)
         #self.assertEqual(Account.objects.get().name, 'DabApps')
         #request = factory.post(url, fill_json_test(),format='json');
@@ -97,28 +104,32 @@ class TestContentCreation(TestCase):
 
 class TestContentPrivacy(TestCase):
     """CONTENT PRIVACY"""
-    def setUp(self,baseurl=BASEURL):
+    def setup(self,baseurl=BASEURL):
         self.baseurl = baseurl
     def test_user_view_list(self):
-        url = self.baseurl + "/posts"
-        req = urllib2.urlopen(url, None, 3)
-        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
-    def test_user_view_post(self):
-        url = self.baseurl + "/post/" + postID
-        req = urllib2.urlopen(url, None, 3)
-        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        """[Should verify that registered users can view lists of posts]"""
+        url = "/posts"
+        response = self.client.get(url)
+        self.assertTrue( response.status_code  == 200 )
+    def test_user_view_post(self, postID=1):
+        """[Should verify that registered users can view single posts]"""
+        url = "/post/" + str(postID)
+        response = self.client.get(url)
+        self.assertTrue( response.status_code  == 200 )
     def test_anon_view_list(self):
-        url = self.baseurl + "/posts"
-        req = urllib2.urlopen(url, None, 3)
-        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
-    def test_anon_view_post(self):
-        url = self.baseurl + "/post/" + postID
-        req = urllib2.urlopen(url, None, 3)
-        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        """[Should verify that anonymous users view restricted lists of posts]"""
+        url = "/posts"
+        response = self.client.get(url)
+        self.assertTrue( response.status_code  == 200 )
+    def test_anon_view_post(self, postID=1):
+        """[Should verify that anonymous users view restricted posts]"""
+        url = "/post/" + str(postID)
+        response = self.client.get(url)
+        self.assertTrue( response.status_code  == 200 )
 
 class TestUserPrivacy(TestCase):
     """USER PRIVACY"""
-    def setUp(self,baseurl=BASEURL):
+    def setup(self,baseurl=BASEURL):
         self.baseurl = baseurl
     def test_privacy_self(self):
         """- As an author, posts I create be private to me"""
@@ -145,7 +156,7 @@ class TestUserPrivacy(TestCase):
 
 class TestUserProfiles(TestCase):
     """USER PROFILES"""
-    def setUp(self,baseurl=BASEURL):
+    def setup(self,baseurl=BASEURL):
         self.baseurl = baseurl
     def test_profile_consist(self):
         """- As an author, I want a consistent identity per server"""
