@@ -1,3 +1,7 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
 {% load markdown_deux_tags %}
 {% if latest_post_list %}
 <ul>
@@ -43,3 +47,4 @@
 		<button type="submit" value="friend_mgnt" >Manage Friends</button>
 </form>
 {% endif %}
+{% endblock %}

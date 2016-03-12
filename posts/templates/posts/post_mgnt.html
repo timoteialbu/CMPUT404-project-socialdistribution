@@ -1,3 +1,6 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
 {% load markdown_deux_tags %}
 <form action = {% url 'posts:post_mgnt' %} method = "POST">{% csrf_token %}
 
@@ -35,7 +38,7 @@
 <form action={% url 'posts:index' %} method="get">
 		<button type="submit">Back</button>
 </form>
-
+{% endblock %}
 
 {% comment %}
 <form action = {% url 'posts:post_mgnt' %}  method="DELETE">
