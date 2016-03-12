@@ -98,4 +98,3 @@ class QuestionViewTests(TestCase):
 #             response.context['latest_post_list'],
 #             ['<Post: Past post 2.>', '<Post: Past post 1.>']
 #         )
-

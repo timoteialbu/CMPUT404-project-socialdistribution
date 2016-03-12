@@ -26,7 +26,7 @@
     <p>No images are available!</p>
 {% endif %}
 
-
+{% if user.is_authenticated %}
 <form action={% url 'posts:create_post' %} method="get">
         <button type="submit" value="edit_post">Create New Post</button>
 </form>
@@ -42,3 +42,4 @@
 <form action={% url 'posts:friend_mgnt' %} method="get">
 		<button type="submit" value="friend_mgnt" >Manage Friends</button>
 </form>
+{% endif %}

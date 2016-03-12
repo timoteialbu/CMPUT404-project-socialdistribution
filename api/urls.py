@@ -39,6 +39,12 @@ urlpatterns = [
     # url(r'^author/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 ]
 
+# Catch-alls, to be added to the end of the URL
+# load order might catch mishandled queries
+# MUST have a / at the end also.
+# Eg. r'^.*/$' instead of r'^.*' as last pattern.
+# To pass url to view AS A NAMED ARG, use r'^(?P<url>.*)/$'.
+
 
 # adds extra suffix patterns to urls might be good for pagination
 # urlpatterns = format_suffix_patterns(urlpatterns)
