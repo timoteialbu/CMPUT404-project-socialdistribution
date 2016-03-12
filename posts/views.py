@@ -6,10 +6,11 @@ from friendship.models import Friend, Follow
 from api.models import Post, Image, Comment, Author
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
 from rest_framework.decorators import api_view
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from api.serializers import PostSerializer
 from rest_framework.response import Response
-
+from django.template import loader
+from django.template import RequestContext
 
 
 
@@ -131,9 +132,22 @@ def friend_mgnt(request):
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
+
         context = {
             'latest_post_list': latest_post_list
         }
+
+        if request.method == 'POST':
+            print
+            values = request.POST.getlist('identity')
+            print values
+
+            for post in latest_post_list:
+                for identity in values:
+                    if str(identity) == str(post.identity):
+                        post.delete()
+
+            return redirect('posts:post_mgnt')
         return render(request, 'posts/post_mgnt.html', context)
 
 
