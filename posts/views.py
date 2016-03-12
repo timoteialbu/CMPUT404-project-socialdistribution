@@ -251,7 +251,6 @@ def post_detail(request, identity):
     isAuthor = False
     if(isAuthenticated):
         isAuthor = Author.objects.get(user=request.user).user == post.author.user
-        print isAuthor
     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 # @api_view(['GET'])
