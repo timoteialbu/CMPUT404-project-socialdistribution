@@ -47,7 +47,7 @@ class Post(models.Model):
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
     visibility = models.CharField(
-        max_length=10, choices=PRIVACY_CHOICES, default='ME')
+        max_length=10, choices=PRIVACY_CHOICES, default='PRIVATE')
 
     # def save(self, *args, **kwargs):
     # mights be handy for setting publish and such

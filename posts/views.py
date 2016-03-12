@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
-from friendship.models import Friend, Follow
+from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import Post, Image, Comment, Author
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
 from rest_framework.decorators import api_view
@@ -36,7 +36,10 @@ def get_posts(request):
 
 
 def try_adding_friend(user, friend):
-
+    try:
+        friend_id = int(User.objects.get(username=friend).id)
+    except Exception:
+        return "Not a valid user, please try again."
     msg = ""
     try:
         User.objects.get(username=friend)
@@ -48,7 +51,8 @@ def try_adding_friend(user, friend):
     except Exception:
         msg += "You are already following %s" % friend
     try:
-        msg += " and waiting for them to accept your request." % friend
+        Friend.objects.add_friend(user, friend)
+        msg += " and waiting for them to accept your request."
     except Exception:
         msg += " and already waiting for a response to your request"
     return msg
@@ -57,11 +61,12 @@ def try_adding_friend(user, friend):
 
 def try_remove_relationship(user, friend):
     try:
+        friend_name = User.objects.get(username=friend)
         friend_id = int(User.objects.get(username=friend).id)
     except Exception:
         return "Not a valid user, please try again."
     msg = ""
-    if Follow.objects.remove_follower(user, friend_id):
+    if Follow.objects.remove_follower(user, friend_name):
         msg += "You are no longer following %s" % friend
     else:
         msg += "You are not following %s, so you can't unfollow them." % friend
@@ -92,20 +97,25 @@ def add_relationship(request, context):
     addform_valid = context['addform'].is_valid(),
     if addform_valid:
         friend = context['addform'].cleaned_data['user_choice_field']
-        print friend,"suckkk"
         context['addfriend'] = friend
         if friend is not None:
-            print "works"
             context['add_msg'] = try_adding_friend(request.user, friend)
     elif not addform_valid:
         context['add_msg'] = "Invalid input"
         context['addform'] = AddFriendForm()
 
-def friend_requests(request, context):
+def friend_requests(request, context, users):
     requests_valid = context['friendrequestform'].is_valid(),
     if requests_valid:
+        for user in users:
+            req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=User.objects.get(username=user))
+            if request.POST[user] == "A":
+                req_id.accept()
+            elif request.POST[user] == "R":
+                req_id.reject()
+                try_remove_relationship(request.user, user)
+        
         #friend = context['friendrequestform'].cleaned_data['user_choice_field']
-        print context
         #context['addfriend'] = friend
 
 
@@ -116,8 +126,6 @@ def friend_mgnt(request):
                      str(x.from_user),
                      Friend.objects.unread_requests(request.user)))
     context = {'friendrequestform': FriendRequestForm(names=users)}
-    print context['friendrequestform'],"dick"
-    print "fuck",users
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
@@ -125,8 +133,7 @@ def friend_mgnt(request):
         })
         remove_relationship(request, context)
         add_relationship(request, context)
-        friend_requests(request, context)
-        print "shit"
+        friend_requests(request, context, users)
     else:
         context.update({
             'addform': AddFriendForm(),
@@ -143,9 +150,7 @@ def post_mgnt(request):
         }
 
         if request.method == 'POST':
-            print
             values = request.POST.getlist('identity')
-            print values
 
             for post in latest_post_list:
                 for identity in values:
@@ -211,7 +216,6 @@ def edit_post(request, identity):
 
 def delete_post(request, identity):
     latest_post_list = get_posts(request)
-
     if request.method == 'POST':
         for post in latest_post_list:
             if str(post.identity) == str(identity):
@@ -221,9 +225,7 @@ def delete_post(request, identity):
 
 
 def post_detail(request, identity):
-    #print identity
     post = get_object_or_404(Post, identity=identity)
-    #comment = Comment.objects.create(post=post, published=timezone.now())
     comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -231,7 +233,6 @@ def post_detail(request, identity):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
-            print post.author
             post.published_date = timezone.now()
             post.save()
             # the "identity" part must be the same as the P<"identity" in url.py
@@ -244,15 +245,16 @@ def post_detail(request, identity):
             comment.save()
             #return redirect('posts:detail', identity=post.pk)                
     else:
-        print post
         form = PostForm(initial={'content': post.content})
         cform = CommentForm()
+
     isAuthenticated = request.user.is_authenticated()
     isAuthor = False
     if(isAuthenticated):
         isAuthor = Author.objects.get(user=request.user).user == post.author.user
         print isAuthor
     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
+
 
 # @api_view(['GET'])
 # def post_detail(request, identity):
@@ -280,3 +282,16 @@ def create_img(request):
     else:
         form = UploadImgForm()
 
+
+def create_img(request):
+    if request.method == 'POST':
+        form = UploadImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            img = form.save(commit=False)
+            img.author = Author.objects.get(user=request.user)
+            img.published = timezone.now()
+            img.save()
+            return redirect('posts:index')
+    else:
+        form = UploadImgForm()
+    return render(request, 'posts/edit_img.html', {'form': form})

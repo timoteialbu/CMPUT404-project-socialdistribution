@@ -43,6 +43,7 @@ class FriendRequestForm(forms.Form):
         for field_name in names:
             self.fields[field_name] = forms.CharField(max_length=32)
             self.fields[field_name] = forms.ChoiceField(
+                label=field_name,
                 choices=CHOICES,
                 widget=forms.RadioSelect()
             )
