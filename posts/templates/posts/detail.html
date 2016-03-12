@@ -1,3 +1,7 @@
+{% extends 'posts/base.html' %}
+
+{% block content1 %}
+
 {% block content %}
 <div class="post">
     {% if post.pub_date %}
@@ -62,6 +66,8 @@
 	<button type="submit" value="save">Save</button>
     </form>
 </div>
+{% endblock %}
+
 {% endblock %}
 
 

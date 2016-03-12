@@ -1,3 +1,7 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
 {% load markdown_deux_tags %}
 <h1>Publish page</h1>
 
@@ -8,3 +12,4 @@
   <input id="your_name" type="text" name="your_name" value="{{ current_name }}">
   <input type="submit" value="Submit my post" />
 </form>
+{% endblock %}
