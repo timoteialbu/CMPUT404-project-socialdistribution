@@ -2,6 +2,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+
+    url(r'^create_img/$', views.create_img, name='create_img'),
+    
     url(r'^$', views.index, name='index'),
 
 
@@ -19,5 +22,5 @@ urlpatterns = [
     url(r'^delete_post/(?P<identity>[^/]+)/$',
      views.delete_post, name='delete_post'),
 
-    url(r'^create_img/$', views.create_img, name='create_img'),
+        
 ]

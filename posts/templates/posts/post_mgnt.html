@@ -1,12 +1,7 @@
-<form action {% url 'posts:post_mgnt' %} method = "get">
+<form action = {% url 'posts:post_mgnt' %} method = "POST">{% csrf_token %}
+{}
 <label>You want to delete or authorize posts?</label>
 <br>
-
-<select id = "selection">
-  <option value="none">----------------</option>
-  <option value="delete_posts">Delete Posts</option>
-  <option value="authorize_posts">Authorize Posts</option>
-</select>
 
 <br><br>
 
@@ -15,7 +10,7 @@
 <table sytle = "width:100%">
 {% for post in latest_post_list %}
 	<tr>
-		<td><input type="checkbox" name = {{post.identity}} value = {{post.identity}}></td>
+		<td><input type="checkbox" name = "identity" value = {{post.identity}}></td>
 		<td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
     </tr>
     {% endfor %}
@@ -27,7 +22,7 @@
 
 	<br>
 
-	<button type="submit" value = "confirm" onclick="doa();">Confirm</button>
+	<button type="submit" value = "confirm">Delete Selected Post</button>
 </form>
 
 <br><br>
@@ -36,3 +31,11 @@
 		<button type="submit">Back</button>
 </form>
 
+
+{% comment %}
+<form action = {% url 'posts:post_mgnt' %}  method="DELETE">
+   <label for="since">Since</label>
+   <input id="since" name="since" type="datetime"/>
+   <button type="submit">Delete</button>
+</form>
+{% endcomment %}
