@@ -1,3 +1,4 @@
+{% load markdown_deux_tags %}
 <script type="text/javascript">
 	function doa() {
 		var action  = document.getElementById("selection");
@@ -41,7 +42,11 @@
 {% for post in latest_post_list %}
 	<tr>
 		<td><input type="checkbox" value = {{post.identity}}></td>
-		<td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
+        {% if post.contentType == 'text/plain' %}
+	        <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
+        {% else %}
+            <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|markdown}}</a></td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>

@@ -1,3 +1,4 @@
+{% load markdown_deux_tags %}
 {%comment%}
 {% block content %}
     <div class="post">
@@ -97,13 +98,21 @@
                 {{ post.pub_date }}
             </div>
 		{% endif %}
-		<p>{{ post.content|urlize|linebreaks }}</p>
+        {% if post.contentType == 'text/plain' %}
+            <p>{{ post.content|urlize|linebreaks }}</p>
+        {% else %}
+            <p>{{ post.content|urlize|markdown }}</p>
+        {% endif %}
 		<p>{{ post.get_privacy_display }}</p>
     </div>
 
 	<div class="comments">
 		{% for comment in comments %}
-			<p>{{ comment.comment_text|urlize|linebreaks }}</p>
+            {% if post.contentType == 'text/plain' %}
+                <p>{{ comment.comment_text|urlize|linebreaks }}</p>
+            {% else %}
+                <p>{{ comment.comment_text|urlize|markdown }}</p>
+            {% endif %}
 		{% endfor %}
 	</div>
 

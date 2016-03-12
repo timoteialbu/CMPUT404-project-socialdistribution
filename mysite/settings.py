@@ -79,7 +79,17 @@ INSTALLED_APPS = (
     'friendship',
     'rest_framework',
     'api',
+    'markdown_deux',
 )
+
+MARKDOWN_DEUX_STYLES = {
+    "default": {
+        "extras": {
+            "code-friendly": None,
+        },
+        "safe_mode": "escape",
+    },
+}
 
 # This ID comes from the Django admin page
 # After adding a new site, click on it. Look in the browsers
