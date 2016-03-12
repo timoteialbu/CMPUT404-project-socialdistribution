@@ -24,9 +24,14 @@ def handle_uploaded_file(f):
 
 
 def get_posts(request):
-    latest_post_list = Post.objects.filter(
-        Q(visibility='PU') |
-        Q(author=Author.objects.get(user=request.user)))
+    print request.user
+    if request.user.is_anonymous():
+        latest_post_list = Post.objects.filter(
+            Q(visibility='PU'))
+    else:
+        latest_post_list = Post.objects.filter(
+            Q(visibility='PU') |
+            Q(author=Author.objects.get(user=request.user)))
     return latest_post_list
 
 
