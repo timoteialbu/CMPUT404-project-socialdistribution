@@ -79,7 +79,17 @@ INSTALLED_APPS = (
     'friendship',
     'rest_framework',
     'api',
+    'markdown_deux',
 )
+
+MARKDOWN_DEUX_STYLES = {
+    "default": {
+        "extras": {
+            "code-friendly": None,
+        },
+        "safe_mode": "escape",
+    },
+}
 
 # This ID comes from the Django admin page
 # After adding a new site, click on it. Look in the browsers
@@ -158,7 +168,7 @@ REST_FRAMEWORK = {
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/Users/alain/workspace/csvm/~04/project/CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 

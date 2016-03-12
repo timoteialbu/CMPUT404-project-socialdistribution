@@ -8,12 +8,12 @@ from api.models import Post, Image, Comment
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('content', 'visibility')
+        fields = ('content', 'visibility', 'contentType')
 
 class CommentForm(forms.ModelForm):
 	class Meta:
 		model = Comment
-		fields = ('comment',)
+		fields = ('comment', 'contentType')
 
 class UploadImgForm(forms.ModelForm):
     class Meta:

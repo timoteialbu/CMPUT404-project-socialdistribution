@@ -1,8 +1,13 @@
+{% load markdown_deux_tags %}
 {% if latest_post_list %}
 <ul>
     {% for post in latest_post_list %}
 	<li>
-	   <a href="{% url 'posts:detail' post.identity %}">{{ post.content|linebreaks }}</a>
+    {% if post.contentType == 'text/plain' %}
+	    <a href="{% url 'posts:detail' post.identity %}">{{ post.content|linebreaks }}</a>
+    {% else %}
+        <a href="{% url 'posts:detail' post.identity %}">{{ post.content|markdown }}</a>
+    {% endif %}
     </li>
     {% endfor %}
 </ul>

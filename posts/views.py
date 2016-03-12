@@ -68,82 +68,7 @@ def try_remove_relationship(user, friend):
 #####################################################
 
 
-#################DELETE ME JUST FOR REF#####################
-def my_view(request):
-    # List of this user's friends
-    all_friends = Friend.objects.friends(request.user)
-
-    # List all unread friendship requests
-    requests = Friend.objects.unread_requests(user=request.user)
-
-    # List all rejected friendship requests
-    rejects = Friend.objects.rejected_requests(user=request.user)
-
-    # Count of all rejected friendship requests
-    reject_count = Friend.objects.rejected_request_count(user=request.user)
-
-    # List all unrejected friendship requests
-    unrejects = Friend.objects.unrejected_requests(user=request.user)
-
-    # Count of all unrejected friendship requests
-    unreject_count = Friend.objects.unrejected_request_count(user=request.user)
-
-    # List all sent friendship requests
-    sent = Friend.objects.sent_requests(user=request.user)
-
-    # List of this user's followers
-    all_followers = Follow.objects.followers(request.user)
-
-    # List of who this user is following
-    following = Follow.objects.following(request.user)
-
-    ### Managing friendship relationships
-
-    # Create a friendship request
-    other_user = User.objects.get(pk=1)
-    new_relationship = Friend.objects.add_friend(request.user, other_user)
-
-    # Can optionally save a message when creating friend requests
-    message_relationship = Friend.objects.add_friend(
-        from_user=request.user,
-        to_user=some_other_user,
-        message='Hi, I would like to be your friend',
-    )
-
-    # And immediately accept it, normally you would give this option to the user
-    new_relationship.accept()
-
-    # Now the users are friends
-    Friend.objects.are_friends(request.user, other_user) == True
-
-    # Remove the friendship
-    Friend.objects.remove_friend(other_user, request.user)
-
-
-
-        # Create request.user follows other_user relationship
-    following_created = Follow.objects.add_follower(request.user, other_user)
-
-
-def tempFriendDebug(user, friend):
-    print "List of this user's friends"
-    print Friend.objects.friends(user)
-    print " List all unread friendship requests"
-    print Friend.objects.unread_requests(user=user)
-    print " List all rejected friendship requests"
-    print Friend.objects.rejected_requests(user=user)
-    print " List all unrejected friendship requests"
-    print Friend.objects.unrejected_requests(user=user)
-    print " List all sent friendship requests"
-    print Friend.objects.sent_requests(user=user)
-    print " List of this user's followers"
-    print Follow.objects.followers(user)
-    print " List of who this user is following"
-    print Follow.objects.following(user)
-#######################################################################
-
-
-def add_friend(request, context):
+def remove_relationship(request, context):
     unfrienduserform_valid = context['unfrienduserform'].is_valid()
     if unfrienduserform_valid:
         friend = context['unfrienduserform'].cleaned_data['username']
@@ -158,12 +83,14 @@ def add_friend(request, context):
         context['unfrienduserform'] = UnFriendUserForm
 
 
-def remove_relationship(request, context):
+def add_relationship(request, context):
     addform_valid = context['addform'].is_valid(),
     if addform_valid:
         friend = context['addform'].cleaned_data['user_choice_field']
+        print friend,"suckkk"
         context['addfriend'] = friend
         if friend is not None:
+            print "works"
             context['add_msg'] = try_adding_friend(request.user, friend)
     elif not addform_valid:
         context['add_msg'] = "Invalid input"
@@ -184,14 +111,17 @@ def friend_mgnt(request):
                      str(x.from_user),
                      Friend.objects.unread_requests(request.user)))
     context = {'friendrequestform': FriendRequestForm(names=users)}
+    print context['friendrequestform'],"dick"
+    print "fuck",users
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
         })
         remove_relationship(request, context)
-        add_friend(request, context)
+        add_relationship(request, context)
         friend_requests(request, context)
+        print "shit"
     else:
         context.update({
             'addform': AddFriendForm(),
@@ -230,6 +160,17 @@ def index(request):
         'latest_post_list': latest_post_list
     }
     return render(request, 'posts/index.html', context)
+
+
+# api stuff for the future
+# # post_collection
+# @api_view(['GET'])
+# def index(request):
+#     if request.method == 'GET':
+#         posts = Post.objects.all()
+#         serializer = PostSerializer(posts, many=True)
+#         return Response(serializer.data)
+
 
 
 def create_post(request):
@@ -272,43 +213,48 @@ def delete_post(request, identity):
     return redirect('posts:index')
 
 
-# def detail(request, identity):
-#     post = get_object_or_404(Post, pk=identity)
-#     comment = Comment.objects.create(post=post, published=timezone.now())
-#     comments = Comment.objects.select_related().filter(post=identity)
-#     if request.method == "POST":
-#         form = PostForm(request.POST, instance=post)
-#         cform = CommentForm(request.POST, instance=comment)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.author = Author.objects.get(user=request.user)
-#             post.published_date = timezone.now()
-#             post.save()
-#             # the "identity" part must be the same as the P<"identity" in url.py
-#             return redirect('posts:detail', identity=post.pk)
-#         elif cform.is_valid():
-#             comment = cform.save(commit=False)
-#             comment.published = timezone.now()
-#             comment.post=post
-#             comment.save()
-#             return redirect('posts:detail', identity=post.pk)                
-#     else:
-#         form = PostForm(instance=post)
-#         cform = CommentForm(instance=comment)
-#     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
-
-
-
-@api_view(['GET'])
 def post_detail(request, identity):
-    try:
-        post = Post.objects.get(identity=identity)
-    except Post.DoesNotExist:
-        return HttpResponse(status=404)
+    print identity
+    #identity = Post.objects.get(identity=identity).identity
+    print identity
+    
+    post = get_object_or_404(Post, identity='047f6a63-0174-4c69-ac50-633ea1207766')
+    print post
+    comment = Comment.objects.create(post=post, published=timezone.now())
+    comments = Comment.objects.select_related().filter(post=identity)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        cform = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = Author.objects.get(user=request.user)
+            post.published_date = timezone.now()
+            post.save()
+            # the "identity" part must be the same as the P<"identity" in url.py
+            return redirect('posts:detail', identity=post.pk)
+        elif cform.is_valid():
+            comment = cform.save(commit=False)
+            comment.published = timezone.now()
+            comment.post=post
+            comment.save()
+            return redirect('posts:detail', identity=post.pk)                
+    else:
+        form = PostForm(instance=post)
+        cform = CommentForm(instance=comment)
+    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
 
-    if request.method == 'GET':
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
+
+
+# @api_view(['GET'])
+# def post_detail(request, identity):
+#     try:
+#         post = Post.objects.get(identity=identity)
+#     except Post.DoesNotExist:
+#         return HttpResponse(status=404)
+
+#     if request.method == 'GET':
+#         serializer = PostSerializer(post)
+#         return Response(serializer.data)
 
 
 

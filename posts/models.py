@@ -30,8 +30,6 @@
 # 		post = models.ForeignKey(Post, on_delete=models.CASCADE)
 # 		comment_text = models.TextField(max_length=400)
 # 		pub_date = models.DateTimeField('date published')
-		
-
 # 		def __unicode__(self):
 # 			return self.comment_text[:20] + "..."
 
