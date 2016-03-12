@@ -22,7 +22,6 @@ class TestGenericUsecase(TestCase):
     """GENERIC"""
     def setUp(self,baseurl=BASEURL):
         self.baseurl = baseurl
-    # GENERICS
     def generic_json_content(self):
         template=json.dumps({
             "title": "TITLE",
@@ -33,7 +32,7 @@ class TestGenericUsecase(TestCase):
             "content": "FILLER CONTENT",
             "visibility": None})
         return template
-    def generic_usecase(self, target='/author/posts', data=" "):
+    def generic_usecase(self, target='/', data=" "):
         url = (target)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_202_OK)

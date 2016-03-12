@@ -6,10 +6,11 @@ from friendship.models import Friend, Follow
 from api.models import Post, Image, Comment, Author
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
 from rest_framework.decorators import api_view
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from api.serializers import PostSerializer
 from rest_framework.response import Response
-
+from django.template import loader
+from django.template import RequestContext
 
 
 
@@ -23,9 +24,14 @@ def handle_uploaded_file(f):
 
 
 def get_posts(request):
-    latest_post_list = Post.objects.filter(
-        Q(visibility='PU') |
-        Q(author=Author.objects.get(user=request.user)))
+    print request.user
+    if request.user.is_anonymous():
+        latest_post_list = Post.objects.filter(
+            Q(visibility='PU'))
+    else:
+        latest_post_list = Post.objects.filter(
+            Q(visibility='PU') |
+            Q(author=Author.objects.get(user=request.user)))
     return latest_post_list
 
 
@@ -131,9 +137,22 @@ def friend_mgnt(request):
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
+
         context = {
             'latest_post_list': latest_post_list
         }
+
+        if request.method == 'POST':
+            print
+            values = request.POST.getlist('identity')
+            print values
+
+            for post in latest_post_list:
+                for identity in values:
+                    if str(identity) == str(post.identity):
+                        post.delete()
+
+            return redirect('posts:post_mgnt')
         return render(request, 'posts/post_mgnt.html', context)
 
 
@@ -200,36 +219,36 @@ def delete_post(request, identity):
 
 
 def post_detail(request, identity):
-    print identity
-    #identity = Post.objects.get(identity=identity).identity
-    print identity
-    
-    post = get_object_or_404(Post, identity='047f6a63-0174-4c69-ac50-633ea1207766')
-    print post
-    comment = Comment.objects.create(post=post, published=timezone.now())
+    #print identity
+
+
+
+    post = get_object_or_404(Post, identity=identity)
+    #comment = Comment.objects.create(post=post, published=timezone.now())
     comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
-        cform = CommentForm(request.POST, instance=comment)
+        form = PostForm(request.POST)
+        cform = CommentForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
+            print post.author
             post.published_date = timezone.now()
             post.save()
             # the "identity" part must be the same as the P<"identity" in url.py
-            return redirect('posts:detail', identity=post.pk)
+            #return redirect('posts:detail', identity=post.pk)
         elif cform.is_valid():
             comment = cform.save(commit=False)
             comment.published = timezone.now()
+            comment.author = Author.objects.get(user=request.user)
             comment.post=post
             comment.save()
-            return redirect('posts:detail', identity=post.pk)                
+            #return redirect('posts:detail', identity=post.pk)                
     else:
-        form = PostForm(instance=post)
-        cform = CommentForm(instance=comment)
+        print post
+        form = PostForm(initial={'content': post.content})
+        cform = CommentForm()
     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
-
-
 
 # @api_view(['GET'])
 # def post_detail(request, identity):
