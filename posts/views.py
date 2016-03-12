@@ -24,9 +24,14 @@ def handle_uploaded_file(f):
 
 
 def get_posts(request):
-    latest_post_list = Post.objects.filter(
-        Q(visibility='PU') |
-        Q(author=Author.objects.get(user=request.user)))
+    print request.user
+    if request.user.is_anonymous():
+        latest_post_list = Post.objects.filter(
+            Q(visibility='PU'))
+    else:
+        latest_post_list = Post.objects.filter(
+            Q(visibility='PU') |
+            Q(author=Author.objects.get(user=request.user)))
     return latest_post_list
 
 
@@ -222,7 +227,7 @@ def post_detail(request, identity):
 
     post = get_object_or_404(Post, identity=identity)
     #comment = Comment.objects.create(post=post, published=timezone.now())
-    #comments = Comment.objects.select_related().filter(post=identity)
+    comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
         form = PostForm(request.POST)
         cform = CommentForm(request.POST)
@@ -245,7 +250,7 @@ def post_detail(request, identity):
         print post
         form = PostForm(initial={'content': post.content})
         cform = CommentForm()
-    return render(request, 'posts/detail.html', {'post': post, 'comments': cform, 'form': form, 'cform': cform})
+    return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform})
 
 # @api_view(['GET'])
 # def post_detail(request, identity):

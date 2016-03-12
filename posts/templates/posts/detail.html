@@ -10,7 +10,7 @@
 </div>
 <div class="comments">
     {% for comment in comments %}
-    <p>{{ comment.comment_text|urlize|linebreaks }}</p>
+    <p>{{ comment.comment|urlize|linebreaks }}</p>
     {% endfor %}
 </div>
 <button type=button id = f1 onclick="nextE();">Edit</button>

@@ -98,8 +98,9 @@ MARKDOWN_DEUX_STYLES = {
 SITE_ID = 3
 
 # After log in go to this webpage
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/posts/"
 LOGIN_URL = "/account/login"
+PUBLIC_URL = "/posts/"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -168,7 +169,7 @@ REST_FRAMEWORK = {
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = '/Users/alain/workspace/csvm/~04/project/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/home/shawn/Desktop/404/CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 
