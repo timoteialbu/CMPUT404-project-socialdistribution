@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from mysite.views import Index
-
 from django.conf import settings
 from django.conf.urls.static import static
 
