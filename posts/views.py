@@ -200,49 +200,24 @@ def friend_mgnt(request):
     return render(request, 'posts/friend_mgnt.html', context)
 
 
-def post_mgnt(request, identity = ""):
+def post_mgnt(request):
         latest_post_list = get_posts(request)
 
         context = {
             'latest_post_list': latest_post_list
         }
-        '''
-        print
-        # get what are clicked
-        full_path = request.get_full_path()
-
-        if '?' in full_path:
-            id_string = full_path[full_path.index("?")+1:]
-
-            identities = id_string.split("identity=")
-
-            for i in range(len(identities)/2):
-                identities.pop(len(identities)-1-2*i)
-            print identities
-
-        #for
-        #latest_post_list[2].delete()
-
-        return render(request, 'posts/post_mgnt.html', context)
-        '''
 
         if request.method == 'POST':
-            #form = UploadImgForm(request.POST, request.FILES)
-            #if form.is_valid():
-             #   img = form.save(commit=False)
-             #   img.author = Author.objects.get(user=request.user)
-             #   img.published = timezone.now()
-             #   img.save()
             print
-            #print request.POST
-
             values = request.POST.getlist('identity')
             print values
 
-            return render(request, 'posts/post_mgnt.html', context)
-        else:
-            form = UploadImgForm()
+            for post in latest_post_list:
+                for identity in values:
+                    if str(identity) == str(post.identity):
+                        post.delete()
 
+            return redirect('posts:post_mgnt')
         return render(request, 'posts/post_mgnt.html', context)
 
 
