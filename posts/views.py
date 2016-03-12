@@ -282,3 +282,16 @@ def create_img(request):
     else:
         form = UploadImgForm()
 
+
+def create_img(request):
+    if request.method == 'POST':
+        form = UploadImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            img = form.save(commit=False)
+            img.author = Author.objects.get(user=request.user)
+            img.published = timezone.now()
+            img.save()
+            return redirect('posts:index')
+    else:
+        form = UploadImgForm()
+    return render(request, 'posts/edit_img.html', {'form': form})
