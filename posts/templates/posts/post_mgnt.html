@@ -1,7 +1,7 @@
+{% load markdown_deux_tags %}
 <form action = {% url 'posts:post_mgnt' %} method = "POST">{% csrf_token %}
 
 <label>You want to delete multiple posts?</label>
-<br>
 
 <br><br>
 
@@ -11,10 +11,15 @@
 {% for post in latest_post_list %}
 	<tr>
 		<td><input type="checkbox" name = "identity" value = {{post.identity}}></td>
-		<td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
+        {% if post.contentType == 'text/plain' %}
+	        <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
+        {% else %}
+            <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|markdown}}</a></td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>
+
 
 {% else %}
     <p>No posts are available!</p>
