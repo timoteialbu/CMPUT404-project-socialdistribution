@@ -1,47 +1,16 @@
 {% load markdown_deux_tags %}
-<script type="text/javascript">
-	function doa() {
-		var action  = document.getElementById("selection");
-		var targets = document.getElementsByTagName("input");
+<form action = {% url 'posts:post_mgnt' %} method = "POST">{% csrf_token %}
 
-		if (action.value != "none") { 
-			if (targets.length == 0) {
-				alert("You cannot delete or authorize anything.");
-			}
-			for (var i = 0; i < targets.length; i++) {
-				if (targets[i].checked) {
-					alert("I want to delete post with identity = " + targets[i].value);
-
-
-				}
-			}
-		}
-		else {
-			alert("do nothing!");
-		}
-	}
-</script>
-
-
-<form action = {% url 'posts:post_mgnt' %} method="get">
-<label>You want to delete or authorize posts?</label>
-<br>
-
-<select id = "selection">
-  <option value="none">----------------</option>
-  <option value="delete_posts">Delete Posts</option>
-  <option value="authorize_posts">Authorize Posts</option>
-</select>
+<label>You want to delete multiple posts?</label>
 
 <br><br>
 
 {% if latest_post_list %}
 
 <table sytle = "width:100%">
-
 {% for post in latest_post_list %}
 	<tr>
-		<td><input type="checkbox" value = {{post.identity}}></td>
+		<td><input type="checkbox" name = "identity" value = {{post.identity}}></td>
         {% if post.contentType == 'text/plain' %}
 	        <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
         {% else %}
@@ -51,13 +20,14 @@
     {% endfor %}
 </table>
 
+
 {% else %}
     <p>No posts are available!</p>
 {% endif %}
 
 	<br>
 
-	<button type="submit" value = "confirm" onclick="doa();">Confirm</button>
+	<button type="submit" value = "confirm">Delete Selected Post</button>
 </form>
 
 <br><br>
@@ -66,3 +36,11 @@
 		<button type="submit">Back</button>
 </form>
 
+
+{% comment %}
+<form action = {% url 'posts:post_mgnt' %}  method="DELETE">
+   <label for="since">Since</label>
+   <input id="since" name="since" type="datetime"/>
+   <button type="submit">Delete</button>
+</form>
+{% endcomment %}
