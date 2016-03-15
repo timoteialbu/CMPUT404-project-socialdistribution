@@ -165,9 +165,23 @@ def post_mgnt(request):
 def index(request):
     latest_post_list = get_posts(request)
     latest_img_list = Image.objects.order_by('-published')[:5]
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = Author.objects.get(user=request.user)
+            post.published = timezone.now()
+            post.save()
+            # future ref make to add the namespace ie "posts"
+            return redirect('posts:detail', identity=post.pk)
+    else:
+        form = PostForm()
+    latest_post_list = get_posts(request)
+    latest_img_list = Image.objects.order_by('-published')[:5]
     context = {
         'latest_image_list': latest_img_list,
-        'latest_post_list': latest_post_list
+        'latest_post_list': latest_post_list,
+        'form': form
     }
     return render(request, 'posts/index.html', context)
 
@@ -183,35 +197,6 @@ def index(request):
 
 
 
-def create_post(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = Author.objects.get(user=request.user)
-            post.published = timezone.now()
-            post.save()
-            # future ref make to add the namespace ie "posts"
-            return redirect('posts:detail', identity=post.pk)
-    else:
-        form = PostForm()
-    return render(request, 'posts/edit_post.html', {'form': form})
-
-
-def edit_post(request, identity):
-    post = get_object_or_404(Post, pk=identity)
-    if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = Author.objects.get(user=request.user)
-            post.published_date = timezone.now()
-            post.save()
-            # the "identity" part must be the same as the P<"identity" in url.py
-            return redirect('posts:detail', identity=post.pk)
-    else:
-        form = PostForm(instance=post)
-    return render(request, 'posts/edit_post.html', {'form': form})
 
 
 def delete_post(request, identity):

@@ -3,48 +3,76 @@
 {% block content %}
 
 {% load markdown_deux_tags %}
-{% if latest_post_list %}
-<ul>
-    {% for post in latest_post_list %}
-	<li>
-    {% if post.contentType == 'text/plain' %}
-	    <a href="{% url 'posts:detail' post.identity %}">{{ post.content|linebreaks }}</a>
-    {% else %}
-        <a href="{% url 'posts:detail' post.identity %}">{{ post.content|markdown }}</a>
-    {% endif %}
-    </li>
-    {% endfor %}
-</ul>
-
-{% else %}
-    <p>No posts are available!</p>
-{% endif %}
-
-{% if latest_image_list %}
+<script>
+ function makePost(){
+     var n = 0;
+     var flip = function(){
+	 if(n % 2){
+	     document.getElementById('makePost').style.display="none";	
+	     document.getElementById('showContent').style.display="block";	
+	 }
+	 else{
+	     document.getElementById('makePost').style.display="block";	
+	     document.getElementById('showContent').style.display="none";	
+	 }
+	++n;
+     }
+     return flip;
+ }
+ var next = makePost();
+</script>
+<div id="makePost" style="display: none">
+    <h1>New Content</h1>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+	    {{ form.get_privacy_display}}
+        <button type="submit" value="save">Save</button>
+    </form>
+    <button type=button id = f2 onclick="next();">Back</button>
+</div>
+<div id="showContent">
+    {% if latest_post_list %}
     <ul>
-    {% for image in latest_image_list %}
-	<img src={{ image.img.url }} alt="My_image"/>
-    {% endfor %}
+        {% for post in latest_post_list %}
+	    <li>
+        {% if post.contentType == 'text/plain' %}
+	        <a href="{% url 'posts:detail' post.identity %}">{{ post.content|linebreaks }}</a>
+        {% else %}
+            <a href="{% url 'posts:detail' post.identity %}">{{ post.content|markdown }}</a>
+        {% endif %}
+        </li>
+        {% endfor %}
     </ul>
-{% else %}
-    <p>No images are available!</p>
-{% endif %}
 
-{% if user.is_authenticated %}
-<form action={% url 'posts:create_post' %} method="get">
-        <button type="submit" value="edit_post">Create New Post</button>
-</form>
+    {% else %}
+        <p>No posts are available!</p>
+    {% endif %}
 
-<form action={% url 'posts:create_img' %} method="get">
-		<button type="submit" value="create_img" >Upload Image</button>
-</form>
+    {% if latest_image_list %}
+        <ul>
+        {% for image in latest_image_list %}
+	    <img src={{ image.img.url }} alt="My_image"/>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No images are available!</p>
+    {% endif %}
 
-<form action={% url 'posts:post_mgnt' %} method="get">
-        <button type="submit" value="delete_post">Manage Posts</button>
-</form>
+    {% if user.is_authenticated %}
 
-<form action={% url 'posts:friend_mgnt' %} method="get">
-		<button type="submit" value="friend_mgnt" >Manage Friends</button>
-</form>
-{% endif %}
+    <button type=button id = f1 onclick="next();">Create New Post</button>
+
+    <form action={% url 'posts:create_img' %} method="get">
+		    <button type="submit" value="create_img" >Upload Image</button>
+    </form>
+
+    <form action={% url 'posts:post_mgnt' %} method="get">
+            <button type="submit" value="delete_post">Manage Posts</button>
+    </form>
+
+    <form action={% url 'posts:friend_mgnt' %} method="get">
+		    <button type="submit" value="friend_mgnt" >Manage Friends</button>
+    </form>
+    {% endif %}
+</div>
 {% endblock %}
