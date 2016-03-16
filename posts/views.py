@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow, FriendshipRequest
-from api.models import Post, Image, Comment, Author
+from api.models import *
 from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, HttpResponseRedirect
@@ -159,6 +159,11 @@ def post_mgnt(request):
 
             return redirect('posts:post_mgnt')
         return render(request, 'posts/post_mgnt.html', context)
+
+def nodes(request):
+    nodes_list = Node.objects.all()
+    context = {'nodes_list': nodes_list}
+    return render(request, 'posts/nodes.html', context)
 
 
 # prob should change this to a form view

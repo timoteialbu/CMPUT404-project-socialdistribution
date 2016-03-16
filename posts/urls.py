@@ -12,9 +12,9 @@ urlpatterns = [
 
     url(r'^friend_mgnt/$', views.friend_mgnt, name='friend_mgnt'),
 
+    url(r'^nodes/$', views.nodes, name='nodes'),
+
     url(r'^(?P<identity>[^/]+)/$', views.post_detail, name='detail'),
-
-
 
     url(r'^(?P<identity>[^/]+)$', views.delete_post, name='delete_post'),
 

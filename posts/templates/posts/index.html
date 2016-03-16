@@ -75,6 +75,9 @@
     <form action={% url 'posts:friend_mgnt' %} method="get">
 		    <button type="submit" value="friend_mgnt" >Manage Friends</button>
     </form>
+    <form action={% url 'posts:nodes' %} method="get">
+		    <button type="submit" value="nodes" >Observe Nodes</button>
+    </form>    
     {% endif %}
 </div>
 {% endblock %}
