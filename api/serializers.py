@@ -10,10 +10,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    # author = AuthorSerializer(source='author')
+    author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = ('comment', 'contentType', 'published', 'id',)
+        fields = ('author', 'comment', 'contentType', 'published', 'identity',)
 
 class UserSerializer(serializers.ModelSerializer):
     #userinfo = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
@@ -36,15 +36,15 @@ class PostSerializer(serializers.ModelSerializer):
     # TODO change source to = some user serializer with ID, host,displayname
     # url and github (see api protocols)
     author = AuthorSerializer(read_only=True)
-    comment = CommentSerializer(read_only=True)
+    comment = CommentSerializer(many=True, read_only=False)
+    # comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
-    
     class Meta:
         model = Post
         fields = (
             'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
-            'published', 'identity', 'visibility', 'comment',
+            'comment', 'published', 'identity', 'visibility',
         )
 
 
