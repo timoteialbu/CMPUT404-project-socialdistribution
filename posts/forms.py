@@ -8,13 +8,12 @@ from api.models import Post, Image, Comment
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('content', 'visibility')
+        fields = ('content', 'visibility', 'contentType', 'title')
 
 class CommentForm(forms.ModelForm):
 	class Meta:
 		model = Comment
-		fields = ('comment',)
-
+		fields = ('comment', 'contentType')
 
 class UploadImgForm(forms.ModelForm):
     class Meta:
@@ -44,6 +43,7 @@ class FriendRequestForm(forms.Form):
         for field_name in names:
             self.fields[field_name] = forms.CharField(max_length=32)
             self.fields[field_name] = forms.ChoiceField(
+                label=field_name,
                 choices=CHOICES,
                 widget=forms.RadioSelect()
             )

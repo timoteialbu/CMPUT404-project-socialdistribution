@@ -36,8 +36,6 @@ After Cloning
 
 9) Click on the site you just created. Look at the address bar and notice the number: http://127.0.0.1:8000/admin/sites/site/THIS.NUMBER/. Go to mysite/settings.py and look for the SITE_ID variable. Make sure that variable is set to THIS.NUMBER. 
 
-8) All done, now navigate to:
->http://127.0.0.1:8000/
 
 Contributors / Licensing
 ========================
@@ -52,4 +50,5 @@ Contributors:
     Olexiy Berjanskii
     Erin Torbiak
     Abram Hindle
+    Kyle Hayward
 

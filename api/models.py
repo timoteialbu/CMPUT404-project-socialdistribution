@@ -20,11 +20,14 @@ class Author(models.Model):
     displayName = models.CharField(max_length=30)
     url = models.URLField()
     github = models.URLField()
+    def getUserName(self):
+        u = User.objects.get(user)
+        return u.username
 
 class Post(models.Model):
     author = models.ForeignKey(
         Author, related_name='posts', on_delete=models.CASCADE)
-    title = models.TextField(max_length=100)
+    title = models.TextField(max_length=100, default="Untitled")
     source = models.URLField(max_length=200, blank=True)
     origin = models.URLField(max_length=200, blank=True)
     description = models.TextField(max_length=100, blank=True)
@@ -47,13 +50,15 @@ class Post(models.Model):
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
     visibility = models.CharField(
-        max_length=10, choices=PRIVACY_CHOICES, default='ME')
+        max_length=10, choices=PRIVACY_CHOICES, default='PRIVATE')
 
     # def save(self, *args, **kwargs):
     # mights be handy for setting publish and such
     def __unicode__(self):
         return self.content[:20] + "..."
-
+    def getDisplayName(self):
+        a = Author.objects.get(author)
+        return a.getUserName
 
 def image_file_name(instance, filename):
     return '/'.join(['images/uploads', str(uuid.uuid4()), filename])
@@ -64,7 +69,7 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.TextField(max_length=400)
     published = models.DateTimeField('date published')
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     CONTENT_CHOICES = (
                       ('text/plain', 'Plain text'),
                       ('text/x-markdown', 'Markdown'),
@@ -84,3 +89,14 @@ class Image(models.Model):
 
     def __unicode__(self):
         return '%s' % (self.img)
+
+
+class Node(models.Model):
+    title = models.CharField(max_length=100)
+    location = models.URLField(max_length=200)
+    #identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    def __unicode__(self):
+        return '%s' % (self.title)
+
+
+

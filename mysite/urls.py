@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from mysite.views import Index
-
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -14,8 +13,9 @@ urlpatterns = patterns('',
     url(r'^$', Index.as_view(), name='index'),
     url(r'^posts/', include('posts.urls', namespace="posts")),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/', include('allauth.urls')),
+    url(r'^account/', include('allauth.urls')),
     url(r'^api/', include('api.urls')),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 )
 
 

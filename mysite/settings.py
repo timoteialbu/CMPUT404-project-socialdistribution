@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
     # The Django sites framework is required
     'django.contrib.sites',
     'allauth',
@@ -79,17 +80,28 @@ INSTALLED_APPS = (
     'friendship',
     'rest_framework',
     'api',
+    'markdown_deux',
 )
+
+MARKDOWN_DEUX_STYLES = {
+    "default": {
+        "extras": {
+            "code-friendly": None,
+        },
+        "safe_mode": "escape",
+    },
+}
 
 # This ID comes from the Django admin page
 # After adding a new site, click on it. Look in the browsers
 # address space and there will be '/#/' where # is an int
 # Set this # to the SITE_ID variable below
-SITE_ID = 2
+SITE_ID = 3
 
 # After log in go to this webpage
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/posts/"
 LOGIN_URL = "/account/login"
+PUBLIC_URL = "/posts/"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -158,9 +170,7 @@ REST_FRAMEWORK = {
 
 
 ######CHANGE!!! Run my_setup.py
-
-MEDIA_ROOT = '/home/kyle/Documents/cmput404/CMPUT404-project-socialdistribution/media/'
-
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
 

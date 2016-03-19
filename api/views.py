@@ -1,6 +1,5 @@
-from api.models import Post, Author
-from api.post_serializers import PostSerializer
-from api.post_serializers import AuthorSerializer
+from api.models import *
+from api.serializers import *
 from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -75,6 +74,10 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
         requestId = self.kwargs.get(self.lookup_url_kwarg)
         # TODO Should be a .get but w/e
         return Post.objects.filter(identity=uuid.UUID(requestId))
+
+    def perform_create(self, serializer_class):
+        author = Author.objects.filter(user=self.request.user)
+        serializer_class.save(author=author)
 
 
     
