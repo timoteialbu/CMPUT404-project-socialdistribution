@@ -218,7 +218,7 @@ def post_detail(request, identity):
     post = get_object_or_404(Post, identity=identity)
     comments = Comment.objects.select_related().filter(post=identity)
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, instance=post)
         cform = CommentForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
@@ -242,7 +242,6 @@ def post_detail(request, identity):
     isAuthor = False
     if(isAuthenticated):
         isAuthor = Author.objects.get(user=request.user).user == post.author.user
-        print isAuthor
     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 
