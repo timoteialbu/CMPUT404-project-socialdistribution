@@ -31,6 +31,7 @@ urlpatterns = [
         'rest_framework.urls',
         namespace='rest_framework')
         ),
+    url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
     url(r'^author/posts/$', views.UserPostList.as_view()),
     url(r'^posts/$', views.PostList.as_view()),
     url(r'^author/(?P<uuid>[^/]+)/posts$', views.AuthorPostList.as_view()),
