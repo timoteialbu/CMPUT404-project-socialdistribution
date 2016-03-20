@@ -15,7 +15,7 @@ post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-sig
 # TODO add UUID to User
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     host = models.URLField()
     displayName = models.CharField(max_length=30)
     url = models.URLField()
@@ -99,7 +99,7 @@ class Node(models.Model):
         return '%s' % (self.title)
 
 class Friends(models.Model):
-    uuid = models.UUIDField()
+    id = models.UUIDField(primary_key=True)
 
     def __unicode__(self):
         return '%s' % self.title

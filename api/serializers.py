@@ -8,7 +8,7 @@ from rest_framework import pagination
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ('uuid', 'host', 'displayName', 'url', 'github')
+        fields = ('id', 'host', 'displayName', 'url', 'github')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friends
-        fields = ('uuid',)
+        fields = ('id',)
 
 
 
