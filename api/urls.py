@@ -34,7 +34,17 @@ urlpatterns = [
     url(r'^author/posts/$', views.UserPostList.as_view()),
     url(r'^posts/$', views.PostList.as_view()),
     url(r'^author/(?P<uuid>[^/]+)/posts$', views.AuthorPostList.as_view()),
+    url(r'^posts/(?P<uuid>[^/]+)/comments$', views.CommentList.as_view()),
     url(r'^posts/(?P<uuid>[^/]+)/$', views.PostDetail.as_view()),
+    # TODO: Ask the service if author id is friends. In the "authors" include
+    # TODO: the 2 authors to compare
+    url(r'^friends/(?P<uuid>[^/]+)/$', views.FriendRelationship.as_view()),
+    # TODO: Ask the service if anyone in the list is a friend
+    # TODO: Similar to above, but in this case the author asking
+    # TODO: for this information is in "author" and the "authors" contains a list
+    url(r'^friends/(?P<friend1_uuid>[^/]+)/(?P<friend2_uuid>[^/]+)/$', views.FriendsCheck.as_view()),
+    # TODO: Make a friend request
+    #url(r'^friendrequest/(?P<uuid>[^/]+)/$', views.FriendRequest.as_view()),
     # url(r'^author/$', views.UserList.as_view()),
     # url(r'^author/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 ]
