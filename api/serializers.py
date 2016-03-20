@@ -13,7 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = ('author', 'comment', 'contentType', 'published', 'identity',)
+        fields = ('author', 'comment', 'contentType', 'published', 'id',)
 
 class UserSerializer(serializers.ModelSerializer):
     #userinfo = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 #     class Meta:
 #         model = User
-#         fields = ('identity', 'username', 'posts')
+#         fields = ('id', 'username', 'posts')
 
      
 class PostSerializer(serializers.ModelSerializer):
@@ -38,13 +38,24 @@ class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     comment = CommentSerializer(many=True, read_only=False)
     # comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    def create(self, validated_data):
+        author_data = validated_data.pop('author')
+        author =Author.objects.filter(uuid=author_data["uuid"])
+        post = Post.objects.create(author=author, **validated_data)
+        post = setid(post)
+        return post
+
+    def setid(self, post_data):
+        post_data['id'] = post['id']
+        post_data.pop('id', None)
+        return post_data
 
     class Meta:
         model = Post
         fields = (
             'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
-            'comment', 'published', 'identity', 'visibility',
+            'comment', 'published', 'id', 'visibility',
         )
 
 

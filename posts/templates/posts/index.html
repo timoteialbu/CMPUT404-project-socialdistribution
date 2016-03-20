@@ -36,10 +36,10 @@
         {% for post in latest_post_list %}
 	    <li>
         {% if post.contentType == 'text/plain' %}
-            <a href="{% url 'posts:detail' post.identity %}" class="title">{{post.title}}</a>
+            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
 	        <p>{{ post.content|linebreaks }}</p>
         {% else %}
-            <a href="{% url 'posts:detail' post.identity %}" class="title">{{post.title}}</a>
+            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             <p>{{ post.content|markdown }}</p>
         {% endif %}
         </li>

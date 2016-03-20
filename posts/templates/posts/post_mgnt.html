@@ -13,11 +13,11 @@
 <table sytle = "width:100%">
 {% for post in latest_post_list %}
 	<tr>
-		<td><input type="checkbox" name = "identity" value = {{post.identity}}></td>
+		<td><input type="checkbox" name = "id" value = {{post.id}}></td>
         {% if post.contentType == 'text/plain' %}
-	        <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|linebreaks}}</a></td>
+	        <td><a href="{% url 'posts:detail' post.id %}">{{post.content|linebreaks}}</a></td>
         {% else %}
-            <td><a href="{% url 'posts:detail' post.identity %}">{{post.content|markdown}}</a></td>
+            <td><a href="{% url 'posts:detail' post.id %}">{{post.content|markdown}}</a></td>
         {% endif %}
     </tr>
     {% endfor %}

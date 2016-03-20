@@ -35,7 +35,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     # TODO categories
     categories = ["web", "tutorial"]
-    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     PRIVACY_CHOICES = (
                       ('PUBLIC', 'Public'),
                       ('FOAF', 'Friend of a Friend'),
@@ -69,7 +69,7 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comment')
     comment = models.TextField(max_length=400)
     published = models.DateTimeField('date published')
-    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     CONTENT_CHOICES = (
                       ('text/plain', 'Plain text'),
                       ('text/x-markdown', 'Markdown'),
@@ -94,7 +94,7 @@ class Image(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=100)
     location = models.URLField(max_length=200)
-    #identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     def __unicode__(self):
         return '%s' % (self.title)
 
