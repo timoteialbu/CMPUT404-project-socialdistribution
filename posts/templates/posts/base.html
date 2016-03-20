@@ -227,11 +227,11 @@
 
 <div id='cssmenu'>
 <ul>
-   <li><a href='/posts/'><span>Home</span></a></li>
-   <li><a href='#'><span>Profile</span></a></li>
     {% if user.is_authenticated %}
-        <li><a href='/account/logout'><span>Log out</span></a></li>
-    
+      <li><a href='/posts/'><span>Home</span></a></li>
+      <li><a href='#'><span>Profile</span></a></li>
+      <li><a href='/account/logout'><span>Log out</span></a></li>
+
     {% else %}
       <li style="float:right; color:white">
         <a href='/account/login'>
@@ -240,14 +240,15 @@
       </li>
       <li style="float:right; color:white">
         Password:<br>
-        <input type = "text">
+        <input type = "text"><br>
+        <a class = "default" href="/account/password/reset/">Forgot Password?
+        </a>
       </li>
       <li style="float:right; color:white">
         Username:<br>
-        <input type = "text">
+        <input type = "text"><br>
+        <input type = "checkbox">Remember me
       </li>
-
-
     {% endif %}
 
 </ul>
