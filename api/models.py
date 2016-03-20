@@ -98,5 +98,18 @@ class Node(models.Model):
     def __unicode__(self):
         return '%s' % (self.title)
 
+class Friends(models.Model):
+    uuid = models.UUIDField()
+
+    def __unicode__(self):
+        return '%s' % self.title
+
+
+class FriendsPair(models.Model):
+    authors = list()
+    friends = models.BooleanField()
+    def __unicode__(self):
+        return '%s' % self.title
+
 
 
