@@ -103,6 +103,8 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = AuthorSerializer
 
+#class AuthorView(generics.
+
 
 class FriendRelationship(generics.ListCreateAPIView):
     """

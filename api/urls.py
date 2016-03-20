@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^author/posts/$', views.UserPostList.as_view()),
     url(r'^posts/$', views.PostList.as_view()),
     url(r'^author/(?P<uuid>[^/]+)/posts$', views.AuthorPostList.as_view()),
+    # url(r'^author/(?P<uuid>[^/]+)/$', views.AuthorDetail.as_view()),
     url(r'^posts/(?P<uuid>[^/]+)/comments$', views.CommentList.as_view()),
     url(r'^posts/(?P<uuid>[^/]+)/$', views.PostDetail.as_view()),
     # TODO: Ask the service if author id is friends. In the "authors" include
