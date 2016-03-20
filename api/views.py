@@ -72,7 +72,8 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         postId = self.kwargs.get(self.lookup_url_kwarg)
-        return Post.objects.filter(identity=postId)
+        return Post.objects.filter(id=postId)
+
 
     def perform_create(self, serializer_class):
         author = Author.objects.filter(user=self.request.user)

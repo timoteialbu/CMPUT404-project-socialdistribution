@@ -77,8 +77,8 @@
 <br><br>
 
 {%if isAuthor %}
-<form action = {% url 'posts:delete_post' post.identity %} method = "POST">{% csrf_token %}
-    <button type="submit" name = "identity" value = {{post.identity}}>
+<form action = {% url 'posts:delete_post' post.id %} method = "POST">{% csrf_token %}
+    <button type="submit" name = "id" value = {{post.id}}>
     Delete Selected Post
     </button>
 </form>

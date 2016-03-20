@@ -159,7 +159,7 @@ class TestUserProfiles(TestCase):
     def setup(self,baseurl=BASEURL):
         self.baseurl = baseurl
     def test_profile_consist(self):
-        """- As an author, I want a consistent identity per server"""
+        """- As an author, I want a consistent id per server"""
     def test_profile_friends(self):
         """- As an author, my server will know about my friends"""
     #def test_profile_browse(self):
@@ -201,7 +201,7 @@ class TestUserProfiles(TestCase):
         """- As an author I should be able to browse the posts of others depending on my status"""
 
         # User Profiles
-        """- As an author, I want a consistent identity per server"""
+        """- As an author, I want a consistent id per server"""
         """- As an author, my server will know about my friends"""
 
         #---------------- v TODO v ---------------
