@@ -3,8 +3,10 @@ from api.serializers import *
 from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from friendship.models import Friend
 from django.db.models import Q
 import uuid
+import copy
 
 
 class UserPostList(generics.ListAPIView):
@@ -100,3 +102,54 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = AuthorSerializer
+
+
+class FriendRelationship(generics.ListCreateAPIView):
+    """
+    Returns your friend relationship with a certain author
+    http://service/friends/(?P<uuid>[^/]+)
+    """
+    queryset = Author.objects.all()
+    serializer_class = FriendSerializer
+
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        # Get the uuid from the url
+        request_id = self.kwargs.get(self.lookup_url_kwarg)
+        # Find the author object with that uuid
+        username = Author.objects.get(uuid=request_id)
+        # Get all the friends
+        all_friends = Friend.objects.friends(username.user)
+        # Get the authors objects version of those friends objects
+        all_authors = Author.objects.filter(user__in=all_friends)
+        return all_authors
+
+
+class FriendsCheck(generics.ListCreateAPIView):
+    """
+    Returns your friend relationship with a certain author
+    http://service/friends/(?P<uuid>[^/]+)/(?P<uuid>[^/]+)
+    """
+    queryset = Author.objects.all()
+    serializer_class = FriendsCheckSerializer()
+
+    lookup_url_kwarg_1 = 'friend1_uuid'
+    lookup_url_kwarg_2 = 'friend2_uuid'
+
+    def get_queryset(self):
+        # Get the uuid from the url
+        request_id_1 = self.kwargs.get(self.lookup_url_kwarg_1)
+        request_id_2 = self.kwargs.get(self.lookup_url_kwarg_2)
+        # Find the author object with that uuid
+        username_1 = Author.objects.get(uuid=request_id_1)
+        username_2 = Author.objects.get(uuid=request_id_2)
+        # Check if friends
+        result = Friend.objects.are_friends(username_1.user, username_2.user)
+        authors2 = list()
+        authors2.append(request_id_1)
+        authors2.append(request_id_2)
+        friend_pair = FriendsPair(authors2, result)
+        resultlist = list()
+        resultlist.append(friend_pair)
+        return resultlist

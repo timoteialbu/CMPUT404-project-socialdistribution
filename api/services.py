@@ -11,4 +11,4 @@ def get_posts(user, nodes):
             post_list.append(post)
     return post_list
         
-        
+
