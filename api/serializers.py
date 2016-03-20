@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Post, Author, Comment
+from api.models import Post, Author, Comment, Friends, FriendsPair
+from friendship.models import Friend
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -20,16 +21,18 @@ class UserSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(source='author')
     class Meta:
         model = User
-        fields = ('author')
+        fields = ('author',)
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friends
+        fields = ('uuid',)
 
 
-# class AuthorSerializer(serializers.ModelSerializer):
-#     posts = serializers.PrimaryKeyRelatedField(
-#         many=True, queryset=Post.objects.all())
-
-#     class Meta:
-#         model = User
-#         fields = ('identity', 'username', 'posts')
+class FriendsCheckSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FriendsPair
+        fields = ('authors', 'friends',)
 
      
 class PostSerializer(serializers.ModelSerializer):
@@ -37,6 +40,7 @@ class PostSerializer(serializers.ModelSerializer):
     # url and github (see api protocols)
     author = AuthorSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
+
     
     class Meta:
         model = Post
