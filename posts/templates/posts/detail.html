@@ -9,6 +9,7 @@
         {{ post.pub_date }}
     </div>
     {% endif %}
+    <h2>{{ post.title}}</h2>
     <p>{{ post.content|urlize|linebreaks }}</p>
     <p>{{ post.get_privacy_display }}</p>
 </div>

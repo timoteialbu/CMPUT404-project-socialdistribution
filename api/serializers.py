@@ -37,6 +37,7 @@ class PostSerializer(serializers.ModelSerializer):
     # url and github (see api protocols)
     author = AuthorSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
+
     
     class Meta:
         model = Post
