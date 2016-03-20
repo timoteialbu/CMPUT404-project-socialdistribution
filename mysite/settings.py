@@ -2,6 +2,7 @@
 import os
 import socket
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # openshift is our PAAS for now.
@@ -156,10 +157,10 @@ REST_FRAMEWORK = {
     #'DEFAULT_PAGINATION_CLASS':
     #    'CMPUT404-project-socialdistribution.api.pagination.CustomPagination',
     #'PAGE_SIZE': 100
+    # 'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPagination'
+
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
-
-
 }
 
 
