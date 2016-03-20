@@ -5,7 +5,6 @@ from friendship.models import Friend
 from rest_framework import pagination
 
 
-
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
@@ -54,12 +53,13 @@ class PostSerializer(serializers.ModelSerializer):
     # next = serializers.SerializerMethodField('next_page')
     size = serializers.SerializerMethodField('comment_size')
     next = serializers.SerializerMethodField('next_page')
+    query = serializers.SerializerMethodField('query_type')
 
 
     class Meta:
         model = Post
         fields = (
-            'title', 'source', 'origin', 'description',
+            'query', 'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
             'count', 'size', 'next',
             'comments', 'published', 'id', 'visibility',
@@ -89,3 +89,6 @@ class PostSerializer(serializers.ModelSerializer):
 
     def comment_size(self, obj):
         return 5
+
+    def query_type(self, obj):
+        return 'posts'

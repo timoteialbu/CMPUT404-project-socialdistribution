@@ -5,4 +5,4 @@ django-friendship
 djangorestframework
 django-markdown-deux
 docutils
-
+djangorestframework-jwt
