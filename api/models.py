@@ -94,7 +94,7 @@ class Image(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=100)
     location = models.URLField(max_length=200)
-    #id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     def __unicode__(self):
         return '%s' % (self.title)
 
