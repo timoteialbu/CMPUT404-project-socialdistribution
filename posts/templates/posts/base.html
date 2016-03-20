@@ -233,22 +233,27 @@
       <li><a href='/account/logout'><span>Log out</span></a></li>
 
     {% else %}
+
+    <form class="login" method="POST" action="/account/login/">
+
       <li style="float:right; color:white">
-        <a href='/account/login'>
-          <span>Log In</span>
-        </a>
+        <button class="primaryAction" type="submit">Sign In</button>
       </li>
+
       <li style="float:right; color:white">
-        Password:<br>
-        <input type = "text"><br>
-        <a class = "default" href="/account/password/reset/">Forgot Password?
-        </a>
+<p><label for="id_password">Password:</label> <input id="id_password" name="password" placeholder="Password" type="password" /></p>
+<p><label for="id_remember">Remember Me:</label> <input id="id_remember" name="remember" type="checkbox" /></p>
+        <button href="/account/password/reset/">Forgot Password?
+        </button>
       </li>
+      
       <li style="float:right; color:white">
-        Username:<br>
-        <input type = "text"><br>
-        <input type = "checkbox">Remember me
+          <input type='hidden' name='csrfmiddlewaretoken' value='cxjHrP2zhGYLfIPVNArnB9YoFcoNXXZA' />
+  <p><label for="id_login">Username:</label> <input autofocus="autofocus" id="id_login" maxlength="30" name="login" placeholder="Username" type="text" /></p>
       </li>
+
+    </form>
+
     {% endif %}
 
 </ul>
