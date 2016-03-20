@@ -17,7 +17,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('author', 'comment', 'contentType', 'published', 'identity',)
+        fields = ('author', 'comment', 'contentType', 'published', 'id',)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,10 +34,12 @@ class FriendSerializer(serializers.ModelSerializer):
         fields = ('uuid',)
 
 
+
 class FriendsCheckSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendsPair
         fields = ('authors', 'friends',)
+
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -47,10 +49,12 @@ class PostSerializer(serializers.ModelSerializer):
     # comment = CommentSerializer(many=True, read_only=False)
     comments = serializers.SerializerMethodField('paginated_comments')
     # comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     count = serializers.SerializerMethodField('comment_count')
     # next = serializers.SerializerMethodField('next_page')
     size = serializers.SerializerMethodField('comment_size')
     next = serializers.SerializerMethodField('next_page')
+
 
     class Meta:
         model = Post
@@ -58,7 +62,8 @@ class PostSerializer(serializers.ModelSerializer):
             'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
             'count', 'size', 'next',
-            'comments', 'published', 'identity', 'visibility',
+            'comments', 'published', 'id', 'visibility',
+
         )
 
     def paginated_comments(self, obj):
