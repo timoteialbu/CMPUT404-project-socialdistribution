@@ -267,23 +267,20 @@
 <div id='cssmenu'>
 <ul>
     {% if user.is_authenticated %}
-      <li><a >Social Distribution</a></li>
-      <li><a href='/posts/'><span>Home</span></a></li>
-      <li><a href='/profile/'><span>Profile</span></a></li>
-      <li style="float: right"><a href='/account/logout'><span>Log out</span></a></li>
+      <li><a href='/posts/'>Social Distribution</a></li>
+      <li><a href='/posts/profile/'><span>Profile</span></a></li>
       <li><a href='/posts/'><span>Posts</span></a></li>
-      <li><a href='/posts/'><span>Friends</span></a></li>
-      <li><a href='/posts/'><span>Nodes</span></a></li>
+      <li><a href='/posts/friend_mgnt/'><span>Friends</span></a></li>
+      <li><a href='/posts/nodes/'><span>Nodes</span></a></li>
+        <li style="float: right"><a href='/account/logout/'><span>Log out</span></a></li>
       </ul>
       </div>
-      {% block content %}
-      {% endblock %}
 
-
-
-
-
-
+    {% block content %}
+    <!--
+    This is where all the other pages get loaded in
+    -->
+    {% endblock %}
 
     {% else %}
     <li><a style="padding: 3.6em 1em">Social Distribution</a></li>
