@@ -165,7 +165,7 @@ REST_FRAMEWORK = {
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/cshome/timotei/c404/project/djangoproject/media/'
 MEDIA_URL = '/media/'
 
 
@@ -243,3 +243,4 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
 )
+
