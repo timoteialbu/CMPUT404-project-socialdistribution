@@ -14,11 +14,9 @@ urlpatterns = [
 
     url(r'^nodes/$', views.nodes, name='nodes'),
 
+    url(r'^profile/$', views.index, name='index'),
+
     url(r'^(?P<id>[^/]+)/$', views.post_detail, name='detail'),
 
     url(r'^(?P<id>[^/]+)$', views.delete_post, name='delete_post'),
-
-    url(r'^profile/$', views.post_mgnt, name='profile'),
-
-        
 ]
