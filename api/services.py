@@ -1,5 +1,6 @@
 from api.models import *
 from api.serializers import *
+from api.models import Author
 from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,14 +15,14 @@ def friend_relationship(request, uuid):
 
         if request.method == 'GET':
             # Find the author object with that uuid
-            username = Author.objects.get(uuid=uuid)
+            username = Author.objects.get(id=uuid)
             # Get all the friends
             all_friends = Friend.objects.friends(username.user)
             # Get the authors objects version of those friends objects
             all_authors = Author.objects.filter(user__in=all_friends)
             list_return = []
             for i in all_authors:
-                list_return.append(i.uuid)
+                list_return.append(i.id)
             response = {
                 "query": "friends",
                 "authors": list_return
@@ -34,12 +35,9 @@ def friends_check(request, friend1_uuid, friend2_uuid):
         Returns your friend relationship with a certain author
         http://service/friends/(?P<uuid>[^/]+)/(?P<uuid>[^/]+)
         """
-        queryset = Author.objects.all()
-        serializer_class = FriendsCheckSerializer()
-
         # Find the author object with that uuid
-        username_1 = Author.objects.get(uuid=friend1_uuid)
-        username_2 = Author.objects.get(uuid=friend2_uuid)
+        username_1 = Author.objects.get(id=friend1_uuid)
+        username_2 = Author.objects.get(id=friend2_uuid)
         # Check if friends
         result = Friend.objects.are_friends(username_1.user, username_2.user)
 
