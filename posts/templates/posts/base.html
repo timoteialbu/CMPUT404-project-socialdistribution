@@ -272,8 +272,6 @@
       <li><a href='/account/logout'><span>Log out</span></a></li>
       </ul>
       </div>
-      {% block content %}
-      {% endblock %}
 
     {% else %}
     <form class="login" method="POST" action="/account/login/">
@@ -298,24 +296,55 @@
       </li>
     </ul>
     </div>
-
     </form>
 
+    <center>
     <form class="signup" id="signup_form" method="post" action="/account/signup/">
-    <input type='hidden' name='csrfmiddlewaretoken' value='YtDFecyLDAX8KfAy1S4FaPs5XvlxDm7z' />
-    <p><label for="id_first_name">First name:</label> <input id="id_first_name" maxlength="30" name="first_name" type="text" /></p>
-    <p><label for="id_last_name">Last name:</label> <input id="id_last_name" maxlength="30" name="last_name" type="text" /></p>
-    <p><label for="id_username">Username:</label> <input autofocus="autofocus" id="id_username" name="username" placeholder="Username" type="text" /></p>
-    <p><label for="id_email">E-mail (optional):</label> <input id="id_email" name="email" placeholder="E-mail address" type="email" /></p>
-    <p><label for="id_password1">Password:</label> <input id="id_password1" name="password1" placeholder="Password" type="password" /></p>
-    <p><label for="id_password2">Password (again):</label> <input id="id_password2" name="password2" placeholder="Password (again)" type="password" /><input id="id_confirmation_key" maxlength="40" name="confirmation_key" type="hidden" /></p>
+    <input type='hidden' name='csrfmiddlewaretoken' value='YtDFecyLDAX8KfAy1S4FaPs5XvlxDm7z'/>
+
+    <table>
+    <tr>
+    <td><label for="id_first_name">First name:</label></td>
+    <td><input id="id_first_name" maxlength="30" name="first_name" type="text" /></td>
+    </tr>
+
+    <tr>
+    <td><label for="id_last_name">Last name:</label></td>
+    <td><input id="id_last_name" maxlength="30" name="last_name" type="text" /></td>
+    </tr>
+
+    <tr>
+    <td><label for="id_username">Username:</label></td>
+    <td><input autofocus="autofocus" id="id_username" name="username" placeholder="Username" type="text" /></td>
+    </tr>
+
+    <tr>
+    <td><label for="id_email">E-mail (optional):</label></td>
+    <td><input id="id_email" name="email" placeholder="E-mail address" type="email" /></td>
+    </tr>
+
+    <tr>
+    <td><label for="id_password1">Password:</label></td>
+    <td><input id="id_password1" name="password1" placeholder="Password" type="password" /></td>
+    </tr>
+
+    <tr>
+    <td><label for="id_password2">Password (again):</label></td>
+    <td><input id="id_password2" name="password2" placeholder="Password (again)" type="password" /></td>
+    <td><input id="id_confirmation_key" maxlength="40" name="confirmation_key" type="hidden" /></td>
+    </tr>
+    </table>
     
     <button type="submit">Sign Up &raquo;</button>
+
     </form>
+    </center>
 
     {% endif %}
 
 
+    {% block content %}
+    {% endblock %}
 
 
 </body>
