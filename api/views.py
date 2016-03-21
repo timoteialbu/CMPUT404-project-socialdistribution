@@ -9,6 +9,7 @@ import uuid
 import copy
 
 
+
 class UserPostList(generics.ListAPIView):
     """
     posts that are visible to the currently authenticated user (GET)
@@ -103,6 +104,8 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = AuthorSerializer
 
+#class AuthorView(generics.
+
 
 class FriendRelationship(generics.ListCreateAPIView):
     """
@@ -118,7 +121,7 @@ class FriendRelationship(generics.ListCreateAPIView):
         # Get the uuid from the url
         request_id = self.kwargs.get(self.lookup_url_kwarg)
         # Find the author object with that uuid
-        username = Author.objects.get(uuid=request_id)
+        username = Author.objects.get(id=request_id)
         # Get all the friends
         all_friends = Friend.objects.friends(username.user)
         # Get the authors objects version of those friends objects
@@ -142,8 +145,8 @@ class FriendsCheck(generics.ListCreateAPIView):
         request_id_1 = self.kwargs.get(self.lookup_url_kwarg_1)
         request_id_2 = self.kwargs.get(self.lookup_url_kwarg_2)
         # Find the author object with that uuid
-        username_1 = Author.objects.get(uuid=request_id_1)
-        username_2 = Author.objects.get(uuid=request_id_2)
+        username_1 = Author.objects.get(id=request_id_1)
+        username_2 = Author.objects.get(id=request_id_2)
         # Check if friends
         result = Friend.objects.are_friends(username_1.user, username_2.user)
         authors2 = list()

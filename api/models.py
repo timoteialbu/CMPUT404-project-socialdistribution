@@ -15,14 +15,12 @@ post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-sig
 # TODO add UUID to User
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     host = models.URLField()
     displayName = models.CharField(max_length=30)
     url = models.URLField()
     github = models.URLField()
-    def getUserName(self):
-        u = User.objects.get(user)
-        return u.username
+
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -94,12 +92,12 @@ class Image(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=100)
     location = models.URLField(max_length=200)
-    #id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     def __unicode__(self):
         return '%s' % (self.title)
 
 class Friends(models.Model):
-    uuid = models.UUIDField()
+    id = models.UUIDField(primary_key=True)
 
     def __unicode__(self):
         return '%s' % self.title

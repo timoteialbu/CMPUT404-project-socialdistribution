@@ -2,13 +2,21 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from api.models import Post, Author, Comment, Friends, FriendsPair
 from friendship.models import Friend
-from rest_framework import pagination
+from api.pagination import  CustomPagination
+from rest_framework import pagination, serializers
+import socket
+from django.core.urlresolvers import reverse
+
+try:
+    HOSTNAME = socket.gethostname()
+except:
+    HOSTNAME = 'localhost:8000'
 
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ('uuid', 'host', 'displayName', 'url', 'github')
+        fields = ('id', 'host', 'displayName', 'url', 'github')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -30,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
 class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friends
-        fields = ('uuid',)
+        fields = ('id',)
 
 
 
@@ -41,54 +49,51 @@ class FriendsCheckSerializer(serializers.ModelSerializer):
 
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.HyperlinkedModelSerializer):
     # TODO change source to = some user serializer with ID, host,displayname
     # url and github (see api protocols)
     author = AuthorSerializer(read_only=True)
-    # comment = CommentSerializer(many=True, read_only=False)
+    #comments = Comment.objects.all()
+    #comment_set = CommentSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField('paginated_comments')
-    # comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #comments = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     count = serializers.SerializerMethodField('comment_count')
-    # next = serializers.SerializerMethodField('next_page')
     size = serializers.SerializerMethodField('comment_size')
     next = serializers.SerializerMethodField('next_page')
     query = serializers.SerializerMethodField('query_type')
 
 
+
     class Meta:
         model = Post
         fields = (
-            'query', 'title', 'source', 'origin', 'description',
+            'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
             'count', 'size', 'next',
-            'comments', 'published', 'id', 'visibility',
+            'comments', 'published', 'id', 'visibility', 'query',
 
         )
+
+        depth = 1
 
     def paginated_comments(self, obj):
-        comments = Comment.objects.filter(post=obj)  # [:5]
-        paginator = pagination.PageNumberPagination()
+        comments = Comment.objects.filter(post=obj)[:5]  # [:5]
+        paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, self.context['request'])
-        serializer = CommentSerializer(
-            page,
-            many=True,
-            context={'request': self.context['request']}
-        )
+        serializer = CommentSerializer(page, many=True, context={'request': self.context['request']})
         return serializer.data
-
-    def next_page(self, obj):
-        print "not complete"
-        # if not self.Paginated_comments.has_next():
-        #    return None
-        # page_number = self.page.next_page_number()
-        # return replace_query_param('', self.page_query_param, page_number)
-
     def comment_count(self, obj):
         return len(Comment.objects.filter(post=obj))
 
     def comment_size(self, obj):
         return 5
+    def next_page(self, obj):
+        id = str(obj.id)
+        uri =  reverse('post-comments', kwargs={'uuid': id})
+        uri =  self.context['request'].build_absolute_uri(uri)
+        return uri
 
     def query_type(self, obj):
         return 'posts'
+
