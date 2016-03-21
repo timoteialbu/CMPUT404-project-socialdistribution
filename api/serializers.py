@@ -16,6 +16,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('comment', 'contentType', 'published', 'id',)
 
+
 class UserSerializer(serializers.ModelSerializer):
     #userinfo = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     author = AuthorSerializer(source='author')
@@ -23,10 +24,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('author',)
 
-class FriendSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Friends
-        fields = ('uuid',)
+
+class FriendSerializer(serializers.Serializer):
+        UUID = serializers.UUIDField()
 
 
 class FriendsCheckSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class FriendsCheckSerializer(serializers.ModelSerializer):
 
      
 class PostSerializer(serializers.ModelSerializer):
-    # TODO change source to = some user serializer with ID, host,displayname
+    # TODO change source to = some user serializer with ID, host, displayname
     # url and github (see api protocols)
     author = AuthorSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)

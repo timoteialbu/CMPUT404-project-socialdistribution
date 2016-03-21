@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from jsonfield import JSONField
 import uuid
 
 
@@ -99,7 +100,7 @@ class Node(models.Model):
         return '%s' % (self.title)
 
 class Friends(models.Model):
-    uuid = models.UUIDField()
+    authors = models.UUIDField()
 
     def __unicode__(self):
         return '%s' % self.title
