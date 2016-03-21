@@ -16,11 +16,7 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # adjust to turn off when on Openshift, but allow an environment variable to override on PAAS
-<<<<<<< HEAD
 #DEBUG = ON_PAAS
-=======
-
->>>>>>> kdhaywar/master
 DEBUG = not ON_PAAS
 DEBUG = DEBUG or os.getenv("debug","false").lower() == "true"
 

@@ -1,5 +1,4 @@
 {% extends 'posts/base.html' %}
-
 {% block content %}
 
 {% load markdown_deux_tags %}
@@ -26,6 +25,7 @@
 
 <style type="text/css">
     .nav-bar {
+
         
     }
 </style>
@@ -45,7 +45,7 @@
 
 
 
-
+<center>
 <div id="showContent">
     {% if latest_post_list %}
     <ul>
@@ -76,25 +76,20 @@
         <p>No images are available!</p>
     {% endif %}
 </div>
+<center>
 
 <div class = "nav-bar">
-        {% if user.is_authenticated %}
+    {% if user.is_authenticated %}
+    <table><tr>
+    <td>
         <button type=button id = f1 onclick="next();">Create New Post</button>
-
+    </td>
+    <td style="float: right;">
         <form action={% url 'posts:create_img' %} method="get">
-                <button type="submit" value="create_img" >Upload Image</button>
+            <button type="submit" value="create_img" >Upload Image</button>
         </form>
-
-        <form action={% url 'posts:post_mgnt' %} method="get">
-                <button type="submit" value="delete_post">Manage Posts</button>
-        </form>
-
-        <form action={% url 'posts:friend_mgnt' %} method="get">
-                <button type="submit" value="friend_mgnt" >Manage Friends</button>
-        </form>
-        <form action={% url 'posts:nodes' %} method="get">
-                <button type="submit" value="nodes" >Observe Nodes</button>
-        </form>    
+    </td>
+    </table>
     {% endif %}
 </div>
 {% endblock %}

@@ -6,14 +6,25 @@
   <label>Choose someone to be friends with.</label>
   <p>{{ addform.user_choice_field }}</p>
   <p>{{ add_msg }}</p>
+
   <p><label>Unfriend Someone</label></p>
   <p>{{ unfrienduserform.username}}</p>
   <p>{{ unfriend_msg }}</p> 
   {{ friendrequestform }}  
+
   <button type="submit" class="btn btn-default">Apply Changes</button>
 </form>
+
 <form action={% url 'posts:index' %} method="get">
 		<button type="submit">Back</button>
 </form>
+
+{% load friendshiptags %}
+
+{% friends request.user %}
+
+{% for friend in all_friends %}
+	<p>friend.user</p>
+{% endfor %}
 
 {% endblock %}

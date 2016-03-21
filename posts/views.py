@@ -125,7 +125,12 @@ def friend_mgnt(request):
     users = list(map(lambda x:
                      str(x.from_user),
                      Friend.objects.unread_requests(request.user)))
-    context = {'friendrequestform': FriendRequestForm(names=users)}
+    all_friends = Friend.objects.friends(request.user)
+
+    context = { 'friendrequestform': FriendRequestForm(names=users),
+                'all_friends': all_friends
+    }
+
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
@@ -139,6 +144,8 @@ def friend_mgnt(request):
             'addform': AddFriendForm(),
             'unfrienduserform': UnFriendUserForm(),
         })
+
+    print all_friends
     return render(request, 'posts/friend_mgnt.html', context)
 
 
