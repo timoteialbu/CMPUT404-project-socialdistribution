@@ -7,6 +7,7 @@ from friendship.models import Friend
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
 import uuid
 import copy
 
@@ -83,7 +84,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer_class.save(author=author)
 
 
-class CommentList(generics.ListAPIView):
+class CommentList(generics.ListCreateAPIView):
     """
     access to the comments in a post
     http://service/posts/{post_id}/comments access to the comments in a post
@@ -95,6 +96,11 @@ class CommentList(generics.ListAPIView):
     def get_queryset(self):
         postId = self.kwargs.get(self.lookup_url_kwarg)
         return Comment.objects.filter(post=postId)
+    def perform_create(self, serializer):
+        postId = self.kwargs.get(self.lookup_url_kwarg)
+        author = get_object_or_404(Author, user=self.request.user)
+        post = get_object_or_404(Post, id=postId)
+        serializer.save(author=author, post=post)
 
 
 class UserList(generics.ListAPIView):
