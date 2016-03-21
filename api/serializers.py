@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Post, Author, Comment, Friends, FriendsPair
+from api.models import Post, Author, Comment
 from friendship.models import Friend
 from api.pagination import  CustomPagination
 from rest_framework import pagination, serializers

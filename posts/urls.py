@@ -18,5 +18,7 @@ urlpatterns = [
 
     url(r'^(?P<id>[^/]+)$', views.delete_post, name='delete_post'),
 
+    url(r'^profile/$', views.post_mgnt, name='profile'),
+
         
 ]
