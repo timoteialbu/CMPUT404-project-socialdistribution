@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 from api import views
+from api import services
 
 
 # Maybe delete
@@ -41,13 +42,13 @@ urlpatterns = [
     url(r'^posts/(?P<uuid>[^/]+)/$', views.PostDetail.as_view()),
     # TODO: Ask the service if author id is friends. In the "authors" include
     # TODO: the 2 authors to compare
-    url(r'^friends/(?P<uuid>[^/]+)/$', views.FriendRelationship.as_view()),
+    url(r'^friends/(?P<uuid>[^/]+)/$', services.friend_relationship, name='friend_relationship'),
     # TODO: Ask the service if anyone in the list is a friend
     # TODO: Similar to above, but in this case the author asking
     # TODO: for this information is in "author" and the "authors" contains a list
-    url(r'^friends/(?P<friend1_uuid>[^/]+)/(?P<friend2_uuid>[^/]+)/$', views.FriendsCheck.as_view()),
+    url(r'^friends/(?P<friend1_uuid>[^/]+)/(?P<friend2_uuid>[^/]+)/$', services.friends_check, name='friends_check'),
     # TODO: Make a friend request
-    #url(r'^friendrequest/(?P<uuid>[^/]+)/$', views.FriendRequest.as_view()),
+    url(r'^friendrequest/(?P<uuid>[^/]+)/$', services.friend_request, name='friend_request'),
     # url(r'^author/$', views.UserList.as_view()),
     # url(r'^author/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 ]

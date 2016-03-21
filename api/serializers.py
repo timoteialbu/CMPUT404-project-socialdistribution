@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Post, Author, Comment, Friends, FriendsPair
+from api.models import Post, Author, Comment
 from friendship.models import Friend
 from api.pagination import  CustomPagination
 from rest_framework import pagination, serializers
@@ -27,6 +27,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('author', 'comment', 'contentType', 'published', 'id',)
 
 
+
 class UserSerializer(serializers.ModelSerializer):
     # userinfo = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     author = AuthorSerializer(source='author')
@@ -34,19 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('author',)
-
-class FriendSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Friends
-        fields = ('id',)
-
-
-
-class FriendsCheckSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FriendsPair
-        fields = ('authors', 'friends',)
-
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
