@@ -6,3 +6,4 @@ djangorestframework
 django-markdown-deux
 docutils
 jsonfield
+djangorestframework-jwt

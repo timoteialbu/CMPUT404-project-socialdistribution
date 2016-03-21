@@ -150,11 +150,11 @@ def post_mgnt(request):
         }
 
         if request.method == 'POST':
-            values = request.POST.getlist('identity')
+            values = request.POST.getlist('id')
 
             for post in latest_post_list:
-                for identity in values:
-                    if str(identity) == str(post.identity):
+                for id in values:
+                    if str(id) == str(post.id):
                         post.delete()
 
             return redirect('posts:post_mgnt')
@@ -178,7 +178,7 @@ def index(request):
             post.published = timezone.now()
             post.save()
             # future ref make to add the namespace ie "posts"
-            return redirect('posts:detail', identity=post.pk)
+            return redirect('posts:detail', id=post.pk)
     else:
         form = PostForm()
     latest_post_list = get_posts(request)
@@ -204,36 +204,36 @@ def index(request):
 
 
 
-def delete_post(request, identity):
+def delete_post(request, id):
     latest_post_list = get_posts(request)
     if request.method == 'POST':
         for post in latest_post_list:
-            if str(post.identity) == str(identity):
+            if str(post.id) == str(id):
                 post.delete()
         return redirect('posts:index')
     return render(request, 'posts/index.html', context)
 
 
-def post_detail(request, identity):
-    post = get_object_or_404(Post, identity=identity)
-    comments = Comment.objects.select_related().filter(post=identity)
+def post_detail(request, id):
+    post = get_object_or_404(Post, id=id)
+    comments = Comment.objects.select_related().filter(post=id)
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, instance=post)
         cform = CommentForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
             post.published_date = timezone.now()
             post.save()
-            # the "identity" part must be the same as the P<"identity" in url.py
-            #return redirect('posts:detail', identity=post.pk)
+            # the "id" part must be the same as the P<"id" in url.py
+            #return redirect('posts:detail', id=post.pk)
         elif cform.is_valid():
             comment = cform.save(commit=False)
             comment.published = timezone.now()
             comment.author = Author.objects.get(user=request.user)
             comment.post=post
             comment.save()
-            #return redirect('posts:detail', identity=post.pk)                
+            #return redirect('posts:detail', id=post.pk)                
     else:
         form = PostForm(initial={'content': post.content})
         cform = CommentForm()
@@ -242,14 +242,13 @@ def post_detail(request, identity):
     isAuthor = False
     if(isAuthenticated):
         isAuthor = Author.objects.get(user=request.user).user == post.author.user
-        print isAuthor
     return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 
 # @api_view(['GET'])
-# def post_detail(request, identity):
+# def post_detail(request, id):
 #     try:
-#         post = Post.objects.get(identity=identity)
+#         post = Post.objects.get(id=id)
 #     except Post.DoesNotExist:
 #         return HttpResponse(status=404)
 

@@ -32,9 +32,13 @@ urlpatterns = [
         'rest_framework.urls',
         namespace='rest_framework')
         ),
+    url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
     url(r'^author/posts/$', views.UserPostList.as_view()),
     url(r'^posts/$', views.PostList.as_view()),
     url(r'^author/(?P<uuid>[^/]+)/posts$', views.AuthorPostList.as_view()),
+    url(r'^author/(?P<uuid>[^/]+)/$', views.AuthorDetail.as_view()),
+    url(r'^posts/(?P<uuid>[^/]+)/comments$', views.CommentList.as_view(), name='post-comments'),
+
     url(r'^posts/(?P<uuid>[^/]+)/$', views.PostDetail.as_view()),
     # TODO: Ask the service if author id is friends. In the "authors" include
     # TODO: the 2 authors to compare

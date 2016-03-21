@@ -52,7 +52,7 @@
    - As an author, posts I create can be public
    - As an author, posts I make can be in simple plain text
    - As an author, posts I make can be in markdown (commonMark is good)
-   - As an author, I want a consistent identity per server
+   - As an author, I want a consistent id per server
    - As a server admin, I want to host multiple authors on my server
    - As a server admin, I want to share or not share posts with users
      on other servers.

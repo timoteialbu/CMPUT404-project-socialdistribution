@@ -16,14 +16,12 @@ post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-sig
 # TODO add UUID to User
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     host = models.URLField()
     displayName = models.CharField(max_length=30)
     url = models.URLField()
     github = models.URLField()
-    def getUserName(self):
-        u = User.objects.get(user)
-        return u.username
+
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -36,7 +34,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     # TODO categories
     categories = ["web", "tutorial"]
-    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     PRIVACY_CHOICES = (
                       ('PUBLIC', 'Public'),
                       ('FOAF', 'Friend of a Friend'),
@@ -66,11 +64,11 @@ def image_file_name(instance, filename):
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comment')
     comment = models.TextField(max_length=400)
     published = models.DateTimeField('date published')
-    identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     CONTENT_CHOICES = (
                       ('text/plain', 'Plain text'),
                       ('text/x-markdown', 'Markdown'),
@@ -95,15 +93,9 @@ class Image(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=100)
     location = models.URLField(max_length=200)
-    #identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     def __unicode__(self):
         return '%s' % (self.title)
-
-class Friends(models.Model):
-    authors = models.UUIDField()
-
-    def __unicode__(self):
-        return '%s' % self.title
 
 
 class FriendsPair(models.Model):

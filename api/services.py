@@ -51,6 +51,7 @@ def friends_check(request, friend1_uuid, friend2_uuid):
             }
         )
 
+
 @api_view(['GET'])
 def friend_request(request):
         return None
