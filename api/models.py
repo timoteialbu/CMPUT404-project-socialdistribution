@@ -20,9 +20,7 @@ class Author(models.Model):
     displayName = models.CharField(max_length=30)
     url = models.URLField()
     github = models.URLField()
-    def getUserName(self):
-        u = User.objects.get(user)
-        return u.username
+
 
 class Post(models.Model):
     author = models.ForeignKey(
