@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^account/', include('allauth.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^profile/',include('posts.urls', namespace="profile")),
 )
 
 

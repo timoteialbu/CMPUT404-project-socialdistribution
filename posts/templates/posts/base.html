@@ -267,18 +267,22 @@
 <div id='cssmenu'>
 <ul>
     {% if user.is_authenticated %}
+      <li><a >Social Distribution</a></li>
       <li><a href='/posts/'><span>Home</span></a></li>
-      <li><a href='#'><span>Profile</span></a></li>
-      <li><a href='/account/logout'><span>Log out</span></a></li>
+      <li><a href='/profile/'><span>Profile</span></a></li>
+      <li style="float: right"><a href='/account/logout'><span>Log out</span></a></li>
       </ul>
       </div>
+      {% block content %}
+      {% endblock %}
 
     {% else %}
-    <form class="login" method="POST" action="/account/login/">
-      <input type='hidden' name='csrfmiddlewaretoken' value='cxjHrP2zhGYLfIPVNArnB9YoFcoNXXZA' />
+    <li><a style="padding: 3.6em 1em">Social Distribution</a></li>
 
+    <form class="login" method="POST" action="/account/login/">{% csrf_token %}
+      <input type='hidden' name='csrfmiddlewaretoken' value='iWmOH2ZLQbq3rJ2ZtG5YNBTZMfhAsucF' />
       <li style="float:right;">
-        <a href="/account/login">Log In</a>
+        <button class="primaryAction" style="padding: 2.6em 1.6em" type="submit">Log In</button>
       </li>
 
       <li style="float:right; color:white">
@@ -299,7 +303,7 @@
     </form>
 
     <center>
-    <form class="signup" id="signup_form" method="post" action="/account/signup/">
+    <form class="signup" id="signup_form" method="post" action="/account/signup/">{% csrf_token %}
     <input type='hidden' name='csrfmiddlewaretoken' value='YtDFecyLDAX8KfAy1S4FaPs5XvlxDm7z'/>
 
     <table>
@@ -339,13 +343,9 @@
 
     </form>
     </center>
+    <a href="/account/login">Log In</a>
 
     {% endif %}
-
-
-    {% block content %}
-    {% endblock %}
-
 
 </body>
 </html>
