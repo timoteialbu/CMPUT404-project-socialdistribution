@@ -99,11 +99,18 @@ class UserList(generics.ListAPIView):
     serializer_class = AuthorSerializer
 
 
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = AuthorSerializer
+#class UserDetail(generics.RetrieveAPIView):
+#    queryset = User.objects.all()
+#    serializer_class = AuthorSerializer
 
-#class AuthorView(generics.
+class AuthorDetail(generics.RetrieveAPIView):
+    serializer_class = AuthorSerializer
+    permission_classes = (permissions.AllowAny,)
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        authorId = self.kwargs.get(self.lookup_url_kwarg)
+        return Author.objects.filter(id=authorId)
 
 
 class FriendRelationship(generics.ListCreateAPIView):
