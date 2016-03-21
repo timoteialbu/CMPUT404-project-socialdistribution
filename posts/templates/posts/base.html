@@ -267,6 +267,25 @@
 <div id='cssmenu'>
 <ul>
     {% if user.is_authenticated %}
+      <li><a >Social Distribution</a></li>
+      <li><a href='/posts/'><span>Home</span></a></li>
+      <li><a href='/profile/'><span>Profile</span></a></li>
+
+      <li><a href='/posts/post_mgnt/?'><span>Posts</span></a></li>
+      <li><a href='/posts/friend_mgnt/?'><span>Friends</span></a></li>
+      <li><a href='/posts/nodes/?'><span>Nodes</span></a></li>
+
+      <form method="post" action="/account/logout/">{% csrf_token %}
+      <li style="float: right;">
+          <button type="submit" style = "height: 1em">Sign Out</button>
+      </li>
+      </form>
+
+      </ul>
+      </div>
+      {% block content %}
+      {% endblock %}
+
       <li><a href='/posts/'>Social Distribution</a></li>
       <li><a href='/posts/profile/'><span>Profile</span></a></li>
       <li><a href='/posts/'><span>Posts</span></a></li>
@@ -346,7 +365,6 @@
 
     </form>
     </center>
-    <a href="/account/login">Log In</a>
 
     {% endif %}
 

@@ -118,27 +118,32 @@ def friend_requests(request, context, users):
             #friend = context['friendrequestform'].cleaned_data['user_choice_field']
             #context['addfriend'] = friend
 
-
-
 def friend_mgnt(request):
-        users = list(map(lambda x:
-                         str(x.from_user),
-                         Friend.objects.unread_requests(request.user)))
-        context = {'friendrequestform': FriendRequestForm(names=users)}
-        if request.method == "POST":
-            context.update({
-                'addform': AddFriendForm(request.POST),
-                'unfrienduserform': UnFriendUserForm(request.POST),
-            })
-            remove_relationship(request, context)
-            add_relationship(request, context)
-            friend_requests(request, context, users)
-        else:
-            context.update({
-                'addform': AddFriendForm(),
-                'unfrienduserform': UnFriendUserForm(),
-            })
-        return render(request, 'posts/friend_mgnt.html', context)
+    users = list(map(lambda x:
+                     str(x.from_user),
+                     Friend.objects.unread_requests(request.user)))
+    all_friends = Friend.objects.friends(request.user)
+
+    context = { 'friendrequestform': FriendRequestForm(names=users),
+                'all_friends': all_friends
+    }
+
+    if request.method == "POST":
+        context.update({
+            'addform': AddFriendForm(request.POST),
+            'unfrienduserform': UnFriendUserForm(request.POST),
+        })
+        remove_relationship(request, context)
+        add_relationship(request, context)
+        friend_requests(request, context, users)
+    else:
+        context.update({
+            'addform': AddFriendForm(),
+            'unfrienduserform': UnFriendUserForm(),
+        })
+
+    print all_friends
+    return render(request, 'posts/friend_mgnt.html', context)
 
 
 def post_mgnt(request):
