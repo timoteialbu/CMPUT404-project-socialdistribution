@@ -4,6 +4,13 @@ from api.models import Post, Author, Comment, Friends, FriendsPair
 from friendship.models import Friend
 from api.pagination import  CustomPagination
 from rest_framework import pagination, serializers
+import socket
+from django.core.urlresolvers import reverse
+
+try:
+    HOSTNAME = socket.gethostname()
+except:
+    HOSTNAME = 'localhost:8000'
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -51,35 +58,41 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     comments = serializers.SerializerMethodField('paginated_comments')
     #comments = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
-    #count = serializers.SerializerMethodField('comment_count')
-    # next = serializers.SerializerMethodField('next_page')
-
+    count = serializers.SerializerMethodField('comment_count')
+    size = serializers.SerializerMethodField('comment_size')
+    next = serializers.SerializerMethodField('next_page')
     query = serializers.SerializerMethodField('query_type')
 
 
 
     class Meta:
         model = Post
-#        fields = (
-#            'title', 'source', 'origin', 'description',
-#            'contentType', 'content', 'author', 'categories',
-#            'count', 'size', 'next',
-#            'comments', 'published', 'id', 'visibility',
-
-#        )
         fields = (
-            'query', 'title', 'source', 'origin', 'description',
+            'title', 'source', 'origin', 'description',
             'contentType', 'content', 'author', 'categories',
-            'comments', 'published', 'id', 'visibility',
+            'count', 'size', 'next',
+            'comments', 'published', 'id', 'visibility', 'query',
+
         )
+
         depth = 1
 
     def paginated_comments(self, obj):
-        comments = Comment.objects.filter(post=obj)  # [:5]
+        comments = Comment.objects.filter(post=obj)[:5]  # [:5]
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, self.context['request'])
         serializer = CommentSerializer(page, many=True, context={'request': self.context['request']})
         return serializer.data
+    def comment_count(self, obj):
+        return len(Comment.objects.filter(post=obj))
+
+    def comment_size(self, obj):
+        return 5
+    def next_page(self, obj):
+        id = str(obj.id)
+        uri =  reverse('post-comments', kwargs={'uuid': id})
+        uri =  self.context['request'].build_absolute_uri(uri)
+        return uri
 
     def query_type(self, obj):
         return 'posts'
