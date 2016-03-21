@@ -6,9 +6,10 @@ from api.models import Post, Image, Comment
 
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
+    title = forms.CharField(widget=forms.Textarea(attrs={'cols': 40, 'rows': 1, 'size':40, 'maxlength':40}))
     class Meta:
         model = Post
-        fields = ('content', 'visibility', 'contentType', 'title')
+        fields = ('title', 'content', 'visibility', 'contentType')
 
 class CommentForm(forms.ModelForm):
 	class Meta:
