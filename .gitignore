@@ -6,9 +6,8 @@ db.sqlite3
 vpython27
 venv
 passwords.txt
-media/images/uploads/*
+media/*
 */migrations/
 timotei-project
 project
 *#
-
