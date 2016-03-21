@@ -124,14 +124,14 @@ def friend_mgnt(request):
                      Friend.objects.unread_requests(request.user)))
     all_friends = Friend.objects.friends(request.user)
 
-    context = { 'friendrequestform': FriendRequestForm(names=users),
-                'all_friends': all_friends
+    context = { 'friendrequestform': FriendRequestForm(names=users)
     }
 
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
+            'all_friends': all_friends
         })
         remove_relationship(request, context)
         add_relationship(request, context)
@@ -140,9 +140,12 @@ def friend_mgnt(request):
         context.update({
             'addform': AddFriendForm(),
             'unfrienduserform': UnFriendUserForm(),
+            'all_friends': all_friends
         })
 
     print all_friends
+    for ch in all_friends:
+        print ch
     return render(request, 'posts/friend_mgnt.html', context)
 
 
