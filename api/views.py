@@ -9,6 +9,7 @@ import uuid
 import copy
 
 
+
 class UserPostList(generics.ListAPIView):
     """
     posts that are visible to the currently authenticated user (GET)
