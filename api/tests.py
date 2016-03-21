@@ -70,6 +70,37 @@ class TestGenericUsecase(TestCase):
 #===============================================================================
 #============================ CONCRETE TEST CLASSES ============================
 #===============================================================================
+class TestUserCreation(TestCase):
+    """CONTENT CREATION"""
+    def setup(self,baseurl=BASEURL):
+        self.baseurl = baseurl
+    def test_author_make_post(self):    # TODO Create and view own
+        """User account creation."""
+        url = ('/author/posts')
+        data = {"title": "Author Posts",
+        "source": "any",
+        "origin": "any",
+        "description": "none",
+        "contentType": "text/json",
+        "content": "IMPORTANT STUFF HERE",
+        "visibility": None}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 201)
+        #self.assertEqual(Account.objects.count(), 1)
+        #self.assertEqual(Account.objects.get().name, 'DabApps')
+        #request = factory.post(url, fill_json_test(),format='json');
+        #self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        #self.assertTrue( req.info().gettype() == "text/css", ("Bad mimetype for css! %s" % req.info().gettype()))
+    def test_author_format_post(self):
+        """- As an author, posts I make can be in simple plain text
+        - As an author, posts I make can be in markdown (commonMark is good)"""
+    def test_author_image_post(self):
+        """- As an author, posts I create can link to images."""
+    def test_author_remove_post(self):
+        """- As an author, I want to delete my own posts."""
+    def test_author_make_comment(self):
+        """- As an author, I want to comment on posts that I can access"""
+
 
 class TestContentCreation(TestCase):
     """CONTENT CREATION"""

@@ -11,18 +11,52 @@ def create_uuid(sender, **kw):
                 userinfo.save()
 post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
 
-
+#===============================================================================
+#========================= AUTHOR CLASS INHERITANCE ============================
+#===============================================================================
 # TODO add UUID to User
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    host = models.URLField()
+    host = models.URLField()    # "http://provider.com/"
     displayName = models.CharField(max_length=30)
-    url = models.URLField()
+    url = models.URLField()     # "author/userid"
     github = models.URLField()
+
     def getUserName(self):
-        u = User.objects.get(user)
-        return u.username
+        return User.objects.get(user)
+    def getUserUrl(self):
+        return (User.objects.get(user).host + User.objects.get(user).url)
+
+#========================= _LOCAL IS DEFAULT CLASS =============================
+class _Local(Author,models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    host = models.URLField()    # "http://provider.com/"
+    displayName = models.CharField(max_length=30)
+    url = models.URLField()     # "author/userid"
+    github = models.URLField()
+
+    def getUserName(self):
+        return User.objects.get(user)
+    def getUserUrl(self):
+        return (User.objects.get(user).host + User.objects.get(user).url)
+
+#========================= _REMOTE WRAPS API LOOKUP ============================
+class _Remote(Author,models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    host = models.URLField()    # "http://provider.com/"
+    displayName = models.CharField(max_length=30)
+    url = models.URLField()     # "author/userid"
+    github = models.URLField()
+
+    def getUserName(self):
+        return User.objects.get(user)
+    def getUserUrl(self):
+        return (User.objects.get(user).host + User.objects.get(user).url)
+
+#===============================================================================
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -110,6 +144,3 @@ class FriendsPair(models.Model):
     friends = models.BooleanField()
     def __unicode__(self):
         return '%s' % self.title
-
-
-
