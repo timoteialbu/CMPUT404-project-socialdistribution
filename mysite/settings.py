@@ -168,7 +168,7 @@ JWT_AUTH = {
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
 
@@ -238,6 +238,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR,"static"),
+    #os.path.join(os.path.dirname(__file__), 'static'),
 )
 
 TEMPLATE_DIRS = (
@@ -246,4 +247,3 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
 )
-
