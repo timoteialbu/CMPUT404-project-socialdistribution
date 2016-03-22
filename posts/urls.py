@@ -14,7 +14,7 @@ urlpatterns = [
 
     url(r'^nodes/$', views.nodes, name='nodes'),
 
-    url(r'^profile/$', views.index, name='index'),
+    url(r'^profile/$', views.get_profile, name='get_profile'),
 
     url(r'^(?P<id>[^/]+)/$', views.post_detail, name='detail'),
 

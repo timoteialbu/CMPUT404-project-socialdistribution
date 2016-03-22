@@ -244,6 +244,33 @@ def post_detail(request, id):
         return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 
+def get_profile(request):
+        if request.method == "POST":
+            form = PostForm(request.POST)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.author = Author.objects.get(user=request.user)
+                post.published = timezone.now()
+                post.save()
+                # future ref make to add the namespace ie "posts"
+                return redirect('posts:detail', id=post.pk)
+        else:
+            form = PostForm()
+
+        latest_post_list = Post.objects.filter(
+                Q(author=Author.objects.get(user=request.user)))
+        latest_img_list = Image.objects.order_by('-published')[:5]
+        author = Author.objects.get(user=request.user)
+        context = {
+            'latest_image_list': latest_img_list,
+            'latest_post_list': latest_post_list,
+            'form': form,
+            'author': author,
+            'user': request.user
+        }
+        return render(request, 'posts/profile.html', context)
+
+
 # @api_view(['GET'])
 # def post_detail(request, id):
 #     try:
