@@ -156,7 +156,9 @@ REST_FRAMEWORK = {
 
 
 
-
+JWT_AUTH = {
+    'JWT_VERIFY_EXPIRATION': False,
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
