@@ -32,10 +32,10 @@
      var n = 0;
      var flip = function(){
 	 if(n % 2){
-	     document.getElementById('edit').style.display="none";	
+	     document.getElementById('edit').style.display="none";
 	 }
 	 else{
-	     document.getElementById('edit').style.display="block";	
+	     document.getElementById('edit').style.display="block";
 	 }
 	++n;
      }
@@ -45,10 +45,10 @@
      var n = 0;
      var flip = function(){
 	 if(n % 2){
-	     document.getElementById('comment').style.display="none";	
+	     document.getElementById('comment').style.display="none";
 	 }
 	 else{
-	     document.getElementById('comment').style.display="block";	
+	     document.getElementById('comment').style.display="block";
 	 }
 	++n;
      }
@@ -57,6 +57,7 @@
  var nextE = edit();
  var nextC = comment();
 </script>
+
 <div id="edit" style="display: none;">
     <h1>New Content</h1>
     <form method="POST" class="post-form">{% csrf_token %}
@@ -90,5 +91,3 @@
 {% endblock %}
 
 {% endblock %}
-
-

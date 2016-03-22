@@ -39,41 +39,41 @@
 
 <center>
 
-<div id="showContent">
+<div id="showContent container">
+    <!-- POST LIST -->
     {% if latest_post_list %}
-    <ul>
+    <dl>
         {% for post in latest_post_list %}
-	    <li>
         {% if post.contentType == 'text/plain' %}
-            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
-	        <p>{{ post.content|linebreaks }}</p>
+            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
+	          <dd><p>{{ post.content|linebreaks }}</p></dd>
         {% else %}
-            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
-            <p>{{ post.content|markdown }}</p>
+            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
+            <dd><p>{{ post.content|markdown }}</p></dd>
         {% endif %}
-        </li>
         {% endfor %}
-    </ul>
-
+    </dl>
     {% else %}
-        <p>No posts are available!</p>
+        <h2>No posts are available!</h2>
     {% endif %}
 
+    <!-- IMAGE LIST -->
     {% if latest_image_list %}
-        <ul>
+    <dl>
         {% for image in latest_image_list %}
-	    <img src={{ image.img.url }} alt="My_image"/>
+	    <dt><img src={{ image.img.url }} alt="My_image"/></dt>
         {% endfor %}
-        </ul>
+    </dl>
     {% else %}
-        <p>No images are available!</p>
+        <h2>No images are available!</h2>
     {% endif %}
 </div>
 
 <center>
 
-<div class = "nav-bar">
-    {% if user.is_authenticated %}
+
+    {% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
+<div class="nav-bar">
     <table><tr>
     <td>
         <button type=button id = f1 onclick="next();">Create New Post</button>
@@ -84,7 +84,7 @@
         </form>
     </td>
     </table>
-
-    {% endif %}
 </div>
+    {% endif %}
+
 {% endblock %}

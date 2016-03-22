@@ -10,15 +10,15 @@
 <title>Squanch Social Network</title>
 <!-- Resolves to /static/bootstrap/css/bootstrap.min.css -->
 <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'style/override.css' %}" rel="stylesheet">
 
-<style>body{margin-bottom:10%;}</style>
 </head>
 
 <body>
+    <center>
     <nav class="navbar navbar-inverse navbar-fixed-top">
 
-
-      <div class="container">
+      <div class="container-fluid">
         <div class="navbar-header navbar-brand">SQUANCH</div>
         <ul class="nav navbar-nav">
           <li><a href='/posts/'><span>Home</span></a></li>
@@ -76,14 +76,26 @@
 
     <!-- END NAV SEGMENT -->
 
-    <div class="container" style="padding-top:100px;">
+
   {% if user.is_authenticated %}
+
+
       {% block content %}
 
       {% endblock %}
+
+      <nav class="navbar navbar-inverse navbar-fixed-bottom">
+        <ul class="nav nav-pills nav-justified">
+            <li><button class="btn btn-default" type=button id = f1 onclick="next();" href="">Create New Post</button></li>
+
+            <li><form action={% url 'posts:create_img' %} method="get">
+                <button class="btn btn-default" type="submit" value="create_img" >Upload Image</button></form></li>
+        </ul>
+
+      </nav>
+
   {% else %}
 
-    <center>
     <form class="signup form-group jumbotron" id="signup_form" method="post" action="/account/signup/">{% csrf_token %}
       <h1>Why not Register?</h1>
       <table class="table-condensed">
@@ -129,21 +141,14 @@
       <button type="submit">Sign Up &raquo;</button>
 
     </form>
-    </center>
 
     {% endif %}
-    </div>
+    </center>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-    <script>
-    $("img").addClass("img-responsive img-thumbnail");
-    var w = $(window);
-    var r = function(){$("body").css("padding-top", $(".navbar-fixed-top").height());}
-    w.resize(r);
-    w.load(r);
-
-    </script>
+    <script src="{% static 'script/baseresponsive.js' %}"></script>
+    <script src=""></script>
 
 </body>
 </html>
