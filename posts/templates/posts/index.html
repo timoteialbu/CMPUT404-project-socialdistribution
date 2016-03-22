@@ -7,12 +7,12 @@
      var n = 0;
      var flip = function(){
 	 if(n % 2){
-	     document.getElementById('makePost').style.display="none";	
-	     document.getElementById('showContent').style.display="block";	
+	     document.getElementById('makePost').style.display="none";
+	     document.getElementById('showContent').style.display="block";
 	 }
 	 else{
-	     document.getElementById('makePost').style.display="block";	
-	     document.getElementById('showContent').style.display="none";	
+	     document.getElementById('makePost').style.display="block";
+	     document.getElementById('showContent').style.display="none";
 	 }
 	++n;
      }
@@ -21,14 +21,6 @@
  var next = makePost();
 </script>
 
-
-
-<style type="text/css">
-    .nav-bar {
-
-        
-    }
-</style>
 
 <center>
 <div id="makePost" style="display: none">
@@ -46,40 +38,42 @@
 
 
 <center>
-<div id="showContent">
-    {% if latest_post_list %}
-    <ul>
-        {% for post in latest_post_list %}
-	    <li>
-        {% if post.contentType == 'text/plain' %}
-            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
-	        <p>{{ post.content|linebreaks }}</p>
-        {% else %}
-            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
-            <p>{{ post.content|markdown }}</p>
-        {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
 
+<div id="showContent container">
+    <!-- POST LIST -->
+    {% if latest_post_list %}
+    <dl>
+        {% for post in latest_post_list %}
+        {% if post.contentType == 'text/plain' %}
+            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
+	          <dd><p>{{ post.content|linebreaks }}</p></dd>
+        {% else %}
+            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
+            <dd><p>{{ post.content|markdown }}</p></dd>
+        {% endif %}
+        {% endfor %}
+    </dl>
     {% else %}
-        <p>No posts are available!</p>
+        <h2>No posts are available!</h2>
     {% endif %}
 
+    <!-- IMAGE LIST -->
     {% if latest_image_list %}
-        <ul>
+    <dl>
         {% for image in latest_image_list %}
-	    <img src={{ image.img.url }} alt="My_image"/>
+	    <dt><img src={{ image.img.url }} alt="My_image"/></dt>
         {% endfor %}
-        </ul>
+    </dl>
     {% else %}
-        <p>No images are available!</p>
+        <h2>No images are available!</h2>
     {% endif %}
 </div>
+
 <center>
 
-<div class = "nav-bar">
-    {% if user.is_authenticated %}
+
+    {% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
+<div class="nav-bar">
     <table><tr>
     <td>
         <button type=button id = f1 onclick="next();">Create New Post</button>
@@ -90,6 +84,7 @@
         </form>
     </td>
     </table>
-    {% endif %}
 </div>
+    {% endif %}
+
 {% endblock %}

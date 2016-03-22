@@ -156,7 +156,9 @@ REST_FRAMEWORK = {
 
 
 
-
+JWT_AUTH = {
+    'JWT_VERIFY_EXPIRATION': False,
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -166,7 +168,7 @@ REST_FRAMEWORK = {
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = '/home/shawn/Desktop/404/test/CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 
@@ -236,6 +238,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR,"static"),
+    #os.path.join(os.path.dirname(__file__), 'static'),
 )
 
 TEMPLATE_DIRS = (
@@ -244,4 +247,3 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
 )
-

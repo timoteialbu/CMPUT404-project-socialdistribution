@@ -4,15 +4,19 @@ from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import *
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, UserProfile
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, HttpResponseRedirect
 from api.serializers import PostSerializer
 from rest_framework.response import Response
 from django.template import loader
 from django.template import RequestContext
-
-
+import requests
+import base64
+from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
+from api.serializers import *
+import json
 
 
 # not a view can be moved elsewhere
@@ -76,7 +80,6 @@ def try_remove_relationship(user, friend):
             msg += " You were never friends with %s, I'm sorry :(" % friend
         return msg
 #####################################################
-
 
 def remove_relationship(request, context):
         unfrienduserform_valid = context['unfrienduserform'].is_valid()
@@ -169,9 +172,38 @@ def nodes(request):
         context = {'nodes_list': nodes_list}
         return render(request, 'posts/nodes.html', context)
 
+def get_remote(request, ext):
+        url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
+        author = Author.objects.get(user=request.user)
+        authStr = str(author.id)+"@team5:team5"
+        print "authstr", authStr
+        headers = {
+                'Authorization': "Basic " + str(base64.b64encode(authStr)),
+                'Content-Type': 'application/json',
+        }
+        r = requests.get(url, headers=headers)
+        return r.json()
+
+def post_remote(request, ext, payload):
+        url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
+        author = Author.objects.get(user=request.user)
+        authStr = str(author.id)+"@team5:team5"
+        headers = {
+                'Authorization': "Basic " + str(base64.b64encode(authStr)),
+                'Content-Type': 'application/json',
+        }
+        print "url", url
+        r = requests.post(url, headers=headers, json=payload)
+        return r.status_code
+        
+
 
 # prob should change this to a form view
 def index(request):
+        try:
+            remote_posts = get_remote(request, '/posts/')['posts']
+        except:
+            remote_posts = list()
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
         if request.method == "POST":
@@ -189,7 +221,7 @@ def index(request):
         latest_img_list = Image.objects.order_by('-published')[:5]
         context = {
             'latest_image_list': latest_img_list,
-            'latest_post_list': latest_post_list,
+            'latest_post_list': list(latest_post_list) + remote_posts,
             'form': form
         }
         return render(request, 'posts/index.html', context)
@@ -219,34 +251,94 @@ def delete_post(request, id):
 
 
 def post_detail(request, id):
-        post = get_object_or_404(Post, id=id)
-        comments = Comment.objects.select_related().filter(post=id)
-        if request.method == "POST":
-            form = PostForm(request.POST, instance=post)
-            cform = CommentForm(request.POST)
-            if form.is_valid():
-                post = form.save(commit=False)
-                post.author = Author.objects.get(user=request.user)
-                post.published_date = timezone.now()
-                post.save()
-                # the "id" part must be the same as the P<"id" in url.py
-                #return redirect('posts:detail', id=post.pk)
-            elif cform.is_valid():
-                comment = cform.save(commit=False)
-                comment.published = timezone.now()
-                comment.author = Author.objects.get(user=request.user)
-                comment.post=post
-                comment.save()
-                #return redirect('posts:detail', id=post.pk)
+        post_Q = Post.objects.filter(id=id)
+        comment = None
+        remote = False
+        if not post_Q:
+                post = get_remote(request, '/posts/'+id+'/')
+                comments = post['comments']
+                remote = True
         else:
-            form = PostForm(initial={'content': post.content})
+                post = post_Q.values()[0]
+                comments = Comment.objects.select_related().filter(post=id)
+        if request.method == "POST":
+                # Hackyyy OMG
+                if not remote:
+                        form = PostForm(request.POST, instance=post_Q[0])
+                else:
+                        form = PostForm
+
+                
+                cform = CommentForm(request.POST)
+                print "sdfsd",request.POST,"sd"
+                if not remote and form.is_valid():
+                        post = form.save(commit=False)
+                        post.author = Author.objects.get(user=request.user)
+                        post.published_date = timezone.now()
+                        post.save()
+                        # the "id" part must be the same as the P<"id" in url.py
+                        #return redirect('posts:detail', id=post.pk)
+                elif cform.is_valid():
+                        if not remote:
+                                comment = cform.save(commit=False)
+                                comment.published = timezone.now()
+                                comment.author = Author.objects.get(user=request.user)
+                                comment.post=post_Q[0]
+                                comment.save()
+                        else:
+                                ext = "/posts/"+str(id)+"/comments"
+                                payload = {
+                                        "comment": request.POST['comment'],
+                                        "contentType": request.POST['contentType'],
+                                }
+                                post_remote(request, ext, payload)
+        else:
+            form = PostForm(initial={'content': post['content']})
             cform = CommentForm()
 
         isAuthenticated = request.user.is_authenticated()
         isAuthor = False
-        if(isAuthenticated):
-            isAuthor = Author.objects.get(user=request.user).user == post.author.user
+        if isAuthenticated and not remote:
+            isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
         return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
+
+
+def get_profile(request):
+        if request.method == "POST":
+            formProfile = UserProfile(request.POST)
+
+            if formProfile.is_valid():
+                author = Author.objects.get(user=request.user)
+                author.displayName = formProfile.cleaned_data["displayname"]
+                author.host = formProfile.cleaned_data["host"]
+                author.url = formProfile.cleaned_data["url"]
+                author.github = formProfile.cleaned_data["github"]
+                author.id = formProfile.cleaned_data["id"]
+                author.save()
+            return redirect('posts:update_profile')
+        else:
+            formPost = PostForm()
+            formProfile = UserProfile()
+
+            latest_post_list = Post.objects.filter(
+                    Q(author=Author.objects.get(user=request.user)))
+            latest_img_list = Image.objects.order_by('-published')[:5]
+            author = Author.objects.get(user=request.user)
+
+            formProfile.fields["username"] = request.user.username
+            formProfile.fields["displayname"] = author.displayName
+            formProfile.fields["host"] = author.host
+            formProfile.fields["url"] = author.url
+            formProfile.fields["github"] = author.github
+            formProfile.fields["id"] = author.id
+
+            context = {
+                'latest_image_list': latest_img_list,
+                'latest_post_list': latest_post_list,
+                'form': formPost,
+                'formProfile': formProfile,
+            }
+            return render(request, 'posts/profile.html', context)
 
 
 # @api_view(['GET'])

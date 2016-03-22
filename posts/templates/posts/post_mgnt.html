@@ -7,10 +7,8 @@
 <label>You want to delete multiple posts?</label>
 
 <br><br>
-
 {% if latest_post_list %}
-
-<table sytle = "width:100%">
+<table >
 {% for post in latest_post_list %}
 	<tr>
 		<td><input type="checkbox" name = "id" value = {{post.id}}></td>
