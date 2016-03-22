@@ -14,9 +14,9 @@ urlpatterns = [
 
     url(r'^nodes/$', views.nodes, name='nodes'),
 
+    url(r'^profile/$', views.get_profile, name='update_profile'),
+
     url(r'^(?P<id>[^/]+)/$', views.post_detail, name='detail'),
 
     url(r'^(?P<id>[^/]+)$', views.delete_post, name='delete_post'),
-
-        
 ]

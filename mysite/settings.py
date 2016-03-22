@@ -16,7 +16,7 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # adjust to turn off when on Openshift, but allow an environment variable to override on PAAS
-
+#DEBUG = ON_PAAS
 DEBUG = not ON_PAAS
 DEBUG = DEBUG or os.getenv("debug","false").lower() == "true"
 
@@ -153,6 +153,9 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPagination'
 }
+
+
+
 
 
 # Database

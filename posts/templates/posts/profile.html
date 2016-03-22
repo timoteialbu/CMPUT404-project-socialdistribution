@@ -1,0 +1,72 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
+{% load markdown_deux_tags %}
+
+    <div id="userProfile">
+        <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">Profile</h1>
+
+        <h2 style="font-style:italic;"><span style="font-size:14px;">Personal Information</span></h2>
+
+        <form method="POST" class="UserProfile">{% csrf_token %}
+
+            <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text" value="{{ formProfile.fields.username }}" /></span></p>
+
+            <p><span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; <input name="displayname" type="text" value="{{ formProfile.fields.displayname }}" /></span></p>
+
+            <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="host" size="30" type="text" value="{{ formProfile.fields.host }}" /></span></p>
+
+            <p><span style="font-size:12px;">Url: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="url" size="30" type="text" value="{{ formProfile.fields.host }}" /></span></p>
+
+            <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text" value="{{ formProfile.fields.github }}" /></span></p>
+
+            <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id" size="45" type="text" value="{{ formProfile.fields.id }}" /></span></p>
+
+            <button type="submit" value="save">Update</button>
+
+        </form>
+
+    </div>
+
+    <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">Posts</h1>
+
+    <hr />
+
+    <div id="showContent">
+        {% if latest_post_list %}
+            {% for post in latest_post_list %}
+                {% if post.contentType == 'text/plain' %}
+                    <h2><span style="font-size:14px;">
+                    <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
+                    </span></h2>
+                    <p><span style="font-size:12px;">{{ post.content|linebreaks }}</span></p>
+                {% else %}
+                    <h2><span style="font-size:14px;">
+                    <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
+                    </span></h2>
+                    <p><span style="font-size:12px;">{{ post.content|markdown }}</span></p>
+                {% endif %}
+
+            <form action="comment" enctype="multipart/form-data" id="f1" method="get" name="addComment" target="_blank"><input name="btnComment" type="button" value="Comment" />&nbsp;</form>
+
+            <hr />
+
+            {% endfor %}
+
+        {% else %}
+            <p>No posts are available!</p>
+        {% endif %}
+
+        {% if latest_image_list %}
+            <ul>
+            {% for image in latest_image_list %}
+            <img src={{ image.img.url }} alt="My_image"/>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No images are available!</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

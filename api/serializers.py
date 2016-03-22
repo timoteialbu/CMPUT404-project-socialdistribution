@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Post, Author, Comment, Friends, FriendsPair
+from api.models import Post, Author, Comment
 from friendship.models import Friend
 from api.pagination import  CustomPagination
 from rest_framework import pagination, serializers
@@ -80,6 +80,10 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         id = str(obj.id)
         uri =  reverse('post-comments', kwargs={'uuid': id})
         uri =  self.context['request'].build_absolute_uri(uri)
+        if self.comment_count(obj) > 5:
+            uri = uri + "?page=2"
+        else:
+            uri = None
         return uri
 
     def query_type(self, obj):
