@@ -30,6 +30,14 @@ class AddFriendForm(forms.Form):
     fields = ('username',)
 
 
+class UserProfile(forms.Form):
+    username = forms.CharField(label='Username', required=False)
+    displayname = forms.CharField(label='Name', required=False)
+    host = forms.CharField(label='Host', required=False)
+    url = forms.CharField(label='Host', required=False)
+    github = forms.CharField(label='Github', required=False)
+    id = forms.CharField(label='Id', required=False)
+
 class UnFriendUserForm(forms.Form):
     username = forms.CharField(label='username', required=False)
 
