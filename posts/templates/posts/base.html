@@ -138,7 +138,11 @@
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script>
     $("img").addClass("img-responsive img-thumbnail");
-    $(window).resize(function(){$("body").css("padding-top", $(".navbar-fixed-top").height());});
+    var w = $(window);
+    var r = function(){$("body").css("padding-top", $(".navbar-fixed-top").height());}
+    w.resize(r);
+    w.load(r);
+
     </script>
 
 </body>
