@@ -165,7 +165,8 @@ REST_FRAMEWORK = {
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = '/Users/alain/workspace/csvm/~04/project/CMPUT404-project-socialdistribution/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
 
@@ -235,6 +236,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR,"static"),
+    #os.path.join(os.path.dirname(__file__), 'static'),
 )
 
 TEMPLATE_DIRS = (

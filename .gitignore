@@ -3,12 +3,12 @@ db.sqlite3
 *.pyc
 .project
 .pydevproject
+*.DS_Store
 vpython27
 venv
 passwords.txt
-media/images/uploads/*
+media/*
 */migrations/
 timotei-project
 project
 *#
-
