@@ -1,13 +1,15 @@
-from api.models import *
 from api.serializers import *
 from api.models import Author
-from rest_framework import generics, permissions, pagination
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((IsAuthenticated,))
 def friend_relationship(request, uuid):
         '''GET returns friends of author_id'''
         # a reponse if friends or not
@@ -29,7 +31,10 @@ def friend_relationship(request, uuid):
                         }
             return Response(response, status=status.HTTP_200_OK)
 
+
 @api_view(['GET', 'POST'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((IsAuthenticated,))
 def friends_check(request, friend1_uuid, friend2_uuid):
         """
         Returns your friend relationship with a certain author
@@ -51,5 +56,7 @@ def friends_check(request, friend1_uuid, friend2_uuid):
 
 
 @api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((IsAuthenticated,))
 def friend_request(request):
         return None

@@ -80,6 +80,10 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         id = str(obj.id)
         uri =  reverse('post-comments', kwargs={'uuid': id})
         uri =  self.context['request'].build_absolute_uri(uri)
+        if self.comment_count(obj) > 5:
+            uri = uri + "?page=2"
+        else:
+            uri = None
         return uri
 
     def query_type(self, obj):

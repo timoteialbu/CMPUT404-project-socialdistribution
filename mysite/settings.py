@@ -16,7 +16,7 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # adjust to turn off when on Openshift, but allow an environment variable to override on PAAS
-
+#DEBUG = ON_PAAS
 DEBUG = not ON_PAAS
 DEBUG = DEBUG or os.getenv("debug","false").lower() == "true"
 
@@ -167,7 +167,8 @@ JWT_AUTH = {
 
 
 ######CHANGE!!! Run my_setup.py
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+MEDIA_ROOT = '/Users/Yufei/Desktop/CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 
@@ -245,3 +246,4 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
 )
+

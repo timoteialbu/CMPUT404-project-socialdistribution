@@ -1,5 +1,4 @@
 {% extends 'posts/base.html' %}
-
 {% block content %}
 
 {% load markdown_deux_tags %}
@@ -21,6 +20,17 @@
  }
  var next = makePost();
 </script>
+
+
+
+<style type="text/css">
+    .nav-bar {
+
+        
+    }
+</style>
+
+<center>
 <div id="makePost" style="display: none">
     <h1>New Content</h1>
     <form method="POST" class="post-form">{% csrf_token %}
@@ -30,6 +40,12 @@
     </form>
     <button type=button id = f2 onclick="next();">Back</button>
 </div>
+</center>
+
+
+
+
+<center>
 <div id="showContent">
     {% if latest_post_list %}
     <ul>
@@ -59,25 +75,21 @@
     {% else %}
         <p>No images are available!</p>
     {% endif %}
+</div>
+<center>
 
+<div class = "nav-bar">
     {% if user.is_authenticated %}
-
-    <button type=button id = f1 onclick="next();">Create New Post</button>
-
-    <form action={% url 'posts:create_img' %} method="get">
-		    <button type="submit" value="create_img" >Upload Image</button>
-    </form>
-
-    <form action={% url 'posts:post_mgnt' %} method="get">
-            <button type="submit" value="delete_post">Manage Posts</button>
-    </form>
-
-    <form action={% url 'posts:friend_mgnt' %} method="get">
-		    <button type="submit" value="friend_mgnt" >Manage Friends</button>
-    </form>
-    <form action={% url 'posts:nodes' %} method="get">
-		    <button type="submit" value="nodes" >Observe Nodes</button>
-    </form>    
+    <table><tr>
+    <td>
+        <button type=button id = f1 onclick="next();">Create New Post</button>
+    </td>
+    <td style="float: right;">
+        <form action={% url 'posts:create_img' %} method="get">
+            <button type="submit" value="create_img" >Upload Image</button>
+        </form>
+    </td>
+    </table>
     {% endif %}
 </div>
 {% endblock %}
