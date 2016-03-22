@@ -26,7 +26,7 @@
           <li><a href='/posts/'><span>Friends</span></a></li>
           <li><a href='/account/logout'><span>Log out</span></a></li>
     {% else %}
-        </ul><ul>
+  </ul><ul class="nav">
           <form class="login navbar-right navbar-form form-inline" method="POST" action="/account/login/">{% csrf_token %}
 
           <li class="form-group">
@@ -80,8 +80,10 @@
 
       {% endblock %}
   {% else %}
+
     <center>
     <form class="signup form-group jumbotron" id="signup_form" method="post" action="/account/signup/">{% csrf_token %}
+      <h1>Why not Register?</h1>
       <table class="table-condensed">
       <div class="input-group">
         <tr>

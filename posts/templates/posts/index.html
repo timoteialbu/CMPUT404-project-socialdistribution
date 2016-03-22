@@ -8,12 +8,12 @@
      var n = 0;
      var flip = function(){
 	 if(n % 2){
-	     document.getElementById('makePost').style.display="none";	
-	     document.getElementById('showContent').style.display="block";	
+	     document.getElementById('makePost').style.display="none";
+	     document.getElementById('showContent').style.display="block";
 	 }
 	 else{
-	     document.getElementById('makePost').style.display="block";	
-	     document.getElementById('showContent').style.display="none";	
+	     document.getElementById('makePost').style.display="block";
+	     document.getElementById('showContent').style.display="none";
 	 }
 	++n;
      }
@@ -21,14 +21,6 @@
  }
  var next = makePost();
 </script>
-
-
-
-<style type="text/css">
-    .nav-bar {
-        
-    }
-</style>
 
 <center>
 <div id="makePost" style="display: none">
@@ -94,7 +86,7 @@
         </form>
         <form action={% url 'posts:nodes' %} method="get">
                 <button type="submit" value="nodes" >Observe Nodes</button>
-        </form>    
+        </form>
     {% endif %}
 </div>
 {% endblock %}
