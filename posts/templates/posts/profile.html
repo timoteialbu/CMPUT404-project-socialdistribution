@@ -9,19 +9,24 @@
 
         <h2 style="font-style:italic;"><span style="font-size:14px;">Personal Information</span></h2>
 
-        <p><span style="font-size:12px;">Username: &nbsp; <input name="txtUsername" type="text" value="{{ user.username }}" /></span></p>
+        <form method="POST" class="UserProfile">{% csrf_token %}
 
-        <p><span style="font-size:12px;">First Name: <input name="txtFirstName" type="text" value="{{ user.first_name }}" /></span></p>
+            <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text" value="{{ formProfile.fields.username }}" /></span></p>
 
-        <p><span style="font-size:12px;">Last Name: <input name="txtLastName" type="text" value="{{ user.last_name }}" /></span></p>
+            <p><span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; <input name="displayname" type="text" value="{{ formProfile.fields.displayname }}" /></span></p>
 
-        <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="txtHost" type="url" value="{{ author.host }}" /></span></p>
+            <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="host" size="30" type="text" value="{{ formProfile.fields.host }}" /></span></p>
 
-        <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="txtGithub" type="text" value="{{ author.github }}" /></span></p>
+            <p><span style="font-size:12px;">Url: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="url" size="30" type="text" value="{{ formProfile.fields.host }}" /></span></p>
 
-        <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="txtId" size="45" type="text" value="{{ author.id }}" /></span></p>
+            <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text" value="{{ formProfile.fields.github }}" /></span></p>
 
-        <p><input name="btnUpdate" type="button" value="Update" /></p>
+            <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id" size="45" type="text" value="{{ formProfile.fields.id }}" /></span></p>
+
+            <button type="submit" value="save">Update</button>
+
+        </form>
+
     </div>
 
     <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">Posts</h1>

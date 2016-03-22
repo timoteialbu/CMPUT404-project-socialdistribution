@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import *
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, UserProfile
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, HttpResponseRedirect
 from api.serializers import PostSerializer
@@ -76,7 +76,6 @@ def try_remove_relationship(user, friend):
             msg += " You were never friends with %s, I'm sorry :(" % friend
         return msg
 #####################################################
-
 
 def remove_relationship(request, context):
         unfrienduserform_valid = context['unfrienduserform'].is_valid()
@@ -246,29 +245,40 @@ def post_detail(request, id):
 
 def get_profile(request):
         if request.method == "POST":
-            form = PostForm(request.POST)
-            if form.is_valid():
-                post = form.save(commit=False)
-                post.author = Author.objects.get(user=request.user)
-                post.published = timezone.now()
-                post.save()
-                # future ref make to add the namespace ie "posts"
-                return redirect('posts:detail', id=post.pk)
-        else:
-            form = PostForm()
+            formProfile = UserProfile(request.POST)
 
-        latest_post_list = Post.objects.filter(
-                Q(author=Author.objects.get(user=request.user)))
-        latest_img_list = Image.objects.order_by('-published')[:5]
-        author = Author.objects.get(user=request.user)
-        context = {
-            'latest_image_list': latest_img_list,
-            'latest_post_list': latest_post_list,
-            'form': form,
-            'author': author,
-            'user': request.user
-        }
-        return render(request, 'posts/profile.html', context)
+            if formProfile.is_valid():
+                author = Author.objects.get(user=request.user)
+                author.displayName = formProfile.cleaned_data["displayname"]
+                author.host = formProfile.cleaned_data["host"]
+                author.url = formProfile.cleaned_data["url"]
+                author.github = formProfile.cleaned_data["github"]
+                author.id = formProfile.cleaned_data["id"]
+                author.save()
+            return redirect('posts:update_profile')
+        else:
+            formPost = PostForm()
+            formProfile = UserProfile()
+
+            latest_post_list = Post.objects.filter(
+                    Q(author=Author.objects.get(user=request.user)))
+            latest_img_list = Image.objects.order_by('-published')[:5]
+            author = Author.objects.get(user=request.user)
+
+            formProfile.fields["username"] = request.user.username
+            formProfile.fields["displayname"] = author.displayName
+            formProfile.fields["host"] = author.host
+            formProfile.fields["url"] = author.url
+            formProfile.fields["github"] = author.github
+            formProfile.fields["id"] = author.id
+
+            context = {
+                'latest_image_list': latest_img_list,
+                'latest_post_list': latest_post_list,
+                'form': formPost,
+                'formProfile': formProfile,
+            }
+            return render(request, 'posts/profile.html', context)
 
 
 # @api_view(['GET'])
