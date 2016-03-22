@@ -5,13 +5,13 @@
   <meta charset='utf-8'>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
+  <link rel="shortcut icon" href="/static/favicon.ico" />
 
 <title>Squanch Social Network</title>
 <!-- Resolves to /static/bootstrap/css/bootstrap.min.css -->
 <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
+<style>body{margin-bottom:10%;}</style>
 </head>
 
 <body>
@@ -136,7 +136,10 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-
+    <script>
+    $("img").addClass("img-responsive img-thumbnail");
+    $(window).resize(function(){$("body").css("padding-top", $(".navbar-fixed-top").height());});
+    </script>
 
 </body>
 </html>
