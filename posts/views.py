@@ -11,7 +11,10 @@ from api.serializers import PostSerializer
 from rest_framework.response import Response
 from django.template import loader
 from django.template import RequestContext
-
+import requests
+import base64
+from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 
 
 
@@ -172,9 +175,22 @@ def nodes(request):
         context = {'nodes_list': nodes_list}
         return render(request, 'posts/nodes.html', context)
 
+def get_remote(request, ext):
+        url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
+        author = Author.objects.get(user=request.user)
+        authStr = str(author.id)+"@team5:team5"
+        headers = {
+                'Authorization': base64.b64encode(authStr),
+                'Content-Type': 'application/json',
+        }
+        
+        r = requests.get(url, headers=headers)
+        return r.json()
+
 
 # prob should change this to a form view
 def index(request):
+        remote_posts = get_remote(request, '/posts/')['posts']
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
         if request.method == "POST":
@@ -192,7 +208,7 @@ def index(request):
         latest_img_list = Image.objects.order_by('-published')[:5]
         context = {
             'latest_image_list': latest_img_list,
-            'latest_post_list': latest_post_list,
+            'latest_post_list': list(latest_post_list) + remote_posts,
             'form': form
         }
         return render(request, 'posts/index.html', context)
@@ -222,33 +238,41 @@ def delete_post(request, id):
 
 
 def post_detail(request, id):
-        post = get_object_or_404(Post, id=id)
-        comments = Comment.objects.select_related().filter(post=id)
+        post = Post.objects.filter(id=id)
+        comment = None
+        remote = False
+        if not post:
+                post = get_remote(request, '/posts/'+id+'/')
+                comments = post['comments']
+                remote = True
+        else:
+                post = post.values()[0]
+                comments = Comment.objects.select_related().filter(post=id)
         if request.method == "POST":
-            form = PostForm(request.POST, instance=post)
-            cform = CommentForm(request.POST)
-            if form.is_valid():
+                form = PostForm(request.POST, instance=Post(**post))
+                cform = CommentForm(request.POST)
+                #                if form.is_valid():
                 post = form.save(commit=False)
                 post.author = Author.objects.get(user=request.user)
                 post.published_date = timezone.now()
                 post.save()
                 # the "id" part must be the same as the P<"id" in url.py
                 #return redirect('posts:detail', id=post.pk)
-            elif cform.is_valid():
-                comment = cform.save(commit=False)
-                comment.published = timezone.now()
-                comment.author = Author.objects.get(user=request.user)
-                comment.post=post
-                comment.save()
-                #return redirect('posts:detail', id=post.pk)
+                # elif cform.is_valid():
+                #         comment = cform.save(commit=False)
+                #         comment.published = timezone.now()
+                #         comment.author = Author.objects.get(user=request.user)
+                #         comment.post=Post(**post)
+                #         comment.save()
+                        #return redirect('posts:detail', id=post.pk)
         else:
-            form = PostForm(initial={'content': post.content})
+            form = PostForm(initial={'content': post['content']})
             cform = CommentForm()
 
         isAuthenticated = request.user.is_authenticated()
         isAuthor = False
-        if(isAuthenticated):
-            isAuthor = Author.objects.get(user=request.user).user == post.author.user
+        #if(isAuthenticated):
+        #    isAuthor = Author.objects.get(user=request.user).user == post.author.user
         return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 
