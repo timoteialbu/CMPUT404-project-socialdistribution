@@ -17,9 +17,9 @@ urlpatterns = patterns('',
     url(r'^api/', include('api.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^profile/',include('posts.urls', namespace="profile")),
+    
 )
 
 
 if settings.DEBUG:
     urlpatterns.append(url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}))
-    

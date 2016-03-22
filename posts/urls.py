@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
 
     url(r'^create_img/$', views.create_img, name='create_img'),
-    
+
     url(r'^$', views.index, name='index'),
 
     #url(r'^create_img/$', views.create_img, name='create_img'),
@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^(?P<id>[^/]+)/$', views.post_detail, name='detail'),
 
     url(r'^(?P<id>[^/]+)$', views.delete_post, name='delete_post'),
+
 ]
