@@ -203,7 +203,10 @@ def post_remote(request, ext, payload):
 
 # prob should change this to a form view
 def index(request):
-        remote_posts = get_remote(request, '/posts/')['posts']
+        try:
+            remote_posts = get_remote(request, '/posts/')['posts']
+        except:
+            remote_posts = list()
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
         if request.method == "POST":
