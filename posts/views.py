@@ -15,7 +15,8 @@ import requests
 import base64
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
-
+from api.serializers import *
+import json
 
 
 # not a view can be moved elsewhere
@@ -178,13 +179,26 @@ def get_remote(request, ext):
         url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
         author = Author.objects.get(user=request.user)
         authStr = str(author.id)+"@team5:team5"
+        print "authstr", authStr
         headers = {
-                'Authorization': base64.b64encode(authStr),
+                'Authorization': "Basic " + str(base64.b64encode(authStr)),
                 'Content-Type': 'application/json',
         }
-        
         r = requests.get(url, headers=headers)
         return r.json()
+
+def post_remote(request, ext, payload):
+        url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
+        author = Author.objects.get(user=request.user)
+        authStr = str(author.id)+"@team5:team5"
+        headers = {
+                'Authorization': "Basic " + str(base64.b64encode(authStr)),
+                'Content-Type': 'application/json',
+        }
+        print "url", url
+        r = requests.post(url, headers=headers, json=payload)
+        return r.status_code
+        
 
 
 # prob should change this to a form view
@@ -237,41 +251,55 @@ def delete_post(request, id):
 
 
 def post_detail(request, id):
-        post = Post.objects.filter(id=id)
+        post_Q = Post.objects.filter(id=id)
         comment = None
         remote = False
-        if not post:
+        if not post_Q:
                 post = get_remote(request, '/posts/'+id+'/')
                 comments = post['comments']
                 remote = True
         else:
-                post = post.values()[0]
+                post = post_Q.values()[0]
                 comments = Comment.objects.select_related().filter(post=id)
         if request.method == "POST":
-                form = PostForm(request.POST, instance=Post(**post))
+                # Hackyyy OMG
+                if not remote:
+                        form = PostForm(request.POST, instance=post_Q[0])
+                else:
+                        form = PostForm
+
+                
                 cform = CommentForm(request.POST)
-                #                if form.is_valid():
-                post = form.save(commit=False)
-                post.author = Author.objects.get(user=request.user)
-                post.published_date = timezone.now()
-                post.save()
-                # the "id" part must be the same as the P<"id" in url.py
-                #return redirect('posts:detail', id=post.pk)
-                # elif cform.is_valid():
-                #         comment = cform.save(commit=False)
-                #         comment.published = timezone.now()
-                #         comment.author = Author.objects.get(user=request.user)
-                #         comment.post=Post(**post)
-                #         comment.save()
+                print "sdfsd",request.POST,"sd"
+                if not remote and form.is_valid():
+                        post = form.save(commit=False)
+                        post.author = Author.objects.get(user=request.user)
+                        post.published_date = timezone.now()
+                        post.save()
+                        # the "id" part must be the same as the P<"id" in url.py
                         #return redirect('posts:detail', id=post.pk)
+                elif cform.is_valid():
+                        if not remote:
+                                comment = cform.save(commit=False)
+                                comment.published = timezone.now()
+                                comment.author = Author.objects.get(user=request.user)
+                                comment.post=post_Q[0]
+                                comment.save()
+                        else:
+                                ext = "/posts/"+str(id)+"/comments"
+                                payload = {
+                                        "comment": request.POST['comment'],
+                                        "contentType": request.POST['contentType'],
+                                }
+                                post_remote(request, ext, payload)
         else:
             form = PostForm(initial={'content': post['content']})
             cform = CommentForm()
 
         isAuthenticated = request.user.is_authenticated()
         isAuthor = False
-        #if(isAuthenticated):
-        #    isAuthor = Author.objects.get(user=request.user).user == post.author.user
+        if isAuthenticated and not remote:
+            isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
         return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
 
 
