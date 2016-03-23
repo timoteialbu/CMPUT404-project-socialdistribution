@@ -10,3 +10,4 @@ whitenoise==2.0.6
 wsgiref==0.1.2
 gunicorn
 requests
+dj-static==0.0.6
