@@ -8,4 +8,3 @@ import re
 if __name__ == '__main__':
 	os.system("python manage.py migrate")
 	os.system("python manage.py collectstatic")
-	os.system("python manage.py runserver")
