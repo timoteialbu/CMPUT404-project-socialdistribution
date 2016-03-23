@@ -10,11 +10,7 @@ SECRET_KEY = ')_7av^!cy(wfx=k#3*7x+(=j^fzv+ot^1@sh9s9t=8$bu@r(z$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # adjust to turn off when on Openshift, but allow an environment variable to override on PAAS
-#DEBUG = ON_PAAS
 DEBUG = True
-
-if ON_PAAS and DEBUG:
-    print("*** Warning - Debug mode is on ***")
 
 TEMPLATE_DEBUG = True
 
