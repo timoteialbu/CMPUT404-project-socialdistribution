@@ -6,4 +6,6 @@ djangorestframework
 django-markdown-deux
 docutils
 djangorestframework-jwt
--e .
+whitenoise==2.0.6
+wsgiref==0.1.2
+requests
