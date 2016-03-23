@@ -153,7 +153,7 @@ JWT_AUTH = {
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/home/shawn/Desktop/404/test/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
 # stock django, local development.
