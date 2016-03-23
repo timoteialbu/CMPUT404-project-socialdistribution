@@ -168,7 +168,7 @@ JWT_AUTH = {
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = '/home/shawn/Desktop/404/test/CMPUT404-project-socialdistribution/media/'
+MEDIA_ROOT = 'C:\Users	imot\OneDrive\Documents\GitHub\CMPUT404-project-socialdistribution/media/'
 MEDIA_URL = '/media/'
 
 
