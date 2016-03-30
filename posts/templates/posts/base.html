@@ -23,10 +23,19 @@
         <ul class="nav navbar-nav">
           <li><a href='/posts/'><span>Home</span></a></li>
     {% if user.is_authenticated %}
-          <li><a href='/posts/'><span>Posts</span></a></li>
+          <li><a href='/posts/post_mgnt'><span>Posts</span></a></li>
+          <li><a href='/posts/friend_mgnt/'><span>Friends</span></a></li>
           <li><a href='/posts/profile/'><span>Profile</span></a></li>
-          <li><a href='/posts/'><span>Friends</span></a></li>
-          <li><a href='/account/logout'><span>Log out</span></a></li>
+          </ul>
+
+          <form class="login navbar-right navbar-form form-inline"
+                method="post" action="/account/logout/">{% csrf_token %}
+            <li class="form-group">
+              <button class="btn btn-default primaryAction" type="submit">Log Out</button>
+            </li>
+          </form>
+
+
     {% else %}
   </ul><ul class="nav">
           <form class="login navbar-right navbar-form form-inline" method="POST" action="/account/login/">{% csrf_token %}
