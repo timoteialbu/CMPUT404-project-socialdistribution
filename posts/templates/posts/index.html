@@ -2,6 +2,26 @@
 {% block content %}
 
 {% load markdown_deux_tags %}
+
+<style>
+
+table.post {
+    border: "1";
+    width:80%;
+    border:1px solid #d4d4d4;
+}
+
+table.post td { 
+    width: 40%;
+}
+
+table.post th {
+    padding:10px;
+    width:40px;
+}
+
+</style>
+
 <script>
  function makePost(){
      var n = 0;
@@ -42,17 +62,45 @@
 <div id="showContent container">
     <!-- POST LIST -->
     {% if latest_post_list %}
-    <dl>
         {% for post in latest_post_list %}
+        <table class = "post">
         {% if post.contentType == 'text/plain' %}
-            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
-	          <dd><p>{{ post.content|linebreaks }}</p></dd>
+        <tr>
+            <th>
+            <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg" 
+            alt="Note" style="height:32px;width:32px">
+            </th>
+
+            <td>     
+            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
+            </td>
+            <td>
+            <p>{{ post.content|linebreaks }}</p>
+            </td>
+            <br>
+        </tr>
+        </table>
+
         {% else %}
-            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
-            <dd><p>{{ post.content|markdown }}</p></dd>
+        <table class = "post">
+        <tr>
+            <th>
+            <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg" 
+            alt="Note" style="height:32px;width:32px">
+            </th>
+            <td>
+            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
+            </td>
+            <td>
+            <p>{{ post.content|markdown }}</p>
+            </td>
+            <br>
+        </tr>
+        </table>
         {% endif %}
         {% endfor %}
-    </dl>
+    </table>
+
     {% else %}
         <h2>No posts are available!</h2>
     {% endif %}
