@@ -11,13 +11,17 @@ table.post {
     border:1px solid #d4d4d4;
 }
 
-table.post td { 
-    width: 40%;
+td.post_title { 
+    width: 20%;
+}
+
+td.post_content { 
+    width: 60%;
 }
 
 table.post th {
     padding:10px;
-    width:40px;
+    width: 10%;
 }
 
 </style>
@@ -69,14 +73,18 @@ table.post th {
             <th>
             <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg" 
             alt="Note" style="height:32px;width:32px">
+            {{ post.author.user }}
             </th>
 
-            <td>     
+            <td class = "post_title">     
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </td>
-            <td>
+            <tr>
+            <th></th>
+            <td class = "post_content">
             <p>{{ post.content|linebreaks }}</p>
             </td>
+            </tr>
             <br>
         </tr>
         </table>
@@ -87,11 +95,12 @@ table.post th {
             <th>
             <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg" 
             alt="Note" style="height:32px;width:32px">
+            {{ post.author.user }}
             </th>
-            <td>
+            <td class = "post_title">
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </td>
-            <td>
+            <td class = "post_content">
             <p>{{ post.content|markdown }}</p>
             </td>
             <br>
