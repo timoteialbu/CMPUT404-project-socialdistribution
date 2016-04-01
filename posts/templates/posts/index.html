@@ -79,12 +79,22 @@ table.post th {
             <td class = "post_title">     
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </td>
+
             <tr>
-            <th></th>
-            <td class = "post_content">
-            <p>{{ post.content|linebreaks }}</p>
-            </td>
+                <th></th>
+                <td class = "post_content">
+                <p>{{ post.content|linebreaks }}</p>
+                </td>
             </tr>
+
+            {% for comment in comments_dict|get_item:post.id %}
+                <tr>
+                <th></th>
+                <td class = "post_content">
+                <p>{{comment.comment}}</p>
+                </td>
+            </tr>
+            {% endfor%}
             <br>
         </tr>
         </table>
@@ -100,9 +110,24 @@ table.post th {
             <td class = "post_title">
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </td>
-            <td class = "post_content">
-            <p>{{ post.content|markdown }}</p>
-            </td>
+
+            <tr>
+                <th></th>
+                <td class = "post_content">
+                <p>{{ post.content|linebreaks }}</p>
+                </td>
+            </tr>
+
+            {% for comment in post.comments %}
+            <tr>
+                <th></th>
+                <td class = "post_content">
+                there should have comments
+                <p>comment</p>
+                </td>
+            </tr>
+            {% endfor%}
+
             <br>
         </tr>
         </table>

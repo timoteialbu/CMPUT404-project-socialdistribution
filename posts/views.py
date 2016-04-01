@@ -17,7 +17,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
 from api.serializers import *
 import json
+from django.template.defaulttags import register
 
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 # not a view can be moved elsewhere
 #####################################################
@@ -204,6 +209,7 @@ def index(request):
             remote_posts = get_remote(request, '/posts/')['posts']
         except:
             remote_posts = list()
+
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
         if request.method == "POST":
@@ -217,12 +223,27 @@ def index(request):
                 return redirect('posts:detail', id=post.pk)
         else:
             form = PostForm()
+
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
+
+        comments_dict = {}
+        for p in latest_post_list:
+            comments = Comment.objects.filter(post=p.id)
+            comments_dict[p.id] = comments
+        
+        for p in latest_post_list:
+            print p.id
+            testing = comments_dict[p.id]
+            for cmt in testing:
+                print cmt
+        
         context = {
             'latest_image_list': latest_img_list,
             'latest_post_list': list(latest_post_list) + remote_posts,
-            'form': form
+            'form': form,
+            'comments_dict': comments_dict
+
         }
         return render(request, 'posts/index.html', context)
 
