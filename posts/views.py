@@ -132,11 +132,13 @@ def friend_mgnt(request):
                      Friend.objects.unread_requests(request.user)))
     all_friends = Friend.objects.friends(request.user)
 
-    context = { 'friendrequestform': FriendRequestForm(names=users),
-                'all_friends': all_friends
+    context = { 
+        'friendrequestform': FriendRequestForm(names=users),
+        'all_friends': all_friends
     }
 
     if request.method == "POST":
+        form = PostForm(request.POST)
         context.update({
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
@@ -145,25 +147,21 @@ def friend_mgnt(request):
         add_relationship(request, context)
         friend_requests(request, context, users)
     else:
+        form = PostForm()
         context.update({
             'addform': AddFriendForm(),
             'unfrienduserform': UnFriendUserForm(),
         })
 
     print "all_friends:", all_friends
+    context["form"] = form
     return render(request, 'posts/friend_mgnt.html', context)
 
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
-        print "post_mgnt -> latest_post_list"
-        print latest_post_list
-
-        context = {
-            'latest_post_list': latest_post_list
-        }
-
         if request.method == 'POST':
+            form = PostForm(request.POST)
             values = request.POST.getlist('id')
             for post in latest_post_list:
                 for id in values:
@@ -171,6 +169,12 @@ def post_mgnt(request):
                         post.delete()
 
             return redirect('posts:post_mgnt')
+        else:
+            form = PostForm()
+        context = {
+            'form': form,
+            'latest_post_list': latest_post_list
+        }
         return render(request, 'posts/post_mgnt.html', context)
 
 
@@ -224,7 +228,8 @@ def index(request):
                 post.published = timezone.now()
                 post.save()
                 # future ref make to add the namespace ie "posts"
-                return redirect('posts:detail', id=post.pk)
+                #return redirect('posts:detail', id=post.pk)
+                return redirect('posts:index')
         else:
             form = PostForm()
 
@@ -325,7 +330,7 @@ def post_detail(request, id):
 def get_profile(request):
         if request.method == "POST":
             formProfile = UserProfile(request.POST)
-
+            form = PostForm(request.POST)
             if formProfile.is_valid():
                 author = Author.objects.get(user=request.user)
                 author.displayName = formProfile.cleaned_data["displayname"]
@@ -336,7 +341,7 @@ def get_profile(request):
                 author.save()
             return redirect('posts:update_profile')
         else:
-            formPost = PostForm()
+            form = PostForm()
             formProfile = UserProfile()
 
             latest_post_list = Post.objects.filter(
@@ -354,7 +359,7 @@ def get_profile(request):
             context = {
                 'latest_image_list': latest_img_list,
                 'latest_post_list': latest_post_list,
-                'form': formPost,
+                'form': form,
                 'formProfile': formProfile,
             }
             return render(request, 'posts/profile.html', context)
