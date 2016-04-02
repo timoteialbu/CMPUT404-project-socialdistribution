@@ -102,11 +102,21 @@ function open_modale() {
     var modal = document.getElementById('myModal');
     modal.style.display = "block";
 }
+function open_modale2() {
+    // Get the modal
+    var modal = document.getElementById('myModal2');
+    modal.style.display = "block";
+}
 
 // When the user clicks on <span> (x), close the modal
 function close_modle() {
     // Get the modal
     var modal = document.getElementById('myModal');
+    modal.style.display = "none";
+}
+function close_modle2() {
+    // Get the modal
+    var modal = document.getElementById('myModal2');
     modal.style.display = "none";
 }
 
@@ -116,6 +126,10 @@ window.onclick = function(event) {
     var modal = document.getElementById('myModal');
     if (event.target == modal) {
         modal.style.display = "none";
+    }
+    var modal2 = document.getElementById('myModal2');
+    if (event.target == modal2) {
+        modal2.style.display = "none";
     }
 }
 </script>
@@ -201,7 +215,7 @@ window.onclick = function(event) {
       {% if can_add_psot %}
         <ul class="nav nav-pills nav-justified">
         
-            <li>
+<li>
 
 <!-- Trigger/Open The Modal -->
 <button id="myBtn" class="btn btn-default" onclick="open_modale();">Create New Post</button>
@@ -227,10 +241,34 @@ window.onclick = function(event) {
 
   </div>
 </div>
+</li>
 
-            </li>
+<li>
 
-            <li>
+<button id="myBtn" class="btn btn-default" onclick="open_modale2();">U Image</button>
+
+<div id="myModal2" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close" onclick = "close_modle2()">×</span>
+      <h2>New Content Here</h2>
+    </div>
+
+    <form method="POST" class="post-form">{% csrf_token %}
+    <div class="modal-body">
+      {{ form_image }}
+    </div>
+    <div class="modal-footer">
+      <button type="submit" value="save" class="btn btn-default">Upload</button>
+    </div>
+    </form>
+
+  </div>
+</div>
+
+
+
             <form action={% url 'posts:create_img' %} method="get">
               <button class="btn btn-default" type="submit" value="create_img" >Upload Image</button>
             </form>

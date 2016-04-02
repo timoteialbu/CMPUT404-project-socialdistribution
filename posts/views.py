@@ -215,22 +215,29 @@ def index(request):
             remote_posts = list()
 
         latest_post_list = get_posts(request)
-        latest_img_list = Image.objects.order_by('-published')[:5]
+        latest_img_list = Image.objects.order_by('-published')
         if request.method == "POST":
             form = PostForm(request.POST)
-            if form.is_valid():
+            form_image = UploadImgForm(request.POST, request.FILES)
+            if form.is_valid() and form_image.is_valid():
                 post = form.save(commit=False)
                 post.author = Author.objects.get(user=request.user)
                 post.published = timezone.now()
                 post.save()
+
+                img = form_image.save(commit=False)
+                img.author = Author.objects.get(user=request.user)
+                img.published = timezone.now()
+                img.save()
                 # future ref make to add the namespace ie "posts"
                 #return redirect('posts:detail', id=post.pk)
                 return redirect('posts:index')
         else:
             form = PostForm()
+            form_image = UploadImgForm()
 
         latest_post_list = get_posts(request)
-        latest_img_list = Image.objects.order_by('-published')[:5]
+        latest_img_list = Image.objects.order_by('-published')
 
         comments_dict = {}
         for p in latest_post_list:
@@ -241,6 +248,7 @@ def index(request):
             'latest_image_list': latest_img_list,
             'latest_post_list': list(latest_post_list) + remote_posts,
             'form': form,
+            'form_image': form_image,
             'comments_dict': comments_dict,
             'can_add_psot': True
         }
@@ -369,21 +377,6 @@ def get_profile(request):
 #     if request.method == 'GET':
 #         serializer = PostSerializer(post)
 #         return Response(serializer.data)
-
-
-
-
-def create_img(request):
-        if request.method == 'POST':
-            form = UploadImgForm(request.POST, request.FILES)
-            if form.is_valid():
-                img = form.save(commit=False)
-                img.author = Author.objects.get(user=request.user)
-                img.published = timezone.now()
-                img.save()
-                return redirect('posts:index')
-        else:
-            form = UploadImgForm()
 
 
 def create_img(request):
