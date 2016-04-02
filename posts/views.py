@@ -41,7 +41,7 @@ def get_posts(request):
             latest_post_list = Post.objects.filter(
                 Q(visibility='PUBLIC') |
                 Q(author=Author.objects.get(user=request.user)))
-        return latest_post_list
+        return latest_post_list.order_by('-published')
 
 
 def try_adding_friend(user, friend):
