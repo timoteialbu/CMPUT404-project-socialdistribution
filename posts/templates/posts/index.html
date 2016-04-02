@@ -10,6 +10,12 @@ table.post {
     border:1px solid #d4d4d4;
 }
 
+div.images {
+    border: "1";
+    width:80%;
+    border:0px solid #d4d4d4;
+}
+
 td.post_title { 
     width: 20%;
 }
@@ -26,6 +32,30 @@ td.post_comment {
 table.post th {
     padding:10px;
     width: 10%;
+}
+
+div.center {
+    width: 24.3%;
+    height: 20.42em;
+    top: 50%;
+    margin: 0.28em;
+    float: left;
+    overflow: hidden;
+    border: 3px double #000;
+    white-space: nowrap;
+    display: line-block;
+    vertical-align: middle;
+    text-align: center;
+}
+
+img.centeral {
+    width: 20em;
+    height: 20em;
+    display: block;
+    margin: auto auto auto auto;
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
 }
 </style>
 
@@ -146,17 +176,22 @@ function makePost(n) {
     {% else %}
         <h2>No posts are available!</h2>
     {% endif %}
+    <br>
 
     <!-- IMAGE LIST -->
+    <center>
     {% if latest_image_list %}
-    <dl>
+    <div class="images">
         {% for image in latest_image_list %}
-	    <dt><img src={{ image.img.url }} alt="My_image"/></dt>
+        <div class="center">
+	       <img class = "centeral" src={{ image.img.url }} alt="My_image"/>
+        </div>
         {% endfor %}
-    </dl>
+    </div>
     {% else %}
         <h2>No images are available!</h2>
     {% endif %}
+    </center>
 </div>
 </center>
 
@@ -164,15 +199,16 @@ function makePost(n) {
 <center>
 {% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
 <div class="nav-bar">
-    <table><tr>
-    <td>
-        <button type=button id = f1 onclick="next();">Create New Post</button>
-    </td>
-    <td style="float: right;">
-        <form action={% url 'posts:create_img' %} method="get">
-            <button type="submit" value="create_img" >Upload Image</button>
-        </form>
-    </td>
+    <table>
+    <tr>
+        <td>
+            <button type=button id = f1 onclick="next();">Create New Post</button>
+        </td>
+        <td style="float: right;">
+            <form action={% url 'posts:create_img' %} method="get">
+                <button type="submit" value="create_img" >Upload Image</button>
+            </form>
+        </td>
     </tr>
     </table>
 </div>
