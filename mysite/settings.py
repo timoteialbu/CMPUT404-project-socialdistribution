@@ -165,7 +165,7 @@ DATABASES = {
 }
 
 
-DATABASES['default'] =  dj_database_url.config()
+# DATABASES['default'] =  dj_database_url.config()
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
