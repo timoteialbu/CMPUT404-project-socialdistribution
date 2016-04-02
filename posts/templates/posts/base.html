@@ -196,9 +196,11 @@ window.onclick = function(event) {
 
       {% block content %}
       {% endblock %}
-
+      {{ request.get_full_path }}
       <nav class="navbar navbar-inverse navbar-fixed-bottom">
+      {% if can_add_psot %}
         <ul class="nav nav-pills nav-justified">
+        
             <li>
 
 <!-- Trigger/Open The Modal -->
@@ -234,6 +236,7 @@ window.onclick = function(event) {
             </form>
             </li>
         </ul>
+        {% endif %}
 
       </nav>
 
