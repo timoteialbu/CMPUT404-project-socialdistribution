@@ -4,7 +4,6 @@
 {% load markdown_deux_tags %}
 
 <style>
-
 table.post {
     border: "1";
     width:80%;
@@ -28,26 +27,28 @@ table.post th {
     padding:10px;
     width: 10%;
 }
-
 </style>
 
+
 <script>
- function makePost() {
-     var n = 0;
-     var flip = function() {
-	 if(n % 2){
-        document.getElementById('makePost').style.display="none";
-        document.getElementById('showContent').style.display="block";
-	 }
-	 else{
-        document.getElementById('makePost').style.display="block";
-        document.getElementById('showContent').style.display="none";
-	 }
-	++n;
-     }
-     return flip;
- }
- var next = makePost();
+var n = 0;
+var next = makePost(n);
+
+function makePost(n) {
+    var flip = function() {
+    	if(n % 2){
+            n = 0;
+            document.getElementById('makePost').style.display="none";
+            document.getElementById('showContent').style.display="block";
+    	}
+    	else{
+            n = 1;
+            document.getElementById('makePost').style.display="block";
+            document.getElementById('showContent').style.display="none";
+    	}
+    }
+    return flip;
+}
 </script>
 
 
@@ -58,19 +59,15 @@ table.post th {
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
 	    {{ form.get_privacy_display}}
-        <p>What is it</p>
         <button type="submit" value="save">Save</button>
     </form>
 
-    <button onclick="next();">Back</button>
+    <button onclick="next(1)">Back New Post</button>
 </div>
 </center>
 
 
-
-
 <center>
-
 <div id="showContent container">
     <!-- POST LIST -->
     {% if latest_post_list %}
@@ -161,6 +158,7 @@ table.post th {
         <h2>No images are available!</h2>
     {% endif %}
 </div>
+</center>
 
 
 <center>
@@ -178,6 +176,7 @@ table.post th {
     </tr>
     </table>
 </div>
-    {% endif %}
+{% endif %}
+</center>
 
 {% endblock %}
