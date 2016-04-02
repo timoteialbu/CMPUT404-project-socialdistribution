@@ -156,6 +156,8 @@ def friend_mgnt(request):
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
+        print "post_mgnt -> latest_post_list"
+        print latest_post_list
 
         context = {
             'latest_post_list': latest_post_list
@@ -163,7 +165,6 @@ def post_mgnt(request):
 
         if request.method == 'POST':
             values = request.POST.getlist('id')
-
             for post in latest_post_list:
                 for id in values:
                     if str(id) == str(post.id):
@@ -172,10 +173,12 @@ def post_mgnt(request):
             return redirect('posts:post_mgnt')
         return render(request, 'posts/post_mgnt.html', context)
 
+
 def nodes(request):
         nodes_list = Node.objects.all()
         context = {'nodes_list': nodes_list}
         return render(request, 'posts/nodes.html', context)
+
 
 def get_remote(request, ext):
         url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
@@ -188,6 +191,7 @@ def get_remote(request, ext):
         }
         r = requests.get(url, headers=headers)
         return r.json()
+
 
 def post_remote(request, ext, payload):
         url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
@@ -231,12 +235,6 @@ def index(request):
         for p in latest_post_list:
             comments = Comment.objects.filter(post=p.id)
             comments_dict[p.id] = comments
-        
-        for p in latest_post_list:
-            print p.id
-            testing = comments_dict[p.id]
-            for cmt in testing:
-                print cmt
         
         context = {
             'latest_image_list': latest_img_list,
