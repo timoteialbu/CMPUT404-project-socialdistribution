@@ -73,6 +73,17 @@
     background-color: #5cb85c;
     color: white;
 }
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0} 
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
 </style>
 
 </head>
@@ -87,7 +98,6 @@ var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal 
 function open_modale() {
-    alert("clicks open the modal");
     // Get the modal
     var modal = document.getElementById('myModal');
     modal.style.display = "block";
@@ -184,43 +194,36 @@ window.onclick = function(event) {
 
   {% if user.is_authenticated %}
 
-
       {% block content %}
-
       {% endblock %}
 
       <nav class="navbar navbar-inverse navbar-fixed-bottom">
         <ul class="nav nav-pills nav-justified">
             <li>
-            <button class="btn btn-default" type=button id = f1 onclick="next();" href="">Create New Post in base</button>
-
-
-            <h2>Animated Modal with Header and Footer</h2>
 
 <!-- Trigger/Open The Modal -->
-<button id="myBtn" onclick="open_modale();">Open Modal</button>{% csrf_token %}
+<button id="myBtn" class="btn btn-default" onclick="open_modale();">Create New Post</button>
 
 <!-- The Modal -->
 <div id="myModal" class="modal">
-
   <!-- Modal content -->
   <div class="modal-content">
     <div class="modal-header">
       <span class="close" onclick = "close_modle()">×</span>
       <h2>New Content Here</h2>
     </div>
-    <div class="modal-body">
+
     <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
+    <div class="modal-body">
+      {{ form.as_p }}
       {{ form.get_privacy_display}}
-        <button type="submit" value="save">Save</button>
-    </form>
     </div>
     <div class="modal-footer">
-      <h3>Modal Footer</h3>
+      <button type="submit" value="save" class="btn btn-default">Save</button>
     </div>
-  </div>
+    </form>
 
+  </div>
 </div>
 
             </li>
