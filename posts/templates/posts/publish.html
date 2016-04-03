@@ -2,14 +2,14 @@
 
 {% block content %}
 
-{% load markdown_deux_tags %}
-<h1>Publish page</h1>
+    {% load markdown_deux_tags %}
+    <h1>Publish page</h1>
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action="{% url 'successfullyPosted' %}" method="post">
-  {% csrf_token %}
-  <input id="your_name" type="text" name="your_name" value="{{ current_name }}">
-  <input type="submit" value="Submit my post" />
-</form>
+    <form action="{% url 'successfullyPosted' %}" method="post">
+        {% csrf_token %}
+        <input id="your_name" type="text" name="your_name" value="{{ current_name }}">
+        <input type="submit" value="Submit my post"/>
+    </form>
 {% endblock %}

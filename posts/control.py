@@ -156,15 +156,17 @@ def friend_mgmt(request):
 # ================================================================
 # ----------------------------- Posts ----------------------------
 def get_posts(request):
+	# TODO: mix with other post objects, sorted by post date
+	# returns a QuerySet
 	print request.user
-	if request.user.is_anonymous():
-		latest_post_list = Post.objects.filter(
+	if not request.user.is_anonymous():
+		post_list = Post.objects.filter(
 			Q(visibility='PUBLIC'))
 	else:
-		latest_post_list = Post.objects.filter(
+		post_list = Post.objects.filter(
 			Q(visibility='PUBLIC') |
 			Q(author=Author.objects.get(user=request.user)))
-	return latest_post_list.order_by('-published')
+	return post_list
 
 
 def get_post_detail(request, id):
@@ -244,20 +246,22 @@ def delete_post(request, id):
 
 
 def post_mgmt(request):
-	latest_post_list = get_posts(request).filter(
-		Q(author=Author.objects.get(user=request.user)))
+	post_list = get_posts(request)
+	print "post_mgmt -> post_list"
+	print post_list
+
+	context = {
+		'post_list': post_list
+	}
+
 	if request.method == 'POST':
 		values = request.POST.getlist('id')
-		for post in latest_post_list:
+		for post in post_list:
 			for id in values:
 				if str(id) == str(post.id):
 					post.delete()
 
 		return redirect('posts:post_mgmt')
-	context = {
-		'can_add_psot': False,
-		'latest_post_list': latest_post_list
-	}
 	return render(request, 'posts/post_mgmt.html', context)
 
 
@@ -265,6 +269,20 @@ def post_mgmt(request):
 def get_imgs(request):
 	print request.user
 	return Image.objects.order_by('-published')[:5]
+
+
+def get_posts(request):
+	# TODO: mix with other post objects, sorted by post date
+	# returns a QuerySet
+	print request.user
+	if request.user.is_anonymous():
+		post_list = Post.objects.filter(
+			Q(visibility='PUBLIC'))
+	else:
+		post_list = Post.objects.filter(
+			Q(visibility='PUBLIC') |
+			Q(author=Author.objects.get(user=request.user)))
+	return post_list
 
 
 def create_img(request):
@@ -294,30 +312,24 @@ def delete_img(request, id):
 # ----------------------------------------------------------------
 def get_profile(request):
 	if request.method == "POST":
-
-		# This request returns 2 dictionaries. The first one is to update the profile,
-		# the second one updates a particular post
 		formProfile = UserProfile(request.POST)
-		formPost = PostForm(request.POST)
-		if formProfile.is_valid() and formProfile.changed_data.__len__() > 0:
+		form = PostForm(request.POST)
+		if formProfile.is_valid():
 			author = Author.objects.get(user=request.user)
 			author.displayName = formProfile.cleaned_data["displayname"]
 			author.host = formProfile.cleaned_data["host"]
 			author.url = formProfile.cleaned_data["url"]
 			author.github = formProfile.cleaned_data["github"]
+			author.id = formProfile.cleaned_data["id"]
 			author.save()
-
-		if formPost.is_valid() and formPost.changed_data.__len__() > 0:
-			post = Post.objects.get(id=request.id)
-
 		return redirect('posts:update_profile')
 	else:
-		formPost = PostForm()
+		form = PostForm()
 		formProfile = UserProfile()
 
-		latest_post_list = Post.objects.filter(
+		post_list = Post.objects.filter(
 			Q(author=Author.objects.get(user=request.user)))
-		latest_img_list = Image.objects.order_by('-published')[:5]
+		img_list = Image.objects.order_by('-published')[:5]
 		author = Author.objects.get(user=request.user)
 
 		formProfile.fields["username"] = request.user.username
@@ -328,9 +340,9 @@ def get_profile(request):
 		formProfile.fields["id"] = author.id
 
 		context = {
-			'latest_image_list': latest_img_list,
-			'latest_post_list': latest_post_list,
-			'form': formPost,
+			'image_list': img_list,
+			'post_list': post_list,
+			'form': formPost,  # formPost or form
 			'formProfile': formProfile,
 		}
 		return render(request, 'posts/profile.html', context)
@@ -393,52 +405,44 @@ def post_remote(request, ext, payload):
 # ----------------------------------------------------------------
 # prob should change this to a form view
 def index(request):
+	remote_posts = list()
 	try:
 		remote_posts = get_remote(request, '/posts/')['posts']
 	except:
-		remote_posts = list()
+		pass
 
-	latest_post_list = get_posts(request)
-	latest_img_list = Image.objects.order_by('-published')
-
+	form = PostForm()
 	if request.method == "POST":
-		form = PostForm(request.POST)
-		if form.is_valid():
-			post = form.save(commit=False)
-			post.author = Author.objects.get(user=request.user)
-			post.published = timezone.now()
-			post.save()
-			# future ref make to add the namespace ie "posts"
-			# return redirect('posts:detail', id=post.pk)
-			return redirect('posts:index')
-	else:
-		form = PostForm()
+		form = create_post(request)
 
-	latest_post_list = get_posts(request)
-	latest_img_list = Image.objects.order_by('-published')
-
-	comments_dict = {}
-	for p in latest_post_list:
+	post_list = get_posts(request)
+	comments_dict = dict()
+	for p in post_list:
 		comments = Comment.objects.filter(post=p.id)
 		comments_dict[p.id] = comments
 
+	img_list = get_imgs(request)
+
+	# Want to order posts by date
+	complete_list = list(post_list) + list(img_list)
+
 	context = {
-		'latest_image_list': latest_img_list,
-		'latest_post_list': list(latest_post_list) + remote_posts,
-		'form': form,
+		'post_list': list(post_list) + remote_posts,
+		'image_list': img_list,
 		'comments_dict': comments_dict,
-		'can_add_psot': True
+		'form': form,
 	}
+
 	return render(request, 'posts/index.html', context)
 
-	# api stuff for the future
-	# # post_collection
-	# @api_view(['GET'])
-	# def index(request):
-	#     if request.method == 'GET':
-	#         posts = Post.objects.all()
-	#         serializer = PostSerializer(posts, many=True)
-	#         return Response(serializer.data)
+# api stuff for the future
+# # post_collection
+# @api_view(['GET'])
+# def index(request):
+#     if request.method == 'GET':
+#         posts = Post.objects.all()
+#         serializer = PostSerializer(posts, many=True)
+#         return Response(serializer.data)
 
 
 
@@ -447,13 +451,13 @@ def index(request):
 
 
 
-	# @api_view(['GET'])
-	# def get_post_detail(request, id):
-	#     try:
-	#         post = Post.objects.get(id=id)
-	#     except Post.DoesNotExist:
-	#         return HttpResponse(status=404)
+# @api_view(['GET'])
+# def get_post_detail(request, id):
+#     try:
+#         post = Post.objects.get(id=id)
+#     except Post.DoesNotExist:
+#         return HttpResponse(status=404)
 
-	#     if request.method == 'GET':
-	#         serializer = PostSerializer(post)
-	#         return Response(serializer.data)
+#     if request.method == 'GET':
+#         serializer = PostSerializer(post)
+#         return Response(serializer.data)

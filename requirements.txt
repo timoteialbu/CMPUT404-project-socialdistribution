@@ -12,6 +12,5 @@ gunicorn
 requests
 dj-static==0.0.6
 dj-database-url
-psycopg2==2.6
 static3==0.6.1
 wheel==0.24.0
