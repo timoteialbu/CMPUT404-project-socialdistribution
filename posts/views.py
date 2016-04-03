@@ -149,17 +149,15 @@ def friend_mgmt(request):
 #================================================================
 #----------------------------- Posts ----------------------------
 def get_posts(request):
-        #TODO: mix with other post objects, sorted by post date
-        # returns a QuerySet
         print request.user
-        if not request.user.is_anonymous():
-            post_list = Post.objects.filter(
+        if request.user.is_anonymous():
+            latest_post_list = Post.objects.filter(
                 Q(visibility='PUBLIC'))
         else:
-            post_list = Post.objects.filter(
+            latest_post_list = Post.objects.filter(
                 Q(visibility='PUBLIC') |
                 Q(author=Author.objects.get(user=request.user)))
-        return post_list
+        return latest_post_list.order_by('-published')
 
 def get_post_detail(request, id):
         # returns a QuerySet
@@ -256,18 +254,7 @@ def get_imgs(request):
         print request.user
         return Image.objects.order_by('-published')[:5]
 
-def get_posts(request):
-        #TODO: mix with other post objects, sorted by post date
-        # returns a QuerySet
-        print request.user
-        if request.user.is_anonymous():
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC'))
-        else:
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC') |
-                Q(author=Author.objects.get(user=request.user)))
-        return post_list
+
 
 def create_img(request):
     if request.method == 'POST':
