@@ -2,7 +2,6 @@
 
 {% block content %}
 
-<<<<<<< HEAD
 {% load markdown_deux_tags %}
     <form method="POST" class="UserProfile">{% csrf_token %}
     <div class="modal-content">
@@ -13,51 +12,26 @@
         <div class="modal-body">
         <table>
             <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text" value="{{ formProfile.fields.username }}" /></span></p>
-=======
-    {% load markdown_deux_tags %}
 
-    <div id="userProfile">
-        <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">
-            Profile</h1>
-
-        <h2 style="font-style:italic;"><span style="font-size:14px;">Personal Information</span></h2>
-
-        <form method="POST" class="UserProfile">{% csrf_token %}
-
-            <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text"
-                                                                     value="{{ formProfile.fields.username }}"/></span>
-            </p>
->>>>>>> kdhaywar/master
-
-            <p><span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; <input name="displayname" type="text"
-                                                                                      value="{{ formProfile.fields.displayname }}"/></span>
+            <p>
+            <span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; 
+            <input name="displayname" type="text" value="{{ formProfile.fields.displayname }}"/>
+            </span>
             </p>
 
-            <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="host" size="30"
-                                                                                             type="text"
-                                                                                             value="{{ formProfile.fields.host }}"/></span>
+            <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+            <input name="host" size="30" type="text" value="{{ formProfile.fields.host }}"/></span>
             </p>
 
-            <p><span style="font-size:12px;">Url: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="url" size="30"
-                                                                                                   type="text"
-                                                                                                   value="{{ formProfile.fields.host }}"/></span>
+            <p><span style="font-size:12px;">Url: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="url" size="30" type="text" value="{{ formProfile.fields.host }}"/></span>
             </p>
 
-            <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text"
-                                                                                 value="{{ formProfile.fields.github }}"/></span>
+            <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text" value="{{ formProfile.fields.github }}"/></span>
             </p>
 
-<<<<<<< HEAD
             <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id" size="45" type="text" value="{{ formProfile.fields.id }}" /></span></p>
         </table>
         </div>
-=======
-            <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id"
-                                                                                                        size="45"
-                                                                                                        type="text"
-                                                                                                        value="{{ formProfile.fields.id }}"/></span>
-            </p>
->>>>>>> kdhaywar/master
 
         <div class="modal-footer">
             <button type="submit" value="save" class="btn btn-default">Update</button>
@@ -68,18 +42,11 @@
 
     <br>
 
-<<<<<<< HEAD
     <div id="userProfile" class="modal-content">
 
     <div class="modal-header">
     <h2>Posts</h2>
     </div>
-=======
-    <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">
-        Posts</h1>
-
-    <hr/>
->>>>>>> kdhaywar/master
 
     <div id="showContent" class="modal-body">
         {% if latest_post_list %}
