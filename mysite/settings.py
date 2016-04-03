@@ -1,10 +1,10 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import socket
-#import dj_database_url
+
+# import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
 
 SECRET_KEY = ')_7av^!cy(wfx=k#3*7x+(=j^fzv+ot^1@sh9s9t=8$bu@r(z$'
 
@@ -13,7 +13,6 @@ SECRET_KEY = ')_7av^!cy(wfx=k#3*7x+(=j^fzv+ot^1@sh9s9t=8$bu@r(z$'
 DEBUG = True
 
 TEMPLATE_DEBUG = True
-
 
 # Application definition
 
@@ -32,38 +31,38 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     # ... include the providers you want to enable:
-    #'allauth.socialaccount.providers.amazon',
-    #'allauth.socialaccount.providers.angellist',
-    #'allauth.socialaccount.providers.bitbucket',
-    #'allauth.socialaccount.providers.bitly',
-    #'allauth.socialaccount.providers.coinbase',
-    #'allauth.socialaccount.providers.dropbox',
-    #'allauth.socialaccount.providers.dropbox_oauth2',
-    #'allauth.socialaccount.providers.edmodo',
-    #'allauth.socialaccount.providers.evernote',
-    #'allauth.socialaccount.providers.facebook',
-    #'allauth.socialaccount.providers.flickr',
-    #'allauth.socialaccount.providers.feedly',
-    #'allauth.socialaccount.providers.fxa',
-    #'allauth.socialaccount.providers.github',
-    #'allauth.socialaccount.providers.google',
-    #'allauth.socialaccount.providers.hubic',
-    #'allauth.socialaccount.providers.instagram',
-    #'allauth.socialaccount.providers.linkedin',
-    #'allauth.socialaccount.providers.linkedin_oauth2',
-    #'allauth.socialaccount.providers.odnoklassniki',
-    #'allauth.socialaccount.providers.openid',
-    #'allauth.socialaccount.providers.persona',
-    #'allauth.socialaccount.providers.soundcloud',
-    #'allauth.socialaccount.providers.spotify',
-    #'allauth.socialaccount.providers.stackexchange',
-    #'allauth.socialaccount.providers.tumblr',
-    #'allauth.socialaccount.providers.twitch',
-    #'allauth.socialaccount.providers.twitter',
-    #'allauth.socialaccount.providers.vimeo',
-    #'allauth.socialaccount.providers.vk',
-    #'allauth.socialaccount.providers.weibo',
-    #'allauth.socialaccount.providers.xing'
+    # 'allauth.socialaccount.providers.amazon',
+    # 'allauth.socialaccount.providers.angellist',
+    # 'allauth.socialaccount.providers.bitbucket',
+    # 'allauth.socialaccount.providers.bitly',
+    # 'allauth.socialaccount.providers.coinbase',
+    # 'allauth.socialaccount.providers.dropbox',
+    # 'allauth.socialaccount.providers.dropbox_oauth2',
+    # 'allauth.socialaccount.providers.edmodo',
+    # 'allauth.socialaccount.providers.evernote',
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.flickr',
+    # 'allauth.socialaccount.providers.feedly',
+    # 'allauth.socialaccount.providers.fxa',
+    # 'allauth.socialaccount.providers.github',
+    # 'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.hubic',
+    # 'allauth.socialaccount.providers.instagram',
+    # 'allauth.socialaccount.providers.linkedin',
+    # 'allauth.socialaccount.providers.linkedin_oauth2',
+    # 'allauth.socialaccount.providers.odnoklassniki',
+    # 'allauth.socialaccount.providers.openid',
+    # 'allauth.socialaccount.providers.persona',
+    # 'allauth.socialaccount.providers.soundcloud',
+    # 'allauth.socialaccount.providers.spotify',
+    # 'allauth.socialaccount.providers.stackexchange',
+    # 'allauth.socialaccount.providers.tumblr',
+    # 'allauth.socialaccount.providers.twitch',
+    # 'allauth.socialaccount.providers.twitter',
+    # 'allauth.socialaccount.providers.vimeo',
+    # 'allauth.socialaccount.providers.vk',
+    # 'allauth.socialaccount.providers.weibo',
+    # 'allauth.socialaccount.providers.xing'
     'friendship',
     'rest_framework',
     'rest_framework.authtoken',
@@ -115,7 +114,7 @@ TEMPLATES = [
 
                 # `allauth` needs this from django
                 'django.template.context_processors.request',
-				'django.contrib.auth.context_processors.auth',
+                'django.contrib.auth.context_processors.auth',
             ],
         },
     },
@@ -140,8 +139,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPagination'
 }
 
-
-
 JWT_AUTH = {
     'JWT_VERIFY_EXPIRATION': False,
 }
@@ -154,19 +151,18 @@ JWT_AUTH = {
 
 ######CHANGE!!! Run my_setup.py
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # stock django, local development.
 DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-	}
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
-
-#DATABASES['default'] =  dj_database_url.config()
+# DATABASES['default'] =  dj_database_url.config()
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
@@ -187,7 +183,7 @@ ALLOWED_HOSTS = ['*']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi','static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi', 'static')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -197,8 +193,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR,"static"),
-    #os.path.join(os.path.dirname(__file__), 'static'),
+    os.path.join(BASE_DIR, "static"),
+    # os.path.join(os.path.dirname(__file__), 'static'),
 )
 
 TEMPLATE_DIRS = (

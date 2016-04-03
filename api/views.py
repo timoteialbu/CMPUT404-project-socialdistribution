@@ -13,14 +13,13 @@ import copy
 from django.core import serializers
 
 
-
 class UserPostList(generics.ListAPIView):
     """
     posts that are visible to the currently authenticated user (GET)
     http://service/author/posts 
     """
 
-   #permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PostSerializer
 
     def get_queryset(self):
@@ -42,7 +41,8 @@ class PostList(generics.ListCreateAPIView):
     """
     queryset = Post.objects.filter(visibility='PUBLIC')
     serializer_class = PostSerializer
-    #permission_classes = (permissions.AllowAny,)
+
+    # permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
         serializer.save(author=Author.objects.get(user=self.request.user))
@@ -54,7 +54,7 @@ class AuthorPostList(generics.ListAPIView):
     http://service/author/{AUTHOR_ID}/posts 
     """
     serializer_class = PostSerializer
-    #permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
@@ -72,13 +72,12 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     http://service/posts/{POST_ID}
     """
     serializer_class = PostSerializer
-    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
         postId = self.kwargs.get(self.lookup_url_kwarg)
         return Post.objects.filter(id=postId)
-
 
     def perform_create(self, serializer_class):
         author = Author.objects.filter(user=self.request.user)
@@ -91,12 +90,13 @@ class CommentList(generics.ListCreateAPIView):
     http://service/posts/{post_id}/comments access to the comments in a post
     """
     serializer_class = CommentSerializer
-    #permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
         postId = self.kwargs.get(self.lookup_url_kwarg)
         return Comment.objects.filter(post=postId)
+
     def perform_create(self, serializer):
         postId = self.kwargs.get(self.lookup_url_kwarg)
         author = get_object_or_404(Author, user=self.request.user)
@@ -109,13 +109,13 @@ class UserList(generics.ListAPIView):
     serializer_class = AuthorSerializer
 
 
-#class UserDetail(generics.RetrieveAPIView):
+# class UserDetail(generics.RetrieveAPIView):
 #    queryset = User.objects.all()
 #    serializer_class = AuthorSerializer
 
 class AuthorDetail(generics.RetrieveAPIView):
     serializer_class = AuthorSerializer
-    #permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.AllowAny,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):

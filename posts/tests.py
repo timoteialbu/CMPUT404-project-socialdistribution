@@ -5,15 +5,17 @@ from django.utils import timezone
 import datetime
 from api.models import *
 from django.test.utils import setup_test_environment
+
 setup_test_environment()
 
 
-def new_author(username="john",email="dd@dsd.ca",password="123454"):
+def new_author(username="john", email="dd@dsd.ca", password="123454"):
     if User.objects.filter(username=username).exists():
         user = User.objects.get(username=username)
         return Author.objects.get(user=user)
-    user = User.objects.create_user(username,email,password)
-    return Author.objects.get(user=user,)
+    user = User.objects.create_user(username, email, password)
+    return Author.objects.get(user=user, )
+
 
 def create_post(author, content, days, visibility):
     """
@@ -23,7 +25,7 @@ def create_post(author, content, days, visibility):
     """
     time = timezone.now() + datetime.timedelta(days=days)
     return Post.objects.create(author=author, content=content,
-                                published=time, visibility=visibility)
+                               published=time, visibility=visibility)
 
 
 class QuestionViewTests(TestCase):
@@ -48,11 +50,11 @@ class QuestionViewTests(TestCase):
         create_post(author, post_text, days, "PU")
         response = self.client.get('/posts')
         self.assertQuerysetEqual(
-         response.context['latest_post_list'],
-         ['<Post: Past post.>']
+            response.context['latest_post_list'],
+            ['<Post: Past post.>']
         )
 
-#    def test_index_view_with_a_future_post(self):
+# def test_index_view_with_a_future_post(self):
 #         """
 #         Posts with a pub_date in the future should not be displayed on
 #         the index page.

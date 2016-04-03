@@ -19,6 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 # Maybe delete
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()

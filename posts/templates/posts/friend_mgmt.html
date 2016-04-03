@@ -2,71 +2,71 @@
 
 {% block content %}
 
-<form role="form" action="/posts/friend_mgmt/" method="POST">{% csrf_token %}
-<div class="modal-content">
+    <form role="form" action="/posts/friend_mgmt/" method="POST">{% csrf_token %}
+        <div class="modal-content">
 
-<div class="modal-header">
-  <label>Choose someone to be friends with.</label>
-</div>
+            <div class="modal-header">
+                <label>Choose someone to be friends with.</label>
+            </div>
 
-<div class="modal-body">
-  <p>{{ addform.user_choice_field }}</p>
-  <p>{{ add_msg }}</p>
-</div>
+            <div class="modal-body">
+                <p>{{ addform.user_choice_field }}</p>
+                <p>{{ add_msg }}</p>
+            </div>
 
-<div class="modal-footer">
-  <button type="submit" class="btn btn-default">Add friend</button>
-</div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default">Add friend</button>
+            </div>
 
-</div>
-</form>
+        </div>
+    </form>
 
-<br>
+    <br>
 
-<form role="form" action="/posts/friend_mgmt/" method="POST">{% csrf_token %}
-<div class="modal-content">
+    <form role="form" action="/posts/friend_mgmt/" method="POST">{% csrf_token %}
+        <div class="modal-content">
 
-<div class="modal-header">
-  <p><label>Unfriend Someone</label></p>
-</div>
+            <div class="modal-header">
+                <p><label>Unfriend Someone</label></p>
+            </div>
 
-<div class="modal-body">
-  <p>You are currently a friend with:</p>
+            <div class="modal-body">
+                <p>You are currently a friend with:</p>
 
-  {% load friendshiptags %}
-  {% friends request.user %}
-  
-  <p>{{ unfrienduserform.username}}</p>
-  <p>{{ unfriend_msg }}</p> 
-</div>
+                {% load friendshiptags %}
+                {% friends request.user %}
 
-<div class="modal-footer">
-  <button type="submit" class="btn btn-default">Apply Changes</button>
-</div>
+                <p>{{ unfrienduserform.username }}</p>
+                <p>{{ unfriend_msg }}</p>
+            </div>
 
-</div>
-</form>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default">Apply Changes</button>
+            </div>
+
+        </div>
+    </form>
 
 
-{% if friendrequestform %}
-<br>
-<form role="form" action="/posts/friend_mgmt/" method="POST">{% csrf_token %}
-<div class="modal-content">
+    {% if friendrequestform %}
+        <br>
+        <form role="form" action="/posts/friend_mgmt/" method="POST">{% csrf_token %}
+            <div class="modal-content">
 
-<div class="modal-header">
-  <label>Friend Requests</label>
-</div>
+                <div class="modal-header">
+                    <label>Friend Requests</label>
+                </div>
 
-<div class="modal-body">
-{{friendrequestform}}
-</div>
+                <div class="modal-body">
+                    {{ friendrequestform }}
+                </div>
 
-<div class="modal-footer">
-  <button type="submit" class="btn btn-default">Apply Changes</button>
-</div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-default">Apply Changes</button>
+                </div>
 
-</div>
-</form>
-{% endif%}
+            </div>
+        </form>
+    {% endif %}
 
 {% endblock %}
