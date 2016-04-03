@@ -31,10 +31,20 @@ def handle_uploaded_file(f):
             for chunk in f.chunks():
                 destination.write(chunk)
 
-#================================================================
-#---------------------------- Friends ---------------------------
 
-def try_add_friend(user, friend):
+def get_posts(request):
+        print request.user
+        if request.user.is_anonymous():
+            latest_post_list = Post.objects.filter(
+                Q(visibility='PUBLIC'))
+        else:
+            latest_post_list = Post.objects.filter(
+                Q(visibility='PUBLIC') |
+                Q(author=Author.objects.get(user=request.user)))
+        return latest_post_list.order_by('-published')
+
+
+def try_adding_friend(user, friend):
         try:
             friend_id = int(User.objects.get(username=friend).id)
         except Exception:
@@ -56,53 +66,9 @@ def try_add_friend(user, friend):
             msg += " and already waiting for a response to your request"
         return msg
 
-def add_friend(request, context):
-        addform_valid = context['addform'].is_valid(),
-        if addform_valid:
-            friend = context['addform'].cleaned_data['user_choice_field']
-            context['addfriend'] = friend
-            if friend is not None:
-                context['add_msg'] = try_add_friend(request.user, friend)
-        elif not addform_valid:
-            context['add_msg'] = "Invalid input"
-            context['addform'] = AddFriendForm()
-<<<<<<< HEAD
 
-#----------------------------------------------------------------
-def friend_requests(request, context, users):
-        requests_valid = context['friendrequestform'].is_valid(),
-        if requests_valid:
-            for user in users:
-                req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=User.objects.get(username=user))
-                if request.POST[user] == "A":
-                    req_id.accept()
-                elif request.POST[user] == "R":
-                    req_id.reject()
-                    try_remove_friend(request.user, user)
 
-            #friend = context['friendrequestform'].cleaned_data['user_choice_field']
-            #context['addfriend'] = friend
-
-=======
-
-#----------------------------------------------------------------
-def friend_requests(request, context, users):
-        requests_valid = context['friendrequestform'].is_valid(),
-        if requests_valid:
-            for user in users:
-                req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=User.objects.get(username=user))
-                if request.POST[user] == "A":
-                    req_id.accept()
-                elif request.POST[user] == "R":
-                    req_id.reject()
-                    try_remove_friend(request.user, user)
-
-            #friend = context['friendrequestform'].cleaned_data['user_choice_field']
-            #context['addfriend'] = friend
-
->>>>>>> kdhaywar/master
-#----------------------------------------------------------------
-def try_remove_friend(user, friend):
+def try_remove_relationship(user, friend):
         try:
             friend_name = User.objects.get(username=friend)
             friend_id = int(User.objects.get(username=friend).id)
@@ -118,14 +84,15 @@ def try_remove_friend(user, friend):
         else:
             msg += " You were never friends with %s, I'm sorry :(" % friend
         return msg
+#####################################################
 
-def remove_friend(request, context):
+def remove_relationship(request, context):
         unfrienduserform_valid = context['unfrienduserform'].is_valid()
         if unfrienduserform_valid:
             friend = context['unfrienduserform'].cleaned_data['username']
             friend = friend.strip()
             if str(friend) is not '':
-                context['unfriend_msg'] = try_remove_friend(
+                context['unfriend_msg'] = try_remove_relationship(
                     request.user,
                     friend,
                 )
@@ -133,8 +100,6 @@ def remove_friend(request, context):
             context['unfriend_msg'] = "Invalid input."
             context['unfrienduserform'] = UnFriendUserForm
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 def add_relationship(request, context):
         addform_valid = context['addform'].is_valid(),
@@ -161,19 +126,13 @@ def friend_requests(request, context, users):
             #friend = context['friendrequestform'].cleaned_data['user_choice_field']
             #context['addfriend'] = friend
 
-=======
-#----------------------------------------------------------------
->>>>>>> kdhaywar/master
-=======
-#----------------------------------------------------------------
->>>>>>> kdhaywar/master
-def friend_mgmt(request):
+def friend_mgnt(request):
     users = list(map(lambda x:
                      str(x.from_user),
                      Friend.objects.unread_requests(request.user)))
     all_friends = Friend.objects.friends(request.user)
 
-    context = {
+    context = { 
         'friendrequestform': FriendRequestForm(names=users),
         'all_friends': all_friends
     }
@@ -183,8 +142,8 @@ def friend_mgmt(request):
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
         })
-        remove_friend(request, context)
-        add_friend(request, context)
+        remove_relationship(request, context)
+        add_relationship(request, context)
         friend_requests(request, context, users)
     else:
         context.update({
@@ -193,364 +152,33 @@ def friend_mgmt(request):
         })
 
     print "all_friends:", all_friends
-<<<<<<< HEAD
-<<<<<<< HEAD
     context["can_add_psot"] = False
-    return render(request, 'posts/friend_mgmt.html', context)
+    return render(request, 'posts/friend_mgnt.html', context)
 
 
-def post_mgmt(request):
+def post_mgnt(request):
         latest_post_list = get_posts(request).filter(
             Q(author=Author.objects.get(user=request.user)))
-=======
-    return render(request, 'posts/friend_mgmt.html', context)
-
-
-#================================================================
-#----------------------------- Posts ----------------------------
-def get_posts(request):
-        #TODO: mix with other post objects, sorted by post date
-        # returns a QuerySet
-        print request.user
-        if not request.user.is_anonymous():
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC'))
-        else:
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC') |
-                Q(author=Author.objects.get(user=request.user)))
-        return post_list
-
-def get_post_detail(request, id):
-        # returns a QuerySet
-        post_Q = Post.objects.filter(id=id)
-        comment = None
-        remote = False
-        if not post_Q:
-                post = get_remote(request, '/posts/'+id+'/')
-                comments = post['comments']
-                remote = True
-        else:
-                post = post_Q.values()[0]
-                comments = Comment.objects.select_related().filter(post=id)
-        if request.method == "POST":
-                # Hackyyy OMG
-                if not remote:
-                        form = PostForm(request.POST, instance=post_Q[0])
-                else:
-                        form = PostForm
-
-
-                cform = CommentForm(request.POST)
-                print "sdfsd",request.POST,"sd"
-                if not remote and form.is_valid():
-                        post = form.save(commit=False)
-                        post.author = Author.objects.get(user=request.user)
-                        post.published_date = timezone.now()
-                        post.save()
-                        # the "id" part must be the same as the P<"id" in url.py
-                        #return redirect('posts:detail', id=post.pk)
-                elif cform.is_valid():
-                        if not remote:
-                                comment = cform.save(commit=False)
-                                comment.published = timezone.now()
-                                comment.author = Author.objects.get(user=request.user)
-                                comment.post=post_Q[0]
-                                comment.save()
-                        else:
-                                ext = "/posts/"+str(id)+"/comments"
-                                payload = {
-                                        "comment": request.POST['comment'],
-                                        "contentType": request.POST['contentType'],
-                                }
-                                post_remote(request, ext, payload)
-        else:
-            form = PostForm(initial={'content': post['content']})
-            cform = CommentForm()
-
-        isAuthenticated = request.user.is_authenticated()
-        isAuthor = False
-        if isAuthenticated and not remote:
-            isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
-        return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
-
-
-=======
-    return render(request, 'posts/friend_mgmt.html', context)
-
-
-#================================================================
-#----------------------------- Posts ----------------------------
-def get_posts(request):
-        #TODO: mix with other post objects, sorted by post date
-        # returns a QuerySet
-        print request.user
-        if not request.user.is_anonymous():
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC'))
-        else:
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC') |
-                Q(author=Author.objects.get(user=request.user)))
-        return post_list
-
-def get_post_detail(request, id):
-        # returns a QuerySet
-        post_Q = Post.objects.filter(id=id)
-        comment = None
-        remote = False
-        if not post_Q:
-                post = get_remote(request, '/posts/'+id+'/')
-                comments = post['comments']
-                remote = True
-        else:
-                post = post_Q.values()[0]
-                comments = Comment.objects.select_related().filter(post=id)
-        if request.method == "POST":
-                # Hackyyy OMG
-                if not remote:
-                        form = PostForm(request.POST, instance=post_Q[0])
-                else:
-                        form = PostForm
-
-
-                cform = CommentForm(request.POST)
-                print "sdfsd",request.POST,"sd"
-                if not remote and form.is_valid():
-                        post = form.save(commit=False)
-                        post.author = Author.objects.get(user=request.user)
-                        post.published_date = timezone.now()
-                        post.save()
-                        # the "id" part must be the same as the P<"id" in url.py
-                        #return redirect('posts:detail', id=post.pk)
-                elif cform.is_valid():
-                        if not remote:
-                                comment = cform.save(commit=False)
-                                comment.published = timezone.now()
-                                comment.author = Author.objects.get(user=request.user)
-                                comment.post=post_Q[0]
-                                comment.save()
-                        else:
-                                ext = "/posts/"+str(id)+"/comments"
-                                payload = {
-                                        "comment": request.POST['comment'],
-                                        "contentType": request.POST['contentType'],
-                                }
-                                post_remote(request, ext, payload)
-        else:
-            form = PostForm(initial={'content': post['content']})
-            cform = CommentForm()
-
-        isAuthenticated = request.user.is_authenticated()
-        isAuthor = False
-        if isAuthenticated and not remote:
-            isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
-        return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
-
-
->>>>>>> kdhaywar/master
-def create_post(request):
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = Author.objects.get(user=request.user)
-            post.published = timezone.now()
-            post.save()
-            # future ref make to add the namespace ie "posts"
-            return redirect('posts:detail', id=post.pk)
-
-def delete_post(request, id):
-        post_list = get_posts(request)
-        if request.method == 'POST':
-            for post in post_list:
-                if str(post.id) == str(id):
-                    post.delete()
-            return redirect('posts:index')
-        return render(request, 'posts/index.html')
-
-def post_mgmt(request):
-        post_list = get_posts(request)
-        print "post_mgmt -> post_list"
-        print post_list
-
-        context = {
-            'post_list': post_list
-        }
-
-<<<<<<< HEAD
->>>>>>> kdhaywar/master
-=======
->>>>>>> kdhaywar/master
         if request.method == 'POST':
             values = request.POST.getlist('id')
-            for post in post_list:
+            for post in latest_post_list:
                 for id in values:
                     if str(id) == str(post.id):
                         post.delete()
 
-            return redirect('posts:post_mgmt')
-<<<<<<< HEAD
-<<<<<<< HEAD
+            return redirect('posts:post_mgnt')
         context = {
             'can_add_psot': False,
             'latest_post_list': latest_post_list
         }
-        return render(request, 'posts/post_mgmt.html', context)
-=======
-=======
->>>>>>> kdhaywar/master
-        return render(request, 'posts/post_mgmt.html', context)
+        return render(request, 'posts/post_mgnt.html', context)
 
-#----------------------------------------------------------------
-def get_imgs(request):
-        print request.user
-        return Image.objects.order_by('-published')[:5]
 
-def get_posts(request):
-        #TODO: mix with other post objects, sorted by post date
-        # returns a QuerySet
-        print request.user
-        if request.user.is_anonymous():
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC'))
-        else:
-            post_list = Post.objects.filter(
-                Q(visibility='PUBLIC') |
-                Q(author=Author.objects.get(user=request.user)))
-        return post_list
-<<<<<<< HEAD
-
-def create_img(request):
-        if request.method == 'POST':
-            form = UploadImgForm(request.POST, request.FILES)
-            if form.is_valid():
-                img = form.save(commit=False)
-                img.author = Author.objects.get(user=request.user)
-                img.published = timezone.now()
-                img.save()
-                return redirect('posts:index')
-        else:
-            form = UploadImgForm()
-        return render(request, 'posts/edit_img.html', {'form': form})
-
-def delete_img(request, id):
-        post_list = get_posts(request)
-        if request.method == 'POST':
-            for post in post_list:
-                if str(post.id) == str(id):
-                    post.delete()
-            return redirect('posts:index')
-        return render(request, 'posts/index.html')
-
-#----------------------------------------------------------------
-def get_profile(request):
-        if request.method == "POST":
-            formProfile = UserProfile(request.POST)
-            form = PostForm(request.POST)
-            if formProfile.is_valid():
-                author = Author.objects.get(user=request.user)
-                author.displayName = formProfile.cleaned_data["displayname"]
-                author.host = formProfile.cleaned_data["host"]
-                author.url = formProfile.cleaned_data["url"]
-                author.github = formProfile.cleaned_data["github"]
-                author.id = formProfile.cleaned_data["id"]
-                author.save()
-            return redirect('posts:update_profile')
-        else:
-            form = PostForm()
-            formProfile = UserProfile()
-
-            post_list = Post.objects.filter(
-                    Q(author=Author.objects.get(user=request.user)))
-            img_list = Image.objects.order_by('-published')[:5]
-            author = Author.objects.get(user=request.user)
-
-            formProfile.fields["username"] = request.user.username
-            formProfile.fields["displayname"] = author.displayName
-            formProfile.fields["host"] = author.host
-            formProfile.fields["url"] = author.url
-            formProfile.fields["github"] = author.github
-            formProfile.fields["id"] = author.id
->>>>>>> kdhaywar/master
-
-            context = {
-                'image_list': img_list,
-                'post_list': post_list,
-                'form': formPost, # formPost or form
-                'formProfile': formProfile,
-            }
-            return render(request, 'posts/profile.html', context)
-
-=======
-
-def create_img(request):
-        if request.method == 'POST':
-            form = UploadImgForm(request.POST, request.FILES)
-            if form.is_valid():
-                img = form.save(commit=False)
-                img.author = Author.objects.get(user=request.user)
-                img.published = timezone.now()
-                img.save()
-                return redirect('posts:index')
-        else:
-            form = UploadImgForm()
-        return render(request, 'posts/edit_img.html', {'form': form})
-
-def delete_img(request, id):
-        post_list = get_posts(request)
-        if request.method == 'POST':
-            for post in post_list:
-                if str(post.id) == str(id):
-                    post.delete()
-            return redirect('posts:index')
-        return render(request, 'posts/index.html')
-
-#----------------------------------------------------------------
-def get_profile(request):
-        if request.method == "POST":
-            formProfile = UserProfile(request.POST)
-            form = PostForm(request.POST)
-            if formProfile.is_valid():
-                author = Author.objects.get(user=request.user)
-                author.displayName = formProfile.cleaned_data["displayname"]
-                author.host = formProfile.cleaned_data["host"]
-                author.url = formProfile.cleaned_data["url"]
-                author.github = formProfile.cleaned_data["github"]
-                author.id = formProfile.cleaned_data["id"]
-                author.save()
-            return redirect('posts:update_profile')
-        else:
-            form = PostForm()
-            formProfile = UserProfile()
-
-            post_list = Post.objects.filter(
-                    Q(author=Author.objects.get(user=request.user)))
-            img_list = Image.objects.order_by('-published')[:5]
-            author = Author.objects.get(user=request.user)
-
-            formProfile.fields["username"] = request.user.username
-            formProfile.fields["displayname"] = author.displayName
-            formProfile.fields["host"] = author.host
-            formProfile.fields["url"] = author.url
-            formProfile.fields["github"] = author.github
-            formProfile.fields["id"] = author.id
-
-            context = {
-                'image_list': img_list,
-                'post_list': post_list,
-                'form': formPost, # formPost or form
-                'formProfile': formProfile,
-            }
-            return render(request, 'posts/profile.html', context)
-
->>>>>>> kdhaywar/master
-#----------------------------------------------------------------
-def get_nodes(request):
+def nodes(request):
         nodes_list = Node.objects.all()
         context = {'nodes_list': nodes_list}
         return render(request, 'posts/nodes.html', context)
 
-#----------------------------------------------------------------
 
 def get_remote(request, ext):
         nodes = Node.objects.all()
@@ -595,19 +223,16 @@ def post_remote(request, ext, payload):
             print "url", url
             r = requests.post(url, headers=headers, json=payload)
         return r.status_code
+        
 
-#----------------------------------------------------------------
+
 # prob should change this to a form view
 def index(request):
-
-        remote_posts = list()
         try:
             remote_posts = get_remote(request, '/posts/')['posts']
         except:
-            pass
+            remote_posts = list()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')
 
@@ -629,48 +254,18 @@ def index(request):
 
         comments_dict = {}
         for p in latest_post_list:
-=======
-        form = PostForm()
-        if request.method == "POST":
-            form = create_post(request)
-
-        post_list = get_posts(request)
-        comments_dict = dict()
-        for p in post_list:
->>>>>>> kdhaywar/master
-=======
-        form = PostForm()
-        if request.method == "POST":
-            form = create_post(request)
-
-        post_list = get_posts(request)
-        comments_dict = dict()
-        for p in post_list:
->>>>>>> kdhaywar/master
             comments = Comment.objects.filter(post=p.id)
             comments_dict[p.id] = comments
-
-        img_list = get_imgs(request)
-
-        # Want to order posts by date
-        complete_list = list(post_list) + list(img_list)
-
+        
         context = {
-            'post_list': list(post_list) + remote_posts,
-            'image_list': img_list,
-            'comments_dict': comments_dict,
+            'latest_image_list': latest_img_list,
+            'latest_post_list': list(latest_post_list) + remote_posts,
             'form': form,
-<<<<<<< HEAD
-<<<<<<< HEAD
             'comments_dict': comments_dict,
             'can_add_psot': True
-=======
->>>>>>> kdhaywar/master
-=======
->>>>>>> kdhaywar/master
         }
-
         return render(request, 'posts/index.html', context)
+
 
 # api stuff for the future
 # # post_collection
@@ -685,8 +280,6 @@ def index(request):
 
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 def delete_post(request, id):
         latest_post_list = get_posts(request)
         if request.method == 'POST':
@@ -784,16 +377,10 @@ def get_profile(request):
                 'formProfile': formProfile,
             }
             return render(request, 'posts/profile.html', context)
-=======
-
->>>>>>> kdhaywar/master
-=======
-
->>>>>>> kdhaywar/master
 
 
 # @api_view(['GET'])
-# def get_post_detail(request, id):
+# def post_detail(request, id):
 #     try:
 #         post = Post.objects.get(id=id)
 #     except Post.DoesNotExist:
@@ -802,8 +389,6 @@ def get_profile(request):
 #     if request.method == 'GET':
 #         serializer = PostSerializer(post)
 #         return Response(serializer.data)
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 
 def create_img(request):
@@ -818,7 +403,3 @@ def create_img(request):
     else:
         form = UploadImgForm()
     return render(request, 'posts/edit_img.html', {'form': form})
-=======
->>>>>>> kdhaywar/master
-=======
->>>>>>> kdhaywar/master
