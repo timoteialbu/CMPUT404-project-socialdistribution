@@ -76,14 +76,17 @@
 
                         <form method="POST" class="PostForm">{% csrf_token %}
                             <div class="modal-body">
-                                <p>{{ form.title.label_tag }} <input name="title" type="text" value="{{ post.title }}"/>
+                                <p><span style="font-size:12px;"><label
+                                        for="{{ formPost.title.id_for_label }}">Title:</label> &nbsp; <input name="title"
+                                                                                                         type="text"
+                                                                                                         value="{{ post.title }}"/></span>
                                 </p>
-                                <p>{{ form.content.label_tag }} <input name="content" type="textarea" rows="4" cols="50"
-                                                                       value="{{ post.content }}"/></p>
-                                <p>{{ form.contentType.label_tag }} <input name="contentType"
-                                                                           value="{{ post.contentType }}"/></p>
-                                <p>{{ form.visibility.label_tag }} <input name="visibility"
-                                                                          value="{{ post.visibility }}"/></p>
+                                <p><span style="font-size:12px;"><label
+                                        for="{{ formPost.content.id_for_label }}">Content:</label> &nbsp; <input
+                                        name="content" type="text"
+                                        value="{{ post.content }}"/></span>
+                                </p>
+                                <input name="postId" value="{{ post.id }}" hidden="true"/></span>
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" value="save" class="btn btn-default">Update</button>

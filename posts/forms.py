@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import Post, Image, Comment
-
+import uuid
 
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
@@ -11,6 +11,12 @@ class PostForm(forms.ModelForm):
 	class Meta:
 		model = Post
 		fields = ('title', 'content', 'visibility', 'contentType')
+
+
+class PostEditForm(forms.Form):
+	title = forms.CharField(label='Title', required=False)
+	content = forms.CharField(label='Content', required=False)
+	postId = forms.UUIDField(label='Id')
 
 
 class CommentForm(forms.ModelForm):
