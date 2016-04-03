@@ -7,9 +7,9 @@ urlpatterns = [
 
     url(r'^create_img/$', views.create_img, name='create_img'),
 
-    url(r'^post_mgnt/$', views.post_mgnt, name='post_mgnt'),
+    url(r'^post_mgmt/$', views.post_mgmt, name='post_mgmt'),
 
-    url(r'^friend_mgnt/$', views.friend_mgnt, name='friend_mgnt'),
+    url(r'^friend_mgmt/$', views.friend_mgmt, name='friend_mgmt'),
 
     url(r'^nodes/$', views.nodes, name='nodes'),
 

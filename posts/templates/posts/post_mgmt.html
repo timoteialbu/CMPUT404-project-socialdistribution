@@ -2,7 +2,7 @@
 
 {% block content %}
 {% load markdown_deux_tags %}
-<form action = {% url 'posts:post_mgnt' %} method = "POST">{% csrf_token %}
+<form action = {% url 'posts:post_mgmt' %} method = "POST">{% csrf_token %}
 
 <div class="modal-header">
   <h2>Post Management</h2>
@@ -51,7 +51,7 @@
 {% endblock %}
 
 {% comment %}
-<form action = {% url 'posts:post_mgnt' %}  method="DELETE">
+<form action = {% url 'posts:post_mgmt' %}  method="DELETE">
    <label for="since">Since</label>
    <input id="since" name="since" type="datetime"/>
    <button type="submit">Delete</button>

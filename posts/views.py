@@ -126,7 +126,7 @@ def friend_requests(request, context, users):
             #friend = context['friendrequestform'].cleaned_data['user_choice_field']
             #context['addfriend'] = friend
 
-def friend_mgnt(request):
+def friend_mgmt(request):
     users = list(map(lambda x:
                      str(x.from_user),
                      Friend.objects.unread_requests(request.user)))
@@ -153,10 +153,10 @@ def friend_mgnt(request):
 
     print "all_friends:", all_friends
     context["can_add_psot"] = False
-    return render(request, 'posts/friend_mgnt.html', context)
+    return render(request, 'posts/friend_mgmt.html', context)
 
 
-def post_mgnt(request):
+def post_mgmt(request):
         latest_post_list = get_posts(request).filter(
             Q(author=Author.objects.get(user=request.user)))
         if request.method == 'POST':
@@ -166,12 +166,12 @@ def post_mgnt(request):
                     if str(id) == str(post.id):
                         post.delete()
 
-            return redirect('posts:post_mgnt')
+            return redirect('posts:post_mgmt')
         context = {
             'can_add_psot': False,
             'latest_post_list': latest_post_list
         }
-        return render(request, 'posts/post_mgnt.html', context)
+        return render(request, 'posts/post_mgmt.html', context)
 
 
 def nodes(request):
