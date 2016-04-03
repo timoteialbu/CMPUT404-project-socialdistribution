@@ -181,28 +181,47 @@ def nodes(request):
 
 
 def get_remote(request, ext):
-        url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
-        author = Author.objects.get(user=request.user)
-        authStr = str(author.id)+"@team5:team5"
-        print "authstr", authStr
-        headers = {
-                'Authorization': "Basic " + str(base64.b64encode(authStr)),
-                'Content-Type': 'application/json',
-        }
-        r = requests.get(url, headers=headers)
-        return r.json()
+        nodes = Node.objects.all()
+        r = list()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            print(authToken)
+            try:
+                r = r + requests.get(url, headers=headers).json()['posts']
+            except:
+                try:
+                    r = r + requests.get(url, headers=headers).json()['results']
+                except:
+                    print("Unkown API Format!")
+                    print(r)
+        print(r)
+        return r
 
 
 def post_remote(request, ext, payload):
-        url = 'http://cmput404-team-4a.herokuapp.com/api'+ext
-        author = Author.objects.get(user=request.user)
-        authStr = str(author.id)+"@team5:team5"
-        headers = {
-                'Authorization': "Basic " + str(base64.b64encode(authStr)),
-                'Content-Type': 'application/json',
-        }
-        print "url", url
-        r = requests.post(url, headers=headers, json=payload)
+        nodes = Node.objects.all()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            print "url", url
+            r = requests.post(url, headers=headers, json=payload)
         return r.status_code
         
 
