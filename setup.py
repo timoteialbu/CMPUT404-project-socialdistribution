@@ -1,9 +1,10 @@
-from setuptools import setup
+import os
+from os import remove, close
+from tempfile import mkstemp
+from shutil import move
 
-setup(name='django on Red Hat Openshift',
-    version='1.3.3',
-    description='django on OpenShift',
-    author='',
-    author_email='',
-    url='https://github.com/jfmatth/openshift-django',
-)
+import re
+
+if __name__ == '__main__':
+	os.system("python manage.py migrate")
+	os.system("python manage.py collectstatic")

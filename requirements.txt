@@ -6,3 +6,11 @@ djangorestframework
 django-markdown-deux
 docutils
 djangorestframework-jwt
+whitenoise
+wsgiref==0.1.2
+gunicorn
+requests
+dj-static==0.0.6
+dj-database-url
+static3==0.6.1
+wheel==0.24.0

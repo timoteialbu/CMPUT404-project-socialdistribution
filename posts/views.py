@@ -17,7 +17,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
 from api.serializers import *
 import json
+from django.template.defaulttags import register
 
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 # not a view can be moved elsewhere
 #####################################################
@@ -36,7 +41,7 @@ def get_posts(request):
             latest_post_list = Post.objects.filter(
                 Q(visibility='PUBLIC') |
                 Q(author=Author.objects.get(user=request.user)))
-        return latest_post_list
+        return latest_post_list.order_by('-published')
 
 
 def try_adding_friend(user, friend):
@@ -127,11 +132,13 @@ def friend_mgnt(request):
                      Friend.objects.unread_requests(request.user)))
     all_friends = Friend.objects.friends(request.user)
 
-    context = { 'friendrequestform': FriendRequestForm(names=users),
-                'all_friends': all_friends
+    context = { 
+        'friendrequestform': FriendRequestForm(names=users),
+        'all_friends': all_friends
     }
 
     if request.method == "POST":
+        form = PostForm(request.POST)
         context.update({
             'addform': AddFriendForm(request.POST),
             'unfrienduserform': UnFriendUserForm(request.POST),
@@ -140,37 +147,42 @@ def friend_mgnt(request):
         add_relationship(request, context)
         friend_requests(request, context, users)
     else:
+        form = PostForm()
         context.update({
             'addform': AddFriendForm(),
             'unfrienduserform': UnFriendUserForm(),
         })
 
     print "all_friends:", all_friends
+    context["form"] = form
     return render(request, 'posts/friend_mgnt.html', context)
 
 
 def post_mgnt(request):
         latest_post_list = get_posts(request)
-
-        context = {
-            'latest_post_list': latest_post_list
-        }
-
         if request.method == 'POST':
+            form = PostForm(request.POST)
             values = request.POST.getlist('id')
-
             for post in latest_post_list:
                 for id in values:
                     if str(id) == str(post.id):
                         post.delete()
 
             return redirect('posts:post_mgnt')
+        else:
+            form = PostForm()
+        context = {
+            'form': form,
+            'latest_post_list': latest_post_list
+        }
         return render(request, 'posts/post_mgnt.html', context)
+
 
 def nodes(request):
         nodes_list = Node.objects.all()
         context = {'nodes_list': nodes_list}
         return render(request, 'posts/nodes.html', context)
+
 
 def get_remote(request, ext):
         nodes = Node.objects.all()
@@ -198,6 +210,7 @@ def get_remote(request, ext):
         print(r)
         return r
 
+
 def post_remote(request, ext, payload):
         nodes = Node.objects.all()
         for node in nodes:
@@ -219,11 +232,11 @@ def post_remote(request, ext, payload):
 
 # prob should change this to a form view
 def index(request):
-   #     try:
-  #          remote_posts = get_remote(request, '/posts/')['posts']
- #       except:
-#            remote_posts = list()
-        remote_posts = get_remote(request, '/posts/')
+        try:
+            remote_posts = get_remote(request, '/posts/')['posts']
+        except:
+            remote_posts = list()
+
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
         if request.method == "POST":
@@ -234,15 +247,25 @@ def index(request):
                 post.published = timezone.now()
                 post.save()
                 # future ref make to add the namespace ie "posts"
-                return redirect('posts:detail', id=post.pk)
+                #return redirect('posts:detail', id=post.pk)
+                return redirect('posts:index')
         else:
             form = PostForm()
+
         latest_post_list = get_posts(request)
         latest_img_list = Image.objects.order_by('-published')[:5]
+
+        comments_dict = {}
+        for p in latest_post_list:
+            comments = Comment.objects.filter(post=p.id)
+            comments_dict[p.id] = comments
+        
         context = {
             'latest_image_list': latest_img_list,
             'latest_post_list': list(latest_post_list) + remote_posts,
-            'form': form
+            'form': form,
+            'comments_dict': comments_dict
+
         }
         return render(request, 'posts/index.html', context)
 
@@ -326,7 +349,7 @@ def post_detail(request, id):
 def get_profile(request):
         if request.method == "POST":
             formProfile = UserProfile(request.POST)
-
+            form = PostForm(request.POST)
             if formProfile.is_valid():
                 author = Author.objects.get(user=request.user)
                 author.displayName = formProfile.cleaned_data["displayname"]
@@ -337,7 +360,7 @@ def get_profile(request):
                 author.save()
             return redirect('posts:update_profile')
         else:
-            formPost = PostForm()
+            form = PostForm()
             formProfile = UserProfile()
 
             latest_post_list = Post.objects.filter(
@@ -355,7 +378,7 @@ def get_profile(request):
             context = {
                 'latest_image_list': latest_img_list,
                 'latest_post_list': latest_post_list,
-                'form': formPost,
+                'form': form,
                 'formProfile': formProfile,
             }
             return render(request, 'posts/profile.html', context)
