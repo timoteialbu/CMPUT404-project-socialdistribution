@@ -20,7 +20,7 @@ class UserPostList(generics.ListAPIView):
     http://service/author/posts 
     """
 
-    permission_classes = (permissions.IsAuthenticated,)
+   #permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PostSerializer
 
     def get_queryset(self):
@@ -42,7 +42,7 @@ class PostList(generics.ListCreateAPIView):
     """
     queryset = Post.objects.filter(visibility='PUBLIC')
     serializer_class = PostSerializer
-    permission_classes = (permissions.AllowAny,)
+    #permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
         serializer.save(author=Author.objects.get(user=self.request.user))
@@ -54,7 +54,7 @@ class AuthorPostList(generics.ListAPIView):
     http://service/author/{AUTHOR_ID}/posts 
     """
     serializer_class = PostSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
@@ -72,7 +72,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     http://service/posts/{POST_ID}
     """
     serializer_class = PostSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
@@ -91,7 +91,7 @@ class CommentList(generics.ListCreateAPIView):
     http://service/posts/{post_id}/comments access to the comments in a post
     """
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
@@ -115,7 +115,7 @@ class UserList(generics.ListAPIView):
 
 class AuthorDetail(generics.RetrieveAPIView):
     serializer_class = AuthorSerializer
-    permission_classes = (permissions.AllowAny,)
+    #permission_classes = (permissions.AllowAny,)
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
