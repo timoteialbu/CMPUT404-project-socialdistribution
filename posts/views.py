@@ -163,7 +163,9 @@ def get_posts(request):
 	else:
 		latest_post_list = Post.objects.filter(
 			Q(visibility='PUBLIC') |
-			Q(author=Author.objects.get(user=request.user)))
+			Q(author=Author.objects.get(user=request.user)) |
+            Q(visibility='AUTHOR') &
+            Q(privateAuthor=Author.objects.get(user=request.user).id))
 	return latest_post_list.order_by('-published')
 
 
