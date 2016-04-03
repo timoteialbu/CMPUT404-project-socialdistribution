@@ -1,93 +1,125 @@
 {% extends 'posts/base.html' %}
 
 {% block content1 %}
+{% block content %}
 
-    {% block content %}
-        <div class="post">
-            {% if post.pub_date %}
-                <div class="date">
-                    {{ post.pub_date }}
-                </div>
-            {% endif %}
-            <h2>{{ post.title }}</h2>
-            <p>{{ post.content|urlize|linebreaks }}</p>
-            <p>{{ post.get_privacy_display }}</p>
-        </div>
+<script>
+ function edit(){
+     var n = 0;
+     var flip = function(){
+     if(n % 2){
+         document.getElementById('edit').style.display="none";
+     }
+     else{
+         document.getElementById('edit').style.display="block";
+     }
+    ++n;
+     }
+     return flip;
+ }
+ function comment(){
+     var n = 0;
+     var flip = function(){
+     if(n % 2){
+         document.getElementById('comment').style.display="none";
+     }
+     else{
+         document.getElementById('comment').style.display="block";
+     }
+    ++n;
+     }
+     return flip;
+ }
+ var nextE = edit();
+ var nextC = comment();
+</script>
 
+
+<div class="modal-content">
+<div class="post">
+    {% if post.pub_date %}
+    <div class="date">
+        {{ post.pub_date }}
+    </div>
+    {% endif %}
+
+    <div class="modal-header">
+        <h2>{{ post.title}}</h2>
+        <h3>{{ post.content|urlize|linebreaks }}</h3>
+        <h3>{{ post.get_privacy_display }}</h3>
+    </div>
+
+    <div class="modal-body">
         <div class="comments">
-            {% for comment in comments %}
-                <p>{{ comment.comment|urlize|linebreaks }}</p>
-            {% endfor %}
+        {% for comment in comments %}
+            <p>{{ comment.comment|urlize|linebreaks }}</p>
+        {% endfor %}
         </div>
+    </div>
+
+    <div class="modal-footer">
+    <table style="float: right;"><tr>
         {% if isAuthor %}
-            <button type=button id=f1 onclick="nextE();">Edit</button>
+        <td>
+            <button class="btn btn-default" type=button id = f1 onclick="nextE();">Edit</button>
+        </td>
         {% endif %}
+
         {% if isAuthenticated %}
-            <button type=button id=f2 onclick="nextC();">Comment</button>
+        <td>
+            <button class="btn btn-default" type=button id = f2 onclick="nextC();">Comment</button>
+        </td>
         {% else %}
-            <h2>Login to comment!
-        {% endif %}
-        <script>
-            function edit() {
-                var n = 0;
-                var flip = function () {
-                    if (n % 2) {
-                        document.getElementById('edit').style.display = "none";
-                    }
-                    else {
-                        document.getElementById('edit').style.display = "block";
-                    }
-                    ++n;
-                }
-                return flip;
-            }
-            function comment() {
-                var n = 0;
-                var flip = function () {
-                    if (n % 2) {
-                        document.getElementById('comment').style.display = "none";
-                    }
-                    else {
-                        document.getElementById('comment').style.display = "block";
-                    }
-                    ++n;
-                }
-                return flip;
-            }
-            var nextE = edit();
-            var nextC = comment();
-        </script>
-
-        <div id="edit" style="display: none;">
-            <h1>New Content</h1>
-            <form method="POST" class="post-form">{% csrf_token %}
-                {{ form.as_p }}
-                {{ form.get_privacy_display }}
-                <input type="hidden" name="formType" value="post"></input>
-                <button type="submit" value="save">Save</button>
-            </form>
-        </div>
-        <div id="comment" style="display: none;">
-            <h1>New Comment</h1>
-            <form method="POST" class="comment-form">{% csrf_token %}
-                {{ cform.as_p }}
-                <input type="hidden" name="formType" value="comment"></input>
-                <button type="submit" value="save">Save</button>
-            </form>
-        </div>
-        <br><br>
-
-        {% if isAuthor %}
-            <form action={% url 'posts:delete_post' post.id %} method = "POST">{% csrf_token %}
-            <button type="submit" name="id" value= {{ post.id }}>
-                Delete Selected Post
-            </button>
-            </form>
+        <td>
+            <h2>Login to comment!</h2>
+        </td>
         {% endif %}
 
-        <form action={% url 'posts:index' %} method="get">
-            <button type="submit">Back</button>
-        </form>
-    {% endblock %}
+        {%if isAuthor %}
+        <td>
+            <form action = {% url 'posts:delete_post' post.id %} method = "POST">{% csrf_token %}
+            <button class="btn btn-default" type="submit" name = "id" value = {{post.id}}>Delete</button>
+            </form>
+        </td>
+        {% endif %}
+    </tr></table>
+    </div>
+</div>
+</div>
 
+
+
+
+
+
+
+
+
+
+<div id="edit" style="display: none;">
+    <h1>New Content</h1>
+    <form method="POST" class="post-form">{% csrf_token %}
+	{{ form.as_p }}
+	{{ form.get_privacy_display}}
+	<input type="hidden" name="formType" value="post"></input>
+	<button type="submit" value="save">Save</button>
+    </form>
+</div>
+
+
+<div id="comment" style="display: none;">
+    <h1>New Comment</h1>
+    <form method="POST" class="comment-form">{% csrf_token %}
+	{{ cform.as_p }}
+	<input type="hidden" name="formType" value="comment"></input>
+	<button type="submit" value="save">Save</button>
+    </form>
+</div>
+<br><br>
+
+
+
+
+
+{% endblock %}
 {% endblock %}
