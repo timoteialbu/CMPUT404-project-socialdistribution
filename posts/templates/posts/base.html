@@ -61,22 +61,24 @@
 }
 
 .modal-header {
-    padding: 2px 16px;
+    padding: 3px 16px;
     background-color: #5cb85c;
     color: white;
 }
 
-.modal-body {padding: 2px 16px;}
+.modal-body {
+  padding: 3em auto 3em auto;
+}
 
 .modal-footer {
-    padding: 2px 16px;
+    padding: 3px 16px;
     background-color: #5cb85c;
     color: white;
 }
 
 /* Add Animation */
 @-webkit-keyframes animatetop {
-    from {top:-300px; opacity:0}
+    from {top:-300px; opacity:0} 
     to {top:0; opacity:1}
 }
 
@@ -96,7 +98,7 @@ var btn = document.getElementById("myBtn");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks the button, open the modal
+// When the user clicks the button, open the modal 
 function open_modale() {
     // Get the modal
     var modal = document.getElementById('myModal');
@@ -129,8 +131,8 @@ window.onclick = function(event) {
         <ul class="nav navbar-nav">
           <li><a href='/posts/'><span>Home</span></a></li>
     {% if user.is_authenticated %}
-          <li><a href='/posts/post_mgnt/'><span>Posts</span></a></li>
-          <li><a href='/posts/friend_mgnt/'><span>Friends</span></a></li>
+          <li><a href='/posts/post_mgmt/'><span>Posts</span></a></li>
+          <li><a href='/posts/friend_mgmt/'><span>Friends</span></a></li>
           <li><a href='/posts/profile/'><span>Profile</span></a></li>
           </ul>
 
@@ -196,10 +198,11 @@ window.onclick = function(event) {
 
       {% block content %}
       {% endblock %}
-
       <nav class="navbar navbar-inverse navbar-fixed-bottom">
+      {% if can_add_psot %}
         <ul class="nav nav-pills nav-justified">
-            <li>
+        
+<li>
 
 <!-- Trigger/Open The Modal -->
 <button id="myBtn" class="btn btn-default" onclick="open_modale();">Create New Post</button>
@@ -225,15 +228,15 @@ window.onclick = function(event) {
 
   </div>
 </div>
+</li>
 
-            </li>
-
-            <li>
+<li>
             <form action={% url 'posts:create_img' %} method="get">
               <button class="btn btn-default" type="submit" value="create_img" >Upload Image</button>
             </form>
             </li>
         </ul>
+        {% endif %}
 
       </nav>
 
