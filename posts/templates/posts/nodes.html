@@ -1,8 +1,8 @@
 {% extends 'posts/base.html' %}
 
 {% block content %}
-<h2>Nodes:</h2>
-{% for node in nodes_list %}
-<p>{{node.title}}</p>
-{% endfor %}
+    <h2>Nodes:</h2>
+    {% for node in nodes_list %}
+        <p>{{ node.title }}</p>
+    {% endfor %}
 {% endblock %}

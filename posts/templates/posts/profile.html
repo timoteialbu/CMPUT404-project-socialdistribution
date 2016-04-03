@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<<<<<<< HEAD
 {% load markdown_deux_tags %}
     <form method="POST" class="UserProfile">{% csrf_token %}
     <div class="modal-content">
@@ -12,18 +13,51 @@
         <div class="modal-body">
         <table>
             <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text" value="{{ formProfile.fields.username }}" /></span></p>
+=======
+    {% load markdown_deux_tags %}
 
-            <p><span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; <input name="displayname" type="text" value="{{ formProfile.fields.displayname }}" /></span></p>
+    <div id="userProfile">
+        <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">
+            Profile</h1>
 
-            <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="host" size="30" type="text" value="{{ formProfile.fields.host }}" /></span></p>
+        <h2 style="font-style:italic;"><span style="font-size:14px;">Personal Information</span></h2>
 
-            <p><span style="font-size:12px;">Url: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="url" size="30" type="text" value="{{ formProfile.fields.host }}" /></span></p>
+        <form method="POST" class="UserProfile">{% csrf_token %}
 
-            <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text" value="{{ formProfile.fields.github }}" /></span></p>
+            <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text"
+                                                                     value="{{ formProfile.fields.username }}"/></span>
+            </p>
+>>>>>>> kdhaywar/master
 
+            <p><span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; <input name="displayname" type="text"
+                                                                                      value="{{ formProfile.fields.displayname }}"/></span>
+            </p>
+
+            <p><span style="font-size:12px;">Host: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="host" size="30"
+                                                                                             type="text"
+                                                                                             value="{{ formProfile.fields.host }}"/></span>
+            </p>
+
+            <p><span style="font-size:12px;">Url: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input name="url" size="30"
+                                                                                                   type="text"
+                                                                                                   value="{{ formProfile.fields.host }}"/></span>
+            </p>
+
+            <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text"
+                                                                                 value="{{ formProfile.fields.github }}"/></span>
+            </p>
+
+<<<<<<< HEAD
             <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id" size="45" type="text" value="{{ formProfile.fields.id }}" /></span></p>
         </table>
         </div>
+=======
+            <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id"
+                                                                                                        size="45"
+                                                                                                        type="text"
+                                                                                                        value="{{ formProfile.fields.id }}"/></span>
+            </p>
+>>>>>>> kdhaywar/master
 
         <div class="modal-footer">
             <button type="submit" value="save" class="btn btn-default">Update</button>
@@ -34,30 +68,61 @@
 
     <br>
 
+<<<<<<< HEAD
     <div id="userProfile" class="modal-content">
 
     <div class="modal-header">
     <h2>Posts</h2>
     </div>
+=======
+    <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">
+        Posts</h1>
+
+    <hr/>
+>>>>>>> kdhaywar/master
 
     <div id="showContent" class="modal-body">
         {% if latest_post_list %}
             {% for post in latest_post_list %}
+                <h2><span style="font-size:14px;">
+                <a href="{% url 'posts:detail' post.id %}" class="title">{{ post.title }}</a>
+                </span></h2>
                 {% if post.contentType == 'text/plain' %}
-                    <h2><span style="font-size:14px;">
-                    <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
-                    </span></h2>
                     <p><span style="font-size:12px;">{{ post.content|linebreaks }}</span></p>
                 {% else %}
-                    <h2><span style="font-size:14px;">
-                    <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
-                    </span></h2>
                     <p><span style="font-size:12px;">{{ post.content|markdown }}</span></p>
                 {% endif %}
 
-            <form action="comment" enctype="multipart/form-data" id="f1" method="get" name="addComment" target="_blank"><input name="btnComment" type="button" value="Comment" />&nbsp;</form>
+                <button id="myBtn" class="btn btn-default" onclick="open_modale();">Edit</button>
 
-            <hr />
+                <!-- The Modal -->
+                <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close" onclick="close_modle()">×</span>
+                            <h2>Edit Content Here</h2>
+                        </div>
+
+                        <form method="POST" class="PostForm">{% csrf_token %}
+                            <div class="modal-body">
+                                <p>{{ form.title.label_tag }} <input name="title" type="text" value="{{ post.title }}"/>
+                                </p>
+                                <p>{{ form.content.label_tag }} <input name="content" type="textarea" rows="4" cols="50"
+                                                                       value="{{ post.content }}"/></p>
+                                <p>{{ form.contentType.label_tag }} <input name="contentType"
+                                                                           value="{{ post.contentType }}"/></p>
+                                <p>{{ form.visibility.label_tag }} <input name="visibility"
+                                                                          value="{{ post.visibility }}"/></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" value="save" class="btn btn-default">Update</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <hr/>
 
             {% endfor %}
 
@@ -67,9 +132,9 @@
 
         {% if latest_image_list %}
             <ul>
-            {% for image in latest_image_list %}
-            <img src={{ image.img.url }} alt="My_image"/>
-            {% endfor %}
+                {% for image in latest_image_list %}
+                    <img src={{ image.img.url }} alt="My_image"/>
+                {% endfor %}
             </ul>
         {% else %}
             <p>No images are available!</p>
