@@ -10,49 +10,49 @@ setup_test_environment()
 
 
 def new_author(username="john", email="dd@dsd.ca", password="123454"):
-    if User.objects.filter(username=username).exists():
-        user = User.objects.get(username=username)
-        return Author.objects.get(user=user)
-    user = User.objects.create_user(username, email, password)
-    return Author.objects.get(user=user, )
+	if User.objects.filter(username=username).exists():
+		user = User.objects.get(username=username)
+		return Author.objects.get(user=user)
+	user = User.objects.create_user(username, email, password)
+	return Author.objects.get(user=user, )
 
 
 def create_post(author, content, days, visibility):
-    """
-    Creates a post with the given `post_text` published the given
-    number of `days` offset to now (negative for questions published
-    in the past, positive for post that have yet to be published).
-    """
-    time = timezone.now() + datetime.timedelta(days=days)
-    return Post.objects.create(author=author, content=content,
-                               published=time, visibility=visibility)
+	"""
+	Creates a post with the given `post_text` published the given
+	number of `days` offset to now (negative for questions published
+	in the past, positive for post that have yet to be published).
+	"""
+	time = timezone.now() + datetime.timedelta(days=days)
+	return Post.objects.create(author=author, content=content,
+							   published=time, visibility=visibility)
 
 
 class QuestionViewTests(TestCase):
-    def test_index_view_with_no_posts(self):
-        """
-        If no post exist, an appropriate message should be displayed.
-        """
-        response = self.client.get('/posts')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No posts are available!")
-        self.assertQuerysetEqual(response.context['latest_post_list'], [])
+	def test_index_view_with_no_posts(self):
+		"""
+		If no post exist, an appropriate message should be displayed.
+		"""
+		response = self.client.get('/posts')
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "No posts are available!")
+		self.assertQuerysetEqual(response.context['latest_post_list'], [])
 
-    def test_index_view_with_a_past_post(self):
-        """
-        Posts with a pub_date in the past should be displayed on the
-        index page.
-        """
+	def test_index_view_with_a_past_post(self):
+		"""
+		Posts with a pub_date in the past should be displayed on the
+		index page.
+		"""
 
-        post_text = "Past post."
-        days = -30
-        author = new_author()
-        create_post(author, post_text, days, "PU")
-        response = self.client.get('/posts')
-        self.assertQuerysetEqual(
-            response.context['latest_post_list'],
-            ['<Post: Past post.>']
-        )
+		post_text = "Past post."
+		days = -30
+		author = new_author()
+		create_post(author, post_text, days, "PU")
+		response = self.client.get('/posts')
+		self.assertQuerysetEqual(
+			response.context['latest_post_list'],
+			['<Post: Past post.>']
+		)
 
 # def test_index_view_with_a_future_post(self):
 #         """

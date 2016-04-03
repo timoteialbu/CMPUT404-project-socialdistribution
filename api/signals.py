@@ -9,10 +9,10 @@ import os.path
 
 @receiver(post_save, sender=User)
 def create_uuid(sender, **kw):
-    user = kw["instance"]
-    if kw["created"]:
-        userinfo = Author(user=user)
-        userinfo.save()
+	user = kw["instance"]
+	if kw["created"]:
+		userinfo = Author(user=user)
+		userinfo.save()
 
 
 post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
@@ -20,9 +20,9 @@ post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-sig
 
 @receiver(post_save, sender=User)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        print("Token Created")
-        Token.objects.create(user=instance)
+	if created:
+		print("Token Created")
+		Token.objects.create(user=instance)
 
 
 post_save.connect(create_auth_token, sender=User, dispatch_uid="user-auth")
@@ -30,13 +30,13 @@ post_save.connect(create_auth_token, sender=User, dispatch_uid="user-auth")
 
 @receiver(post_save, sender=Node)
 def generate_token(sender, **kw):
-    node = kw["instance"]
-    if kw["created"]:
-        print("token generated")
-        user = node.user
-        token = Token.objects.get(user=user)
-        node.outgoing_token = token.key
-        node.save()
+	node = kw["instance"]
+	if kw["created"]:
+		print("token generated")
+		user = node.user
+		token = Token.objects.get(user=user)
+		node.outgoing_token = token.key
+		node.save()
 
 
 post_save.connect(generate_token, sender=Node, dispatch_uid="gen_token_signal")
