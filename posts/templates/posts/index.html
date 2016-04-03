@@ -13,15 +13,15 @@ div.images {
     border:0px solid #d4d4d4;
 }
 
-td.post_title { 
+td.post_title {
     width: 20%;
 }
 
-td.post_content { 
+td.post_content {
     width: 60%;
 }
 
-td.post_comment { 
+td.post_comment {
     background-color: lightgrey;
     width: 60%;
 }
@@ -94,7 +94,7 @@ function makePost(n) {
     </form>
 
     <button onclick="next(1)">Back New Post</button>
-    
+
 </div>
 </center>
 
@@ -102,19 +102,19 @@ function makePost(n) {
 <center>
 <div id="showContent container">
     <!-- POST LIST -->
-    {% if latest_post_list %}
-        {% for post in latest_post_list %}
+    {% if post_list %}
+        {% for post in post_list %}
         <table class = "post">
         {% if post.contentType == 'text/plain' %}
         <tr>
             <th>
-            <p><img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg" 
+            <p><img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
             alt="Note" style="height:32px;width:32px">
             {{ post.author.user }}</p>
             </th>
 
-            <td class = "post_title">  
-            <h3>   
+            <td class = "post_title">
+            <h3>
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </h3>
             </td>
@@ -142,7 +142,7 @@ function makePost(n) {
         <table class = "post">
         <tr>
             <th>
-            <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg" 
+            <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
             alt="Note" style="height:32px;width:32px">
             <p>{{ post.author.user }}</p>
             </th>
@@ -183,9 +183,9 @@ function makePost(n) {
 
     <!-- IMAGE LIST -->
     <center>
-    {% if latest_image_list %}
+    {% if image_list %}
     <div class="images">
-        {% for image in latest_image_list %}
+        {% for image in image_list %}
         <div class="center">
 	       <img class = "centeral" src={{ image.img.url }} alt="My_image"/>
         </div>
