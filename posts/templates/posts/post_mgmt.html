@@ -2,52 +2,41 @@
 
 {% block content %}
 {% load markdown_deux_tags %}
+<p>THihsihsihihihsihsihih</p>
 <form action = {% url 'posts:post_mgmt' %} method = "POST">{% csrf_token %}
 
-<div class="modal-header">
-  <h2>Post Management</h2>
-</div>
+<label>You want to delete multiple posts?</label>
 
-<br>
-
+<br><br>
 {% if latest_post_list %}
-<div class="modal-body">
-<table class = "post">
+<table >
 {% for post in latest_post_list %}
 	<tr>
 		<td><input type="checkbox" name = "id" value = {{post.id}}></td>
-    <td style="width:1em;"></td>
-    {% if post.contentType == 'text/plain' %}
-      <td class="post_title">
-      <a href="{% url 'posts:detail' post.id %}">{{post.title|linebreaks}}</a>
-      </td>
-      <td style="width:0.5em;"></td>
-      <td class="post_content"><p>{{post.content|markdown}}</p></td>
-    {% else %}
-      <td class="post_title">
-      <a href="{% url 'posts:detail' post.id %}">{{post.title|linebreaks}}</a>
-      </td>
-      <td style="width:0.5em;"></td>
-      <td class="post_content"><p>{{post.content|markdown}}</p></td>
-    {% endif %}
-  </tr>
-{% endfor %}
+        {% if post.contentType == 'text/plain' %}
+	        <td><a href="{% url 'posts:detail' post.id %}">{{post.content|linebreaks}}</a></td>
+        {% else %}
+            <td><a href="{% url 'posts:detail' post.id %}">{{post.content|markdown}}</a></td>
+        {% endif %}
+    </tr>
+    {% endfor %}
 </table>
-</div>
 
 
 {% else %}
-<div class="modal-body">
     <p>No posts are available!</p>
-</div>
 {% endif %}
 
 	<br>
-<div class="modal-footer">
-	<button class="btn btn-default" type="submit" value = "confirm">Delete Selected Post</button>
-</div>
+
+	<button type="submit" value = "confirm">Delete Selected Post</button>
 </form>
 
+<br><br>
+
+<form action={% url 'posts:index' %} method="get">
+		<button type="submit">Back</button>
+</form>
 {% endblock %}
 
 {% comment %}
