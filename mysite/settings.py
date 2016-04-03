@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.xing'
     'friendship',
     'rest_framework',
+    'rest_framework.authtoken',
     'api',
     'markdown_deux',
 )

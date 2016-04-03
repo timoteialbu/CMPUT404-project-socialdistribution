@@ -20,40 +20,28 @@ import json
 from django.template.defaulttags import register
 
 
-@register.filter
-def get_item(dictionary, key):
-    return dictionary.get(key)
-
-# not a view can be moved elsewhere
-#####################################################
-def handle_uploaded_file(f):
-        with open('some/file/name.txt', 'wb+') as destination:
-            for chunk in f.chunks():
-                destination.write(chunk)
 
 #================================================================
 #---------------------------- Friends ---------------------------
 
 def try_add_friend(user, friend):
+
         try:
             friend_id = int(User.objects.get(username=friend).id)
         except Exception:
-            return "Not a valid user, please try again."
-        msg = ""
-        try:
-            User.objects.get(username=friend)
-        except Exception:
-            return "Not a valid user, please try again."
+            return "\"%s\" is not a valid user." % friend
+
         try:
             Follow.objects.add_follower(user, friend)
             msg += "You are now following %s" % friend
         except Exception:
             msg += "You are already following %s" % friend
+
         try:
             Friend.objects.add_friend(user, friend)
             msg += " and waiting for them to accept your request."
         except Exception:
-            msg += " and already waiting for a response to your request"
+            msg += " and waiting for a response to your request"
         return msg
 
 def add_friend(request, context):

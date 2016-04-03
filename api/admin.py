@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from rest_framework.authtoken.admin import TokenAdmin
 from .models import *
 
 
@@ -15,3 +15,4 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ['published']
 admin.site.register(Post, PostAdmin)
 admin.site.register(Node)
+TokenAdmin.raw_id_fields = ('user',)
