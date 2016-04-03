@@ -104,79 +104,65 @@ function makePost(n) {
     <!-- POST LIST -->
     {% if latest_post_list %}
         {% for post in latest_post_list %}
-        <table class = "post">
-        {% if post.contentType == 'text/plain' %}
-        <tr>
-            <th>
-            <p><img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
-            alt="Note" style="height:32px;width:32px">
-            {{ post.author.user }}</p>
-            </th>
+        <div class="modal-content">
 
-            <td class = "post_title">
+        {% if post.contentType == 'text/plain' %}
+            <div class="modal-header">
+                <p>{{ post.author.user }}:</p>
+            </div>
+
+            <div class="modal-header">
             <h3>
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </h3>
-            </td>
+            </div>
 
-            <tr>
-                <th></th>
-                <td class = "post_content">
+            <div class="modal-body">
                 <h4>{{ post.content|linebreaks }}</h4>
-                </td>
-            </tr>
+                {% for comment in comments_dict|get_item:post.id %}
+                    <p>{{comment.comment}}</p>
+                {% endfor%}
+            </div>
 
-            {% for comment in comments_dict|get_item:post.id %}
-                <tr>
-                <th></th>
-                <td class = "post_comment">
-                <p>{{comment.comment}}</p>
-                </td>
-            </tr>
-            {% endfor%}
-            <br>
-        </tr>
-        </table>
+            <div class="modal-footer">
+                <button>Comment</button>
+            </div>   
+
 
         {% else %}
-        <table class = "post">
-        <tr>
-            <th>
-            <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
-            alt="Note" style="height:32px;width:32px">
-            <p>{{ post.author.user }}</p>
-            </th>
-            <td class = "post_title">
+            <div class="modal-header">
+                <p>{{ post.author.user }}</p>
+            </div>
+
+            <div class = "modal-header">
             <h3>
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </h3>
-            </td>
+            </div>
 
-            <tr>
-                <th></th>
-                <td class = "post_content">
+            <div class="modal-body">
                 <h4>{{ post.content|linebreaks }}</h4>
-                </td>
-            </tr>
+                
+                {% for comment in comments_dict|get_item:post.id %}
+                    <p>{{comment.comment}}</p>
+                {% endfor%}
+            </div>
 
-            {% for comment in comments_dict|get_item:post.id %}
-                <tr>
-                <th></th>
-                <td class = "post_comment">
-                <p>{{comment.comment}}</p>
-                </td>
-            </tr>
-            {% endfor%}
-
-            <br>
-        </tr>
-        </table>
+            <div class="modal-footer">
+                <button>Comment</button>
+            </div>
         {% endif %}
+
+        </div> 
+        <br>
         {% endfor %}
-    </table>
 
     {% else %}
-        <h2>No posts are available!</h2>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>No posts are available!</h2>
+        </div>
+    </div>
     {% endif %}
     <br>
 
