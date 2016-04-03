@@ -142,9 +142,9 @@ function makePost(n) {
         <table class = "post">
         <tr>
             <th>
-            <p><img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
+            <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
             alt="Note" style="height:32px;width:32px">
-            {{ post.author.user }}</p>
+            <p>{{ post.author.user }}</p>
             </th>
             <td class = "post_title">
             <h3>
@@ -168,141 +168,54 @@ function makePost(n) {
             </tr>
             {% endfor%}
 
-    <center>
-        <div id="makePost" style="display: none">
-            <h1>New Content Here</h1>
-
-            <form method="POST" class="post-form">{% csrf_token %}
-                {{ form.as_p }}
-                {{ form.get_privacy_display }}
-                <button type="submit" value="save">Save</button>
-            </form>
-
-            <button onclick="next(1)">Back New Post</button>
-
-        </div>
-    </center>
-
-
-    <center>
-        <div id="showContent container">
-            <!-- POST LIST -->
-            {% if latest_post_list %}
-                {% for post in latest_post_list %}
-                    <table class="post">
-                        {% if post.contentType == 'text/plain' %}
-                            <tr>
-                                <th>
-                                    <p>
-                                        <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
-                                             alt="Note" style="height:32px;width:32px">
-                                        {{ post.author.user }}</p>
-                                </th>
-
-                                <td class="post_title">
-                                    <h3>
-                                        <a href="{% url 'posts:detail' post.id %}" class="title">{{ post.title }}</a>
-                                    </h3>
-                                </td>
-
-                            <tr>
-                                <th></th>
-                                <td class="post_content">
-                                    <h4>{{ post.content|linebreaks }}</h4>
-                                </td>
-                            </tr>
-
-                            {% for comment in comments_dict|get_item:post.id %}
-                                <tr>
-                                    <th></th>
-                                    <td class="post_comment">
-                                        <p>{{ comment.comment }}</p>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            <br>
-                            </tr>
-                            </table>
-
-                        {% else %}
-                            <table class="post">
-                                <tr>
-                                    <th>
-                                        <img src="https://itxdesign-itxdesign.netdna-ssl.com/wp-content/uploads/2014/01/wordpress-post.jpg"
-                                             alt="Note" style="height:32px;width:32px">
-                                        <p>{{ post.author.user }}</p>
-                                    </th>
-                                    <td class="post_title">
-                                        <h3>
-                                            <a href="{% url 'posts:detail' post.id %}"
-                                               class="title">{{ post.title }}</a>
-                                        </h3>
-                                    </td>
-
-                                <tr>
-                                    <th></th>
-                                    <td class="post_content">
-                                        <h4>{{ post.content|linebreaks }}</h4>
-                                    </td>
-                                </tr>
-
-                                {% for comment in comments_dict|get_item:post.id %}
-                                    <tr>
-                                        <th></th>
-                                        <td class="post_comment">
-                                            <p>{{ comment.comment }}</p>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-
-                                <br>
-                                </tr>
-                            </table>
-                        {% endif %}
-                {% endfor %}
-                </table>
-
-            {% else %}
-                <h2>No posts are available!</h2>
-            {% endif %}
             <br>
-
-
-            <!-- IMAGE LIST -->
-            <center>
-                {% if latest_image_list %}
-                    <div class="images">
-                        {% for image in latest_image_list %}
-                            <div class="center">
-                                <img class="centeral" src={{ image.img.url }} alt="My_image"/>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <h2>No images are available!</h2>
-                {% endif %}
-            </center>
-        </div>
-    </center>
-
-
-    <center>
-        {% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
-            <div class="nav-bar">
-                <table>
-                    <tr>
-                        <td>
-                            <button type=button id=f1 onclick="next();">Create New Post</button>
-                        </td>
-                        <td style="float: right;">
-                            <form action={% url 'posts:create_img' %} method="get">
-                                <button type="submit" value="create_img">Upload Image</button>
-                            </form>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+        </tr>
+        </table>
         {% endif %}
+        {% endfor %}
+    </table>
+
+    {% else %}
+        <h2>No posts are available!</h2>
+    {% endif %}
+    <br>
+
+
+    <!-- IMAGE LIST -->
+    <center>
+    {% if latest_image_list %}
+    <div class="images">
+        {% for image in latest_image_list %}
+        <div class="center">
+	       <img class = "centeral" src={{ image.img.url }} alt="My_image"/>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <h2>No images are available!</h2>
+    {% endif %}
     </center>
+</div>
+</center>
+
+
+<center>
+{% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
+<div class="nav-bar">
+    <table>
+    <tr>
+        <td>
+            <button type=button id = f1 onclick="next();">Create New Post</button>
+        </td>
+        <td style="float: right;">
+            <form action={% url 'posts:create_img' %} method="get">
+                <button type="submit" value="create_img" >Upload Image</button>
+            </form>
+        </td>
+    </tr>
+    </table>
+</div>
+{% endif %}
+</center>
 
 {% endblock %}
