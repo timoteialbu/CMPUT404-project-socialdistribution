@@ -42,37 +42,39 @@
         </script>
 
         {% if isAuthor %}
-        <button id="myBtn" class="btn btn-default" onclick="open_modale();">Edit</button>
+            <button id="myBtn" class="btn btn-default" onclick="open_modale();">Edit</button>
 
-        <!-- The Modal -->
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="close" onclick="close_modle()">×</span>
-                    <h2>Edit Content Here</h2>
+            <!-- The Modal -->
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close" onclick="close_modle()">×</span>
+                        <h2>Edit Content Here</h2>
+                    </div>
+
+                    <form method="POST" class="PostForm">{% csrf_token %}
+                        <div class="modal-body">
+                            <p><span style="font-size:12px;"><label
+                                    for="{{ postEditForm.title.id_for_label }}">Title:</label> &nbsp; &nbsp; <input
+                                    name="title"
+                                    type="text"
+                                    value="{{ postEditForm.fields.title }}"/></span>
+                            </p>
+                            <p>
+                                <span style="font-size:12px;"><label
+                                    for="{{ postEditForm.content.id_for_label }}">Content:</label> &nbsp;
+                                    <textarea cols="40" rows="5" name="content">{{ postEditForm.fields.content }}</textarea>
+                                </span>
+                            </p>
+                            <input name="postId" value="{{ postEditForm.fields.postId }}" hidden="true"/></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" value="save" class="btn btn-default">Update</button>
+                        </div>
+                    </form>
                 </div>
-
-                <form method="POST" class="PostForm">{% csrf_token %}
-                    <div class="modal-body">
-                        <p><span style="font-size:12px;"><label
-                                for="{{ postEditForm.title.id_for_label }}">Title:</label> &nbsp; <input name="title"
-                                                                                                     type="text"
-                                                                                                     value="{{ postEditForm.fields.title }}"/></span>
-                        </p>
-                        <p><span style="font-size:12px;"><label
-                                for="{{ postEditForm.content.id_for_label }}">Content:</label> &nbsp; <input
-                                name="content" type="text"
-                                value="{{ postEditForm.fields.content }}"/></span>
-                        </p>
-                        <input name="postId" value="{{ postEditForm.fields.postId }}" hidden="true"/></span>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" value="save" class="btn btn-default">Update</button>
-                    </div>
-                </form>
             </div>
-        </div>
         {% endif %}
         <div id="comment" style="display: none;">
             <h1>New Comment</h1>
@@ -86,9 +88,9 @@
 
         {% if isAuthor %}
             <form action={% url 'posts:delete_post' post.id %} method="POST">{% csrf_token %}
-            <button type="submit" name="id" value= {{ post.id }}>
-                Delete Selected Post
-            </button>
+                <button type="submit" name="id" value= {{ post.id }}>
+                    Delete Selected Post
+                </button>
             </form>
         {% endif %}
 

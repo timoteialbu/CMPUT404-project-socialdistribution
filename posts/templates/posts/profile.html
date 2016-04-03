@@ -81,10 +81,11 @@
                                                                                                          type="text"
                                                                                                          value="{{ post.title }}"/></span>
                                 </p>
-                                <p><span style="font-size:12px;"><label
-                                        for="{{ formPost.content.id_for_label }}">Content:</label> &nbsp; <input
-                                        name="content" type="text"
-                                        value="{{ post.content }}"/></span>
+                                <p>
+                                    <span style="font-size:12px;"><label
+                                        for="{{ formPost.content.id_for_label }}">Content:</label> &nbsp;
+                                        <textarea cols="40" rows="5" name="content">{{ post.content }}</textarea>
+                                    </span>
                                 </p>
                                 <input name="postId" value="{{ post.id }}" hidden="true"/></span>
                             </div>
