@@ -139,8 +139,8 @@ td {
             <div class="navbar-header navbar-brand">SQUANCH</div>
             <ul class="nav navbar-nav">
                 <li><a href='/posts/'><span>Home</span></a></li>
-                <li><a href='/posts/post_mgmt/'><span>Posts</span></a></li>
                 {% if user.is_authenticated %}
+                    <li><a href='/posts/post_mgmt/'><span>Posts</span></a></li>
                     <li><a href='/posts/friend_mgmt/'><span>Friends</span></a></li>
                     <li><a href='/posts/profile/'><span>Profile</span></a></li>
                     </ul>
@@ -217,7 +217,6 @@ td {
         <nav class="navbar navbar-inverse navbar-fixed-bottom">
             {% if can_add_psot %}
                 <ul class="nav nav-pills nav-justified">
-
                     <li>
 
                         <!-- Trigger/Open The Modal -->
@@ -308,6 +307,75 @@ td {
             <button type="submit">Sign Up &raquo;</button>
 
         </form>
+
+
+
+
+    {% if latest_post_list %}
+        {% for post in latest_post_list %}
+        <div class="modal-content">
+
+        {% if post.contentType == 'text/plain' %}
+            <div class="modal-header">
+            <h3> {{ post.author.user }}:&nbsp;{{post.title}}</h3>
+            </div>
+
+            <div class="modal-body">
+                <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                <div class="modal-content">
+                <div class="modal-header">
+                    <label>Comments:</label>
+                </div>
+                {% for comment in comments_dict|get_item:post.id %}
+                    <p>{{comment.comment}}</p>
+                {% endfor%}
+                </div>
+            </div>
+
+            <div class="modal-footer"></div>   
+
+
+        {% else %}
+            <div class="modal-header">
+            <h3> {{ post.author.user }}:&nbsp;{{post.title}}</h3>
+            </div>
+
+            <div class="modal-body">
+                <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                <div class="modal-content">
+                <div class="modal-header">
+                    <label>Comments:</label>
+                </div>
+                {% for comment in comments_dict|get_item:post.id %}
+                    <p>{{comment.comment}}</p>
+                {% endfor%}
+                </div>
+            </div>
+
+            <div class="modal-footer"></div>
+        {% endif %}
+
+        </div> 
+        <br>
+        {% endfor %}
+
+    {% else %}
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>No posts are available!</h2>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+
+
+
+
+
 
     {% endif %}
 </center>
