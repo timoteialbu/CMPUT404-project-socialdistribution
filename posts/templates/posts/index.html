@@ -102,8 +102,8 @@ function makePost(n) {
 <center>
 <div id="showContent container">
     <!-- POST LIST -->
-    {% if post_list %}
-        {% for post in post_list %}
+    {% if latest_post_list %}
+        {% for post in latest_post_list %}
         <table class = "post">
         {% if post.contentType == 'text/plain' %}
         <tr>
@@ -183,9 +183,9 @@ function makePost(n) {
 
     <!-- IMAGE LIST -->
     <center>
-    {% if image_list %}
+    {% if latest_image_list %}
     <div class="images">
-        {% for image in image_list %}
+        {% for image in latest_image_list %}
         <div class="center">
 	       <img class = "centeral" src={{ image.img.url }} alt="My_image"/>
         </div>
