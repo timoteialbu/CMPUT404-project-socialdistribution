@@ -3,14 +3,13 @@
 {% block content %}
 
 {% load markdown_deux_tags %}
+    <form method="POST" class="UserProfile">{% csrf_token %}
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Personal Information</h2>
+        </div>
 
-    <div id="userProfile">
-        <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">Profile</h1>
-
-        <h2 style="font-style:italic;"><span style="font-size:14px;">Personal Information</span></h2>
-
-        <form method="POST" class="UserProfile">{% csrf_token %}
-
+        <div class="modal-body">
             <p><span style="font-size:12px;">Username: &nbsp; <input name="username" type="text" value="{{ formProfile.fields.username }}" /></span></p>
 
             <p><span style="font-size:12px;">Name: &nbsp; &nbsp; &nbsp; &nbsp; <input name="displayname" type="text" value="{{ formProfile.fields.displayname }}" /></span></p>
@@ -22,18 +21,24 @@
             <p><span style="font-size:12px;">Github: &nbsp; &nbsp; &nbsp; <input name="github" type="text" value="{{ formProfile.fields.github }}" /></span></p>
 
             <p><span style="font-size:12px;">ID: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <input name="id" size="45" type="text" value="{{ formProfile.fields.id }}" /></span></p>
+        </div>
 
-            <button type="submit" value="save">Update</button>
-
-        </form>
+        <div class="modal-footer">
+            <button type="submit" value="save" class="btn btn-default">Update</button>
+        </div>
 
     </div>
+    </form>
 
-    <h1 style="background: rgb(238, 238, 238) none repeat scroll 0% 0%; border: 1px solid rgb(204, 204, 204); padding: 5px 10px;">Posts</h1>
+    <br>
 
-    <hr />
+    <div id="userProfile" class="modal-content">
 
-    <div id="showContent">
+    <div class="modal-header">
+    <h2>Posts</h2>
+    </div>
+
+    <div id="showContent" class="modal-body">
         {% if latest_post_list %}
             {% for post in latest_post_list %}
                 {% if post.contentType == 'text/plain' %}
