@@ -108,48 +108,51 @@ function makePost(n) {
 
         {% if post.contentType == 'text/plain' %}
             <div class="modal-header">
-                <p>{{ post.author.user }}:</p>
-            </div>
-
-            <div class="modal-header">
-            <h3>
+            <h3> {{ post.author.user }}:&nbsp;
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </h3>
             </div>
 
             <div class="modal-body">
                 <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                <div class="modal-content">
+                <div class="modal-header">
+                    <label>Comments:</label>
+                </div>
                 {% for comment in comments_dict|get_item:post.id %}
                     <p>{{comment.comment}}</p>
                 {% endfor%}
+                </div>
             </div>
 
             <div class="modal-footer">
-                <button>Comment</button>
+                <button class="btn btn-default">Comment</button>
             </div>   
 
 
         {% else %}
             <div class="modal-header">
-                <p>{{ post.author.user }}</p>
-            </div>
-
-            <div class = "modal-header">
-            <h3>
+            <h3> {{ post.author.user }}:  &nbsp;
             <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
             </h3>
             </div>
 
             <div class="modal-body">
                 <h4>{{ post.content|linebreaks }}</h4>
-                
+                <br>
+                <div class="modal-content">
+                <div class="modal-header">
+                    <label>Comments:</label>
+                </div>
                 {% for comment in comments_dict|get_item:post.id %}
                     <p>{{comment.comment}}</p>
                 {% endfor%}
+                </div>
             </div>
 
             <div class="modal-footer">
-                <button>Comment</button>
+                <button class="btn btn-default">Comment</button>
             </div>
         {% endif %}
 
@@ -164,7 +167,7 @@ function makePost(n) {
         </div>
     </div>
     {% endif %}
-    <br>
+    <hr>
 
 
     <!-- IMAGE LIST -->
