@@ -259,7 +259,7 @@
     {% else %}
         <form class="signup" id="signup_form" method="post" action="/account/signup/">{% csrf_token %}
             <div class="modal-content">
-            
+
             <div class="modal-header">
             <h2>Why not Register?</h2>
             </div>
@@ -272,7 +272,7 @@
                 </tr>
 
                 <tr>
-                    <td><label for="id_last_name">Last name:</label></td> 
+                    <td><label for="id_last_name">Last name:</label></td>
                     <td><input id="id_last_name" maxlength="30" name="last_name" type="text" /></td>
                 </tr>
 
@@ -334,7 +334,7 @@
                 </div>
             </div>
 
-            <div class="modal-footer"></div>   
+            <div class="modal-footer"></div>
 
 
         {% else %}
@@ -358,7 +358,7 @@
             <div class="modal-footer"></div>
         {% endif %}
 
-        </div> 
+        </div>
         <br>
         {% endfor %}
 

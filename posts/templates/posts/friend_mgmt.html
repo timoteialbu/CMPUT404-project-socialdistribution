@@ -10,7 +10,7 @@
             </div>
 
             <div class="modal-body">
-                <p>{{ addform.user_choice_field }}</p>
+		<p>{{ addform.add_username }}</p>
                 <p>{{ add_msg }}</p>
             </div>
 
@@ -31,13 +31,19 @@
             </div>
 
             <div class="modal-body">
-                <p>You are currently a friend with:</p>
-
-                {% load friendshiptags %}
-                {% friends request.user %}
-
-                <p>{{ unfrienduserform.username }}</p>
-                <p>{{ unfriend_msg }}</p>
+		<p>You are currently a friend with:</p>
+		{% if unfriendlist %}
+		{% for friend in unfriendlist %}
+		<p>{{friend}}
+		    <input type="checkbox" name="remove" value={{friend}}>
+		</p>
+		{% endfor %}
+		{% for error in unfriend_msg %}
+		<p>{{ error }}</p>
+		{% endfor %}
+		{% else %}
+		<p> No one :( </p>
+		{% endif %}
             </div>
 
             <div class="modal-footer">
