@@ -415,12 +415,15 @@ def index(request):
         if request.method == "POST":
             form = PostForm(request.POST)
             if form.is_valid():
-                post = form.save(commit=False)
+                post = Post()
                 post.author = Author.objects.get(user=request.user)
-                post.published = timezone.now()
+                post.title = form.cleaned_data["title"]
+                post.content = form.cleaned_data["content"]
+                post.contentType = form.cleaned_data["contentType"]
+                post.visibility = form.cleaned_data["visibility"]
+                test = form.cleaned_data["privateAuthor"]
+                post.privateAuthor = User.objects.all().filter(id=test.id)
                 post.save()
-                # future ref make to add the namespace ie "posts"
-                #return redirect('posts:detail', id=post.pk)
                 return redirect('posts:index')
         else:
             form = PostForm()

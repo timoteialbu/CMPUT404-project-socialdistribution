@@ -19,9 +19,9 @@ class PostForm(forms.ModelForm):
 
 
 class PostEditForm(forms.Form):
-	title = forms.CharField(label='Title', required=False)
-	content = forms.CharField(label='Content', required=False)
-	postId = forms.UUIDField(label='Id')
+    title = forms.CharField(label='Title', required=False)
+    content = forms.CharField(label='Content', required=False)
+    postId = forms.UUIDField(label='Id')
 
 
 class CommentForm(forms.ModelForm):
