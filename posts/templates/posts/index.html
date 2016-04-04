@@ -1,90 +1,216 @@
 {% extends 'posts/base.html' %}
 {% block content %}
+<style>
+table.post {
+    border: "1";
+    width:80%;
+    border:1px solid #d4d4d4;
+}
+
+div.images {
+    border: "1";
+    width:80%;
+    border:0px solid #d4d4d4;
+}
+
+td.post_title {
+    width: 20%;
+}
+
+td.post_content {
+    width: 60%;
+}
+
+td.post_comment {
+    background-color: lightgrey;
+    width: 60%;
+}
+
+table.post th {
+    padding:10px;
+    width: 10%;
+}
+
+div.center {
+    width: 24.3%;
+    height: 20.42em;
+    top: 50%;
+    margin: 0.28em;
+    float: left;
+    overflow: hidden;
+    border: 3px double #000;
+    white-space: nowrap;
+    display: line-block;
+    vertical-align: middle;
+    text-align: center;
+}
+
+img.centeral {
+    width: 20em;
+    height: 20em;
+    display: block;
+    margin: auto auto auto auto;
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
+}
+</style>
 
 {% load markdown_deux_tags %}
+
+
+
+
 <script>
- function makePost(){
-     var n = 0;
-     var flip = function(){
-	 if(n % 2){
-	     document.getElementById('makePost').style.display="none";
-	     document.getElementById('showContent').style.display="block";
-	 }
-	 else{
-	     document.getElementById('makePost').style.display="block";
-	     document.getElementById('showContent').style.display="none";
-	 }
-	++n;
-     }
-     return flip;
- }
- var next = makePost();
+var n = 0;
+var next = makePost(n);
+
+function makePost(n) {
+    var flip = function() {
+    	if(n % 2){
+            n = 0;
+            document.getElementById('makePost').style.display="none";
+            document.getElementById('showContent').style.display="block";
+    	}
+    	else{
+            n = 1;
+            document.getElementById('makePost').style.display="block";
+            document.getElementById('showContent').style.display="none";
+    	}
+    }
+    return flip;
+}
 </script>
 
 
 <center>
 <div id="makePost" style="display: none">
-    <h1>New Content</h1>
+    <h1>New Content Here</h1>
+
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
 	    {{ form.get_privacy_display}}
         <button type="submit" value="save">Save</button>
     </form>
-    <button type=button id = f2 onclick="next();">Back</button>
+
+    <button onclick="next(1)">Back New Post</button>
+
 </div>
 </center>
 
 
-
-
 <center>
-
 <div id="showContent container">
     <!-- POST LIST -->
     {% if latest_post_list %}
-    <dl>
         {% for post in latest_post_list %}
+        <div class="modal-content">
+
         {% if post.contentType == 'text/plain' %}
-            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
-	          <dd><p>{{ post.content|linebreaks }}</p></dd>
+            <div class="modal-header">
+            <h3> {{ post.author.user }}:&nbsp;
+            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
+            </h3>
+            </div>
+
+            <div class="modal-body">
+                <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                {% with comments=comments_dict|get_item:post.id %}
+                    {% if comments.count > 0 %}
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <label>Comments:</label>
+                        </div>
+                        {% for comment in comments %}
+                            <p>{{comment.comment}}</p>
+                        {% endfor%}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="modal-footer">         
+            </div>   
+
+
         {% else %}
-            <dt><a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a></dt>
-            <dd><p>{{ post.content|markdown }}</p></dd>
+            <div class="modal-header">
+            <h3> {{ post.author.user }}:  &nbsp;
+            <a href="{% url 'posts:detail' post.id %}" class="title">{{post.title}}</a>
+            </h3>
+            </div>
+
+            <div class="modal-body">
+                <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                {% with comments=comments_dict|get_item:post.id %}
+                    {% if comments.count > 0 %}
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <label>Comments:</label>
+                        </div>
+                        {% for comment in comments %}
+                            <p>{{comment.comment}}</p>
+                        {% endfor%}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="modal-footer">
+            </div>
         {% endif %}
+
+        </div> 
+        <br>
         {% endfor %}
-    </dl>
+
     {% else %}
-        <h2>No posts are available!</h2>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>No posts are available!</h2>
+        </div>
+    </div>
     {% endif %}
+    <hr>
+
 
     <!-- IMAGE LIST -->
+    <center>
     {% if latest_image_list %}
-    <dl>
+    <div class="images">
         {% for image in latest_image_list %}
-	    <dt><img src={{ image.img.url }} alt="My_image"/></dt>
+        <div class="center">
+	       <img class = "centeral" src={{ image.img.url }} alt="My_image"/>
+        </div>
         {% endfor %}
-    </dl>
+    </div>
     {% else %}
         <h2>No images are available!</h2>
     {% endif %}
+    </center>
 </div>
+</center>
+
 
 <center>
-
-
-    {% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
+{% if user.is_authenticated and False %}<!-- QUICK DIRTY TEST HACK PLS RM-->
 <div class="nav-bar">
-    <table><tr>
-    <td>
-        <button type=button id = f1 onclick="next();">Create New Post</button>
-    </td>
-    <td style="float: right;">
-        <form action={% url 'posts:create_img' %} method="get">
-            <button type="submit" value="create_img" >Upload Image</button>
-        </form>
-    </td>
+    <table>
+    <tr>
+        <td>
+            <button type=button id = f1 onclick="next();">Create New Post</button>
+        </td>
+        <td style="float: right;">
+            <form action={% url 'posts:create_img' %} method="get">
+                <button type="submit" value="create_img" >Upload Image</button>
+            </form>
+        </td>
+    </tr>
     </table>
 </div>
-    {% endif %}
+{% endif %}
+</center>
 
 {% endblock %}

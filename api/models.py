@@ -1,15 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from django.conf import settings
 import uuid
+from rest_framework_jwt.settings import api_settings
 
-
-def create_uuid(sender, **kw):
-        user = kw["instance"]
-        if kw["created"]:
-                userinfo = Author(user=user)
-                userinfo.save()
-post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 
 # TODO add UUID to User
@@ -35,28 +34,34 @@ class Post(models.Model):
     categories = ["web", "tutorial"]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     PRIVACY_CHOICES = (
-                      ('PUBLIC', 'Public'),
-                      ('FOAF', 'Friend of a Friend'),
-                      ('FRIENDS', 'Private To My Friends'),
-                      ('PRIVATE', 'Private To Me'),
-                      ('SERVERONLY', 'Private To Friends On My Host'),
+        ('PUBLIC', 'Public'),
+        ('AUTHOR', 'Private to an Author'),
+        ('FOAF', 'Friend of a Friend'),
+        ('FRIENDS', 'Private To My Friends'),
+        ('PRIVATE', 'Private To Me'),
+        ('SERVERONLY', 'Private To Friends On My Host'),
     )
     CONTENT_CHOICES = (
-                      ('text/plain', 'Plain text'),
-                      ('text/x-markdown', 'Markdown'),
+        ('text/plain', 'Plain text'),
+        ('text/x-markdown', 'Markdown'),
     )
+    privateAuthor = models.ManyToManyField(User)
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
     visibility = models.CharField(
         max_length=10, choices=PRIVACY_CHOICES, default='PRIVATE')
 
+
+
     # def save(self, *args, **kwargs):
     # mights be handy for setting publish and such
     def __unicode__(self):
         return self.content[:20] + "..."
+
     def getDisplayName(self):
         a = Author.objects.get(author)
         return a.getUserName
+
 
 def image_file_name(instance, filename):
     return '/'.join(['images/uploads', str(uuid.uuid4()), filename])
@@ -69,8 +74,8 @@ class Comment(models.Model):
     published = models.DateTimeField('date published', auto_now_add=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     CONTENT_CHOICES = (
-                      ('text/plain', 'Plain text'),
-                      ('text/x-markdown', 'Markdown'),
+        ('text/plain', 'Plain text'),
+        ('text/x-markdown', 'Markdown'),
     )
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
@@ -92,6 +97,15 @@ class Image(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=100)
     location = models.URLField(max_length=200)
+
+    auth_token = models.TextField(blank=True)
+
+    # To Deactivate node - deactivate user  --Not implemented yet
+    user = models.OneToOneField(User)  # The user from which the node has Authenticated
+    outgoing_token = models.TextField(blank=True)
+
+    is_authenticated = models.BooleanField(default=True)
+
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     def __unicode__(self):
         return '%s' % (self.title)
@@ -100,8 +114,41 @@ class Node(models.Model):
 class FriendsPair(models.Model):
     authors = list()
     friends = models.BooleanField()
+
     def __unicode__(self):
         return '%s' % self.title
 
 
+def create_uuid(sender, **kw):
+    user = kw["instance"]
+    if kw["created"]:
+        userinfo = Author(user=user)
+        userinfo.save()
 
+
+post_save.connect(create_uuid, sender=User, dispatch_uid="users-uuidcreation-signal")
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        print("Token Created")
+        Token.objects.create(user=instance)
+
+
+# post_save.connect(create_auth_token, sender=User, dispatch_uid="user-auth")
+
+# @receiver(post_save, sender=Node)
+def generate_token(sender, **kw):
+    node = kw["instance"]
+    if kw["created"]:
+        print("token generated")
+        user = node.user
+        # token = Token.objects.get(user=user)
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+        node.outgoing_token = token
+        node.save()
+
+
+post_save.connect(generate_token, sender=Node, dispatch_uid="gen_token_signal")

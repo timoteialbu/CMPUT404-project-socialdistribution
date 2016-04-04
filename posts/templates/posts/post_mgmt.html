@@ -1,0 +1,56 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+    {% load markdown_deux_tags %}
+
+    <form action={% url 'posts:post_mgmt' %} method = "POST">{% csrf_token %}
+
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Manage Your Posts</h2>
+        </div>
+
+        {% if latest_post_list %}
+            <div class="modal-body">
+            <table>
+                <tr>
+                    <td></td>
+                    <td><p>Title</p></td>
+                    <td><p>Content</p></td>
+                </tr>
+
+                {% for post in latest_post_list %}
+                    <tr>
+                        <td><input type="checkbox" name="id" value= {{ post.id }}></td>
+                        {% if post.contentType == 'text/plain' %}
+                            <td><a href="{% url 'posts:detail' post.id %}">{{ post.title|linebreaks }}</a></td>
+                            <td><p>{{ post.content|linebreaks }}</p></td>
+                        {% else %}
+                            <td><a href="{% url 'posts:detail' post.id %}">{{ post.title|linebreaks }}</a></td>
+                            <td><p>{{ post.content|linebreaks }}</p></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" value="confirm" class="btn btn-default">Delete Selected Post</button>
+        </div>
+        
+        {% else %}
+        <div class="modal-body">
+            <h3>No posts are available!</h3>
+        </div>
+        {% endif %}
+    </div>
+    </form>
+{% endblock %}
+
+{% comment %}
+<form action = {% url 'posts:post_mgmt' %}  method="DELETE">
+   <label for="since">Since</label>
+   <input id="since" name="since" type="datetime"/>
+   <button type="submit">Delete</button>
+</form>
+{% endcomment %}

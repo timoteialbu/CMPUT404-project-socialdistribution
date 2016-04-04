@@ -2,12 +2,23 @@
 
 {% block content1 %}
 
-{% block content %}
-    <h1>Add Image</h1>
-    <form method="POST" class="image-form" enctype="multipart/form-data">{% csrf_token %}
-        {{ form }}
-        <button type="submit" value="save">Save</button>
-    </form>
-{% endblock %}
+    {% block content %}
+        <div class = "modal-content">
+        <div class="modal-header">
+            <h2>Add Image</h2>
+        </div>
+
+
+        <form method="POST" class="image-form" enctype="multipart/form-data">{% csrf_token %}
+            <div class="modal-body">
+                {{ form }}
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" type="submit" value="save">Save</button>
+            </div>
+        </form>
+        </div>
+    {% endblock %}
 
 {% endblock %}
