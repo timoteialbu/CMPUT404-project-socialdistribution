@@ -342,7 +342,7 @@ def get_profile(request):
 		context = {
 			'image_list': img_list,
 			'post_list': post_list,
-			'form': formPost,  # formPost or form
+			'form': form,  # formPost or form
 			'formProfile': formProfile,
 		}
 		return render(request, 'posts/profile.html', context)

@@ -4,7 +4,8 @@ from django.db.models import Q
 from django.contrib.auth.models import User  # added for friendship
 from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import *
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, UserProfile
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, \
+	UserProfile, PostEditForm
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, HttpResponseRedirect
 from api.serializers import PostSerializer
@@ -189,7 +190,14 @@ def get_post_detail(request, id):
 			form = PostForm
 
 		cform = CommentForm(request.POST)
-		print "sdfsd", request.POST, "sd"
+		postEditForm = PostEditForm(request.POST)
+
+		if postEditForm.is_valid() and postEditForm.changed_data.__len__() > 0:
+			post1 = Post.objects.get(id=id)
+			post1.title = postEditForm.cleaned_data["title"]
+			post1.content = postEditForm.cleaned_data["content"]
+			post1.save()
+			return redirect('posts:detail', id=id)
 		if not remote and form.is_valid():
 			post = form.save(commit=False)
 			post.author = Author.objects.get(user=request.user)
@@ -214,14 +222,26 @@ def get_post_detail(request, id):
 	else:
 		form = PostForm(initial={'content': post['content']})
 		cform = CommentForm()
+		postEditForm = PostEditForm()
+		post1 = Post.objects.get(id=id)
+		postEditForm.fields["title"] = post1.title
+		postEditForm.fields["content"] = post1.content
+		postEditForm.fields["postId"] = post1.id
 
 	isAuthenticated = request.user.is_authenticated()
 	isAuthor = False
 	if isAuthenticated and not remote:
 		isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
 	return render(request, 'posts/detail.html',
-				  {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated,
-				   'isAuthor': isAuthor})
+				{
+					'post': post,
+					'comments': comments,
+					'form': form,
+					'cform': cform,
+					'isAuthenticated': isAuthenticated,
+					'isAuthor': isAuthor,
+					'postEditForm': postEditForm
+				})
 
 
 def create_post(request):
@@ -296,11 +316,10 @@ def delete_img(request, id):
 # ----------------------------------------------------------------
 def get_profile(request):
 	if request.method == "POST":
-
 		# This request returns 2 dictionaries. The first one is to update the profile,
 		# the second one updates a particular post
 		formProfile = UserProfile(request.POST)
-		formPost = PostForm(request.POST)
+		formPost = PostEditForm(request.POST)
 		if formProfile.is_valid() and formProfile.changed_data.__len__() > 0:
 			author = Author.objects.get(user=request.user)
 			author.displayName = formProfile.cleaned_data["displayname"]
@@ -310,11 +329,14 @@ def get_profile(request):
 			author.save()
 
 		if formPost.is_valid() and formPost.changed_data.__len__() > 0:
-			post = Post.objects.get(id=request.id)
+			post = Post.objects.get(id=formPost.cleaned_data["postId"])
+			post.title = formPost.cleaned_data["title"]
+			post.content = formPost.cleaned_data["content"]
+			post.save()
 
 		return redirect('posts:update_profile')
 	else:
-		formPost = PostForm()
+		formPost = PostEditForm()
 		formProfile = UserProfile()
 
 		latest_post_list = Post.objects.filter(
@@ -332,7 +354,7 @@ def get_profile(request):
 		context = {
 			'latest_image_list': latest_img_list,
 			'latest_post_list': latest_post_list,
-			'form': formPost,
+			'formPost': formPost,
 			'formProfile': formProfile,
 		}
 		return render(request, 'posts/profile.html', context)
