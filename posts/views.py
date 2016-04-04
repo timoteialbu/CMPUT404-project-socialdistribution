@@ -109,7 +109,7 @@ def remove_friend(request, context):
             if str(friend) is not '':
                 context['unfriend_msg'] = try_remove_friend(
                     request.user,
-                    friend,
+                    friend
                 )
         elif not unfrienduserform_valid:
             context['unfriend_msg'] = "Invalid input."
@@ -150,15 +150,14 @@ def friend_mgmt(request):
 #================================================================
 #----------------------------- Posts ----------------------------
 def get_posts(request):
-        print request.user
+        #print request.user
         if request.user.is_anonymous():
             latest_post_list = Post.objects.filter(
-                Q(visibility='PUBLIC'))
+                Q(visibility='PUBLIC')) 
         else:
-            latest_post_list = Post.objects.filter(
-                Q(visibility='PUBLIC') |
-                Q(author=Author.objects.get(user=request.user)))
+            latest_post_list = Post.objects
         return latest_post_list.order_by('-published')
+
 
 def get_post_detail(request, id):
 		# returns a QuerySet
@@ -233,7 +232,6 @@ def get_post_detail(request, id):
 						'postEditForm': postEditForm
 					})
 
-
 def create_post(request):
         form = PostForm(request.POST)
         if form.is_valid():
@@ -269,6 +267,7 @@ def post_mgmt(request):
             'latest_post_list': latest_post_list
         }
         return render(request, 'posts/post_mgmt.html', context)
+
 
 #----------------------------------------------------------------
 def get_imgs(request):
@@ -423,8 +422,43 @@ def index(request):
         else:
             form = PostForm()
 
-        latest_post_list = get_posts(request)
-        latest_img_list = Image.objects.order_by('-published')
+        if request.user.is_anonymous():
+            pass
+        else:
+            all_friends = Friend.objects.friends(request.user)
+            print all_friends
+            print request.user
+            print "\n"
+            length = len(latest_post_list)
+            for i in range(length):
+                print latest_post_list[length-1-i].author.user
+                if latest_post_list[length-1-i].visibility == "PUBLIC":
+                    print "public"
+                    pass
+
+                elif latest_post_list[length-1-i].visibility == "AUTHOR":
+                    print latest_post_list[length-1-i].privateAuthor
+                    print "Private to an Author"
+
+                elif latest_post_list[length-1-i].visibility == 'FOAF':
+                    print 'Friend of a Friend'
+
+                elif latest_post_list[length-1-i].visibility == 'FRIENDS':
+                    if latest_post_list[length-1-i].author.user in all_friends:
+                        print "You can see this"
+                        pass
+                    else:
+                        print "yufei3 should not see this ------------------------------"
+                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
+                    print 'Private To My Friends'
+
+                elif latest_post_list[length-1-i].visibility == 'PRIVATE':
+                    print 'Private To Me'
+
+                elif latest_post_list[length-1-i].visibility == 'SERVERONLY':
+                    print 'Private To Friends On My Host'
+                print '\n'
+
 
         comments_dict = {}
         for p in latest_post_list:
