@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import *
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, \
+from .forms import PostForm, UploadImgForm, AddFriendForm, FriendRequestForm, CommentForm, \
     UserProfile, PostEditForm
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, HttpResponseRedirect
@@ -44,33 +44,31 @@ def do_debug(debug=True, message="--DEBUG--"):
 #---------------------------- Friends ---------------------------
 
 def try_add_friend(user, friend):
-        try:
-            friend_id = int(User.objects.get(username=friend).id)
-        except Exception:
-            return "Not a valid user, please try again."
-        msg = ""
-        try:
-            User.objects.get(username=friend)
-        except Exception:
-            return "Not a valid user, please try again."
-        try:
-            Follow.objects.add_follower(user, friend)
-            msg += "You are now following %s" % friend
-        except Exception:
-            msg += "You are already following %s" % friend
-        try:
-            Friend.objects.add_friend(user, friend)
-            msg += " and waiting for them to accept your request."
-        except Exception:
-            msg += " and already waiting for a response to your request"
-        return msg
+    msg = ""
+    try:
+        friend_object = User.objects.get(username=friend)
+    except Exception:
+        return "Not a valid user, please try again."
+    try:
+        Follow.objects.add_follower(user, friend_object)
+        msg += "You are now following %s" % friend
+    except Exception:
+        msg += "You are already following %s" % friend
+    try:
+        Friend.objects.add_friend(user, friend_object)
+        msg += " and waiting for them to accept your request."
+    except Exception:
+        msg += " and already waiting for a response to your request"
+    return msg
+
 
 def add_friend(request, context):
         addform_valid = context['addform'].is_valid(),
         if addform_valid:
-            friend = context['addform'].cleaned_data['user_choice_field']
-            context['addfriend'] = friend
-            if friend is not None:
+            friend = context['addform'].cleaned_data['add_username']
+            friend = friend.strip()
+            #context['addfriend'] = friend
+            if friend is not '':
                 context['add_msg'] = try_add_friend(request.user, friend)
         elif not addform_valid:
             context['add_msg'] = "Invalid input"
@@ -80,7 +78,6 @@ def add_friend(request, context):
 def try_remove_friend(user, friend):
         try:
             friend_name = User.objects.get(username=friend)
-            friend_id = int(User.objects.get(username=friend).id)
         except Exception:
             return "Not a valid user, please try again."
         msg = ""
@@ -88,25 +85,16 @@ def try_remove_friend(user, friend):
             msg += "You are no longer following %s" % friend
         else:
             msg += "You are not following %s, so you can't unfollow them." % friend
-        if Friend.objects.remove_friend(friend_id, user):
+        if Friend.objects.remove_friend(friend_name, user):
             msg += " You are no longer friends with %s" % friend
         else:
             msg += " You were never friends with %s, I'm sorry :(" % friend
         return msg
 
 def remove_friend(request, context):
-        unfrienduserform_valid = context['unfrienduserform'].is_valid()
-        if unfrienduserform_valid:
-            friend = context['unfrienduserform'].cleaned_data['username']
-            friend = friend.strip()
-            if str(friend) is not '':
-                context['unfriend_msg'] = try_remove_friend(
-                    request.user,
-                    friend
-                )
-        elif not unfrienduserform_valid:
-            context['unfriend_msg'] = "Invalid input."
-            context['unfrienduserform'] = UnFriendUserForm
+    friendList = request.POST.getlist('remove')
+    for friend in friendList:
+        context['unfriend_msg'] = try_remove_friend(request.user, friend)
 
 #----------------------------------------------------------------
 def friend_requests(request, context, users):
@@ -136,19 +124,19 @@ def friend_mgmt(request):
     }
 
     if request.method == "POST":
-        form = PostForm(request.POST)
         context.update({
             'addform': AddFriendForm(request.POST),
-            'unfrienduserform': UnFriendUserForm(request.POST),
+            #'unfrienduserform': UnFriendUserForm(request.POST),
+            'unfriendlist': Friend.objects.friends(request.user),
         })
         remove_friend(request, context)
         add_friend(request, context)
         friend_requests(request, context, users)
     else:
-        form = PostForm()
         context.update({
             'addform': AddFriendForm(),
-            'unfrienduserform': UnFriendUserForm(),
+            #'unfrienduserform': UnFriendUserForm(),
+            'unfriendlist': Friend.objects.friends(request.user),
         })
 
     print ("all_friends:" , all_friends)
