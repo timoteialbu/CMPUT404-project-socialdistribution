@@ -489,7 +489,6 @@ def index(request):
         if request.method == "POST":
             print("MORE DEBUGGING")
             process_form(request) # Handles properly
-
         try:
             latest_post_list = list(get_posts(request))
         except:
@@ -501,7 +500,7 @@ def index(request):
             pass
 
         try:
-            remote_posts = list(get_remote(request, '/posts/')['posts'])
+            remote_posts = list(get_remote(request, '/posts/'))
         except:
             pass
 
