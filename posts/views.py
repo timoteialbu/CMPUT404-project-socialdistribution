@@ -291,11 +291,9 @@ def process_form(request):
             #print(User.objects.all().filter(id=test.id) + "<---------------- after filter")
             #print(post.privateAuthor + "<----------------------- post.privateAuthor when created")
             post.save()
-            return redirect('posts:index')
         except:
             print("PROBLEM PROCESSING FORM")
-            return redirect('posts:index')
-    return None # BAD DEFAULT
+    return redirect('posts:index')
 
 def create_post(request):
     if request.method == "POST":
@@ -497,6 +495,13 @@ def index(request):
         latest_post_list = list()
         latest_img_list = list()
 
+    # Fallback on empty form
+    # THIS SHOULDN'T EVEN BE HERE
+        form = PostForm()
+        if request.method == "POST":
+            print("MORE DEBUGGING")
+            process_form(request) # Handles properly
+
         try:
             latest_post_list = list(get_posts(request))
         except:
@@ -516,13 +521,6 @@ def index(request):
             github_posts = list(get_github_posts(request))
         except:
             pass
-
-    # Fallback on empty form
-    # THIS SHOULDN'T EVEN BE HERE
-        form = PostForm()
-        if request.method == "POST":
-            print("MORE DEBUGGING")
-            process_form(request) # Handles properly
 
         if not (request.user.is_anonymous()):
             my_posts, other_posts = [], []
