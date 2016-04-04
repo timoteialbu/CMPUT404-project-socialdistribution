@@ -303,7 +303,6 @@ def delete_img(request, id):
 
 #----------------------------------------------------------------
 def get_profile(request):
-<<<<<<< HEAD
         if request.method == "POST":
             # This request returns 2 dictionaries. The first one is to update the profile,
             # the second one updates a particular post
@@ -332,7 +331,7 @@ def get_profile(request):
                 Q(author=Author.objects.get(user=request.user)))
             latest_img_list = Image.objects.order_by('-published')[:5]
             author = Author.objects.get(user=request.user)
-    
+
             formProfile.fields["username"] = request.user.username
             formProfile.fields["displayname"] = author.displayName
             formProfile.fields["host"] = author.host
@@ -347,51 +346,6 @@ def get_profile(request):
                 'formProfile': formProfile,
             }
             return render(request, 'posts/profile.html', context)
-=======
-		if request.method == "POST":
-			# This request returns 2 dictionaries. The first one is to update the profile,
-			# the second one updates a particular post
-			formProfile = UserProfile(request.POST)
-			formPost = PostEditForm(request.POST)
-			if formProfile.is_valid() and formProfile.changed_data.__len__() > 0:
-				author = Author.objects.get(user=request.user)
-				author.displayName = formProfile.cleaned_data["displayname"]
-				author.host = formProfile.cleaned_data["host"]
-				author.url = formProfile.cleaned_data["url"]
-				author.github = formProfile.cleaned_data["github"]
-				author.save()
-
-			if formPost.is_valid() and formPost.changed_data.__len__() > 0:
-				post = Post.objects.get(id=formPost.cleaned_data["postId"])
-				post.title = formPost.cleaned_data["title"]
-				post.content = formPost.cleaned_data["content"]
-				post.save()
-
-			return redirect('posts:update_profile')
-		else:
-			formPost = PostEditForm()
-			formProfile = UserProfile()
-
-			latest_post_list = Post.objects.filter(
-				Q(author=Author.objects.get(user=request.user)))
-			latest_img_list = Image.objects.order_by('-published')[:5]
-			author = Author.objects.get(user=request.user)
-
-			formProfile.fields["username"] = request.user.username
-			formProfile.fields["displayname"] = author.displayName
-			formProfile.fields["host"] = author.host
-			formProfile.fields["url"] = author.url
-			formProfile.fields["github"] = author.github
-			formProfile.fields["id"] = author.id
-
-			context = {
-				'latest_image_list': latest_img_list,
-				'latest_post_list': latest_post_list,
-				'formPost': formPost,
-				'formProfile': formProfile,
-			}
-			return render(request, 'posts/profile.html', context)
->>>>>>> f191d5cdefb363144cdc7a8c160eb110535a8db4
 
 
 #----------------------------------------------------------------
