@@ -116,14 +116,18 @@ function makePost(n) {
             <div class="modal-body">
                 <h4>{{ post.content|linebreaks }}</h4>
                 <br>
-                <div class="modal-content">
-                <div class="modal-header">
-                    <label>Comments:</label>
-                </div>
-                {% for comment in comments_dict|get_item:post.id %}
-                    <p>{{comment.comment}}</p>
-                {% endfor%}
-                </div>
+                {% with comments=comments_dict|get_item:post.id %}
+                    {% if comments.count > 0 %}
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <label>Comments:</label>
+                        </div>
+                        {% for comment in comments %}
+                            <p>{{comment.comment}}</p>
+                        {% endfor%}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </div>
 
             <div class="modal-footer">
