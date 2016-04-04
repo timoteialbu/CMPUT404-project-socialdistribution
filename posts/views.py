@@ -405,7 +405,7 @@ def post_remote(request, ext, payload):
 # prob should change this to a form view
 def index(request):
         try:
-            remote_posts = get_remote(request, '/posts/')['posts']
+            remote_posts = get_remote(request, '/posts/')
         except:
             remote_posts = list()
 
