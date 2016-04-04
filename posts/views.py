@@ -329,7 +329,7 @@ def get_profile(request):
 				Q(author=Author.objects.get(user=request.user)))
 			latest_img_list = Image.objects.order_by('-published')[:5]
 			author = Author.objects.get(user=request.user)
-	
+
 			formProfile.fields["username"] = request.user.username
 			formProfile.fields["displayname"] = author.displayName
 			formProfile.fields["host"] = author.host

@@ -45,7 +45,7 @@ class Post(models.Model):
         ('text/plain', 'Plain text'),
         ('text/x-markdown', 'Markdown'),
     )
-    privateAuthor = models.TextField(max_length=20, blank=True, editable=True, help_text="If visibility is private to an Author: Enter AuthorID", verbose_name="Private Author")
+    privateAuthor = models.ManyToManyField(User)
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
     visibility = models.CharField(
