@@ -7,7 +7,7 @@ from api.models import Post, Image, Comment
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
     title = forms.CharField(widget=forms.Textarea(attrs={'cols': 40, 'rows': 1, 'size': 40, 'maxlength': 40}))
-    privateAuthor = forms.CharField(widget=forms.Textarea(attrs={'cols': 40, 'rows': 1, 'size': 40, 'maxlength': 20, 'placeholder': 'AuthorID (Private to an Author)'}))   
+    privateAuthor = forms.CharField(required=False, widget=forms.Textarea(attrs={'cols': 40, 'rows': 1, 'size': 40, 'maxlength': 20, 'placeholder': 'AuthorID (Private to an Author)'}))   
     privateAuthor.label='Private Author'
 
     class Meta:
