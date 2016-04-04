@@ -448,8 +448,17 @@ def index(request):
                     print "Private to an Author"
 
                 elif latest_post_list[length-1-i].visibility == 'FOAF':
-                    if latest_post_list[length-1-i].author.user == request.user:
-                        pass
+                    flag = True
+
+                    for friend in all_friends:
+                        if flag:
+                            friend_list = Friend.objects.friends(friend)
+                            if (request.user in friend_list) or (latest_post_list[length-1-i].author.user == request.user):
+                                flag = False
+
+                    if flag:
+                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
+
                     print 'Friend of a Friend'
 
                 elif latest_post_list[length-1-i].visibility == 'FRIENDS':
