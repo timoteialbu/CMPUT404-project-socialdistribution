@@ -33,6 +33,14 @@ def handle_uploaded_file(f):
                 destination.write(chunk)
 
 #================================================================
+# DEBUGGER
+def do_debug(debug=True, message="--DEBUG--"):
+    if debug:
+        print message
+#================================================================
+
+
+#================================================================
 #---------------------------- Friends ---------------------------
 
 def try_add_friend(user, friend):
@@ -143,21 +151,58 @@ def friend_mgmt(request):
             'unfrienduserform': UnFriendUserForm(),
         })
 
-    print "all_friends:", all_friends
+    print ("all_friends:" , all_friends)
     return render(request, 'posts/friend_mgmt.html', context)
 
 
 #================================================================
 #----------------------------- Posts ----------------------------
-def get_posts(request):
-        #print request.user
+def visibility_filter(request, sel):
+    # Python's version of a Switch-Case:
+    # We can return functions, including
+    # defaults and empty functions.
+    vis = {
+        "PUBLIC": lambda: None,
+        "PRIVATE": lambda: None,
+        "AUTHOR": lambda: None,
+        "FRIENDS": lambda: None,
+        "FOAF": lambda: None,
+        "SERVERONLY": lambda: None,
+    }
+    function = vis.get(sel, lambda: None)
+    return function
+
+def get_posts(request): # Return QuerySet
+    # Returns all posts unless the user is anonymous (then only public)
         if request.user.is_anonymous():
-            latest_post_list = Post.objects.filter(
-                Q(visibility='PUBLIC')) 
+            print("Anonymous")
+            latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
         else:
+            print("Is User")
             latest_post_list = Post.objects.all()
+            print(latest_post_list)
         return latest_post_list.order_by('-published')
 
+def filter_posts(request, selection):
+    # Returns True if the selection can be seen by the current user
+        myuser = selection.author.user
+        if myuser == request.user:  # REDUNDANT AS HELL
+            return True
+        elif selection.visibility == 'FOAF':
+            for friend in Friend.objects.friends(request.user):
+                friend_list = Friend.objects.friends(friend)
+                if (request.user in friend_list):
+                    return True
+            return False
+        elif (
+                (selection.visibility == 'AUTHOR' and selection.privateAuthor != request.user)
+            or  (selection.visibility == 'FRIENDS' and myusernot in all_friends)
+            or  (selection.visibility == 'PRIVATE' and myuser!= request.user)
+            or  (selection.visibility == 'SERVERONLY')
+            ):
+                return False
+        else:
+            return True
 
 def get_post_detail(request, id):
         # returns a QuerySet
@@ -233,6 +278,7 @@ def get_post_detail(request, id):
                     })
 
 def create_post(request):
+    if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
@@ -241,6 +287,7 @@ def create_post(request):
             post.save()
             # future ref make to add the namespace ie "posts"
             return redirect('posts:detail', id=post.pk)
+    return None
 
 def delete_post(request, id):
         post_list = get_posts(request)
@@ -268,13 +315,16 @@ def post_mgmt(request):
         }
         return render(request, 'posts/post_mgmt.html', context)
 
+#----------------------------------------------------------------
+# GITHUB
+def get_github_posts(request):
+    github_posts = list()
+    return github_posts
 
 #----------------------------------------------------------------
-def get_imgs(request):
-        print request.user
+def get_imgs(request):  # Return QuerySet
+        do_debug(request.user)
         return Image.objects.order_by('-published')[:5]
-
-
 
 def create_img(request):
     if request.method == 'POST':
@@ -368,16 +418,16 @@ def get_remote(request, ext):
                     'Authorization': authToken,
                     'Content-Type': 'application/json',
             }
-            print(authToken)
+            do_debug(authToken)
             try:
                 r = r + requests.get(url, headers=headers).json()['posts']
             except:
                 try:
                     r = r + requests.get(url, headers=headers).json()['results']
                 except:
-                    print("Unkown API Format!")
-                    print(r)
-        print(r)
+                    do_debug("Unkown API Format!")
+                    do_debug(r)
+        do_debug(r)
         return r
 
 
@@ -394,24 +444,16 @@ def post_remote(request, ext, payload):
                     'Authorization': authToken,
                     'Content-Type': 'application/json',
             }
-            print "url", url
+            do_debug ("url" + url)
             r = requests.post(url, headers=headers, json=payload)
         return r.status_code
 
 #----------------------------------------------------------------
-# prob should change this to a form view
-def index(request):
-        try:
-            remote_posts = get_remote(request, '/posts/')['posts']
-        except:
-            remote_posts = list()
-
-        latest_post_list = get_posts(request)
-        latest_img_list = Image.objects.order_by('-published')
-
-        if request.method == "POST":
-            form = PostForm(request.POST)
-            if form.is_valid():
+def process_form(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            try:
                 post = Post()
                 post.author = Author.objects.get(user=request.user)
                 post.title = form.cleaned_data["title"]
@@ -419,102 +461,75 @@ def index(request):
                 post.contentType = form.cleaned_data["contentType"]
                 post.visibility = form.cleaned_data["visibility"]
                 test = form.cleaned_data["privateAuthor"]
-                print test, "<---------------- test"
+                do_debug( test + "<---------------- test")
                 post.privateAuthor = User.objects.all().filter(id=test.id)
-                print User.objects.all().filter(id=test.id), "<---------------- after filter"
-                print post.privateAuthor, "<----------------------- post.privateAuthor when created"
+                do_debug (User.objects.all().filter(id=test.id) + "<---------------- after filter")
+                do_debug (post.privateAuthor + "<----------------------- post.privateAuthor when created")
                 post.save()
                 return redirect('posts:index')
-        else:
-            form = PostForm()
+            except:
+                return 400
+    return None # BAD DEFAULT
 
-        if request.user.is_anonymous():
+#----------------------------------------------------------------
+# prob should change this to a form view
+def index(request):
+
+        remote_posts = list()
+        github_posts = list()
+        latest_post_list = list()
+        latest_img_list = list()
+
+        try:
+            latest_post_list = list(get_posts(request))
+        except:
             pass
-        else:
-            all_friends = Friend.objects.friends(request.user)
-            print all_friends
-            print request.user
-            print "\n"
-            length = len(latest_post_list)
-            for i in range(length):
-                print latest_post_list[length-1-i].author.user
-                if latest_post_list[length-1-i].visibility == "PUBLIC":
-                    pass
+
+        try:
+            remote_posts = list(get_remote(request, '/posts/')['posts'])
+        except:
+            pass
+
+        try:
+            github_posts = list(get_github_posts(request))
+        except:
+            pass
+
+        try:
+            latest_img_list = list(get_imgs(request))
+        except:
+            pass
 
 
+    # Fallback on empty form
+    # THIS SHOULDN'T EVEN BE HERE
+        form = PostForm()
+        process_form(request) # Handles properly
 
-                elif latest_post_list[length-1-i].visibility == "AUTHOR":
-                    print latest_post_list[length-1-i].privateAuthor
-                    if (latest_post_list[length-1-i].privateAuthor == request.user) or (latest_post_list[length-1-i].author.user == request.user):
-                        pass
-                    else:
-                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-                    print "Private to an Author"
+        if not (request.user.is_anonymous()):
+            my_posts, other_posts = [], []
 
+            # Splits into two lists based on authorship and cantidacy
+            for x in latest_post_list:
+                if (x.author.user == request.user):
+                    my_posts.append(x)
+                elif filter_posts(request, x):
+                    other_posts.append(x)
 
-                elif latest_post_list[length-1-i].visibility == 'FOAF':
-                    flag = True
-                    for friend in all_friends:
-                        if flag:
-                            friend_list = Friend.objects.friends(friend)
-                            if (request.user in friend_list) or (latest_post_list[length-1-i].author.user == request.user):
-                                flag = False
-                    if flag:
-                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-
-                elif latest_post_list[length-1-i].visibility == 'FRIENDS':
-                    if (latest_post_list[length-1-i].author.user in all_friends) or (latest_post_list[length-1-i].author.user == request.user):
-                        pass
-                    else:
-                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-
-                elif latest_post_list[length-1-i].visibility == 'PRIVATE':
-                    if latest_post_list[length-1-i].author.user != request.user:
-                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-
-                elif latest_post_list[length-1-i].visibility == 'SERVERONLY':
-                    pass
-                print '\n'
-
+            latest_post_list = my_posts + other_posts
 
         comments_dict = {}
         for p in latest_post_list:
-            print p.privateAuthor
             comments = Comment.objects.filter(post=p.id)
             comments_dict[p.id] = comments
-        
+
+        grouped_list = latest_post_list + remote_posts + github_posts
+
         context = {
             'latest_image_list': latest_img_list,
-            'latest_post_list': list(latest_post_list) + remote_posts,
+            'latest_post_list': grouped_list,
             'form': form,
             'comments_dict': comments_dict,
             'can_add_psot': True
         }
         return render(request, 'posts/index.html', context)
-
-# api stuff for the future
-# # post_collection
-# @api_view(['GET'])
-# def index(request):
-#     if request.method == 'GET':
-#         posts = Post.objects.all()
-#         serializer = PostSerializer(posts, many=True)
-#         return Response(serializer.data)
-
-
-
-
-
-
-
-
-# @api_view(['GET'])
-# def get_post_detail(request, id):
-#     try:
-#         post = Post.objects.get(id=id)
-#     except Post.DoesNotExist:
-#         return HttpResponse(status=404)
-
-#     if request.method == 'GET':
-#         serializer = PostSerializer(post)
-#         return Response(serializer.data)
