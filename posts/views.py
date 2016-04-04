@@ -91,33 +91,36 @@ def try_remove_friend(user, friend):
             msg += " You were never friends with %s, I'm sorry :(" % friend
         return msg
 
+
 def remove_friend(request, context):
     friendList = request.POST.getlist('remove')
+    context['unfriend_msg'] = []
     for friend in friendList:
-        context['unfriend_msg'] = try_remove_friend(request.user, friend)
+        context['unfriend_msg'].append(str(try_remove_friend(request.user, friend)))
+
 
 #----------------------------------------------------------------
 def friend_requests(request, context, users):
         requests_valid = context['friendrequestform'].is_valid(),
         if requests_valid:
             for user in users:
-                req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=User.objects.get(username=user))
+                userId = User.objects.get(username=user)
+                req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=userId)
                 if request.POST[user] == "A":
                     req_id.accept()
+                    Follow.objects.add_follower(request.user, userId)
                 elif request.POST[user] == "R":
                     req_id.reject()
+                    Friend.objects.remove_friend(userId, request.user)
                     try_remove_friend(request.user, user)
-
-            #friend = context['friendrequestform'].cleaned_data['user_choice_field']
-            #context['addfriend'] = friend
-
 #----------------------------------------------------------------
+
+
 def friend_mgmt(request):
     users = list(map(lambda x:
                      str(x.from_user),
-                     Friend.objects.unread_requests(request.user)))
+                     Friend.objects.unrejected_requests(user=request.user)))
     all_friends = Friend.objects.friends(request.user)
-
     context = {
         'friendrequestform': FriendRequestForm(names=users),
         'all_friends': all_friends
@@ -138,8 +141,6 @@ def friend_mgmt(request):
             #'unfrienduserform': UnFriendUserForm(),
             'unfriendlist': Friend.objects.friends(request.user),
         })
-
-    print ("all_friends:" , all_friends)
     return render(request, 'posts/friend_mgmt.html', context)
 
 #================================================================

@@ -38,7 +38,9 @@
 		    <input type="checkbox" name="remove" value={{friend}}>
 		</p>
 		{% endfor %}
-		<p>{{ unfriend_msg }}</p> 
+		{% for error in unfriend_msg %}
+		<p>{{ error }}</p>
+		{% endfor %}
 		{% else %}
 		<p> No one :( </p>
 		{% endif %}
