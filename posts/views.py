@@ -447,7 +447,7 @@ def index(request):
                     print 'Friend of a Friend'
 
                 elif latest_post_list[length-1-i].visibility == 'FRIENDS':
-                    if latest_post_list[length-1-i].author.user in all_friends:
+                    if (latest_post_list[length-1-i].author.user in all_friends) or latest_post_list[length-1-i].author.user == request.user:
                         print "You can see this"
                         pass
                     else:
@@ -456,6 +456,8 @@ def index(request):
                     print 'Private To My Friends'
 
                 elif latest_post_list[length-1-i].visibility == 'PRIVATE':
+                    if latest_post_list[length-1-i].author.user != request.user:
+                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
                     print 'Private To Me'
 
                 elif latest_post_list[length-1-i].visibility == 'SERVERONLY':
