@@ -32,14 +32,17 @@
                     </tr>
                 {% endfor %}
             </table>
-        {% else %}
-            <p>No posts are available!</p>
-        {% endif %}
         </div>
 
         <div class="modal-footer">
             <button type="submit" value="confirm" class="btn btn-default">Delete Selected Post</button>
         </div>
+        
+        {% else %}
+        <div class="modal-body">
+            <h3>No posts are available!</h3>
+        </div>
+        {% endif %}
     </div>
     </form>
 {% endblock %}
