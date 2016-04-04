@@ -163,6 +163,8 @@ def visibility_filter(request, label):
 def filter_posts(request, selection):
     # Returns True if the selection can be seen by the current user
         myuser = selection.author.user
+        all_friends = Friend.objects.friends(request.user)
+        
         if myuser == request.user:  # REDUNDANT AS HELL
             return True
         elif selection.visibility == 'FOAF':
@@ -173,7 +175,7 @@ def filter_posts(request, selection):
             return False
         elif (
                 (selection.visibility == 'AUTHOR' and selection.privateAuthor != request.user)
-            or  (selection.visibility == 'FRIENDS' and myusernot in all_friends)
+            or  (selection.visibility == 'FRIENDS' and myuser not in all_friends)
             or  (selection.visibility == 'PRIVATE' and myuser!= request.user)
             or  (selection.visibility == 'SERVERONLY')
             ):
