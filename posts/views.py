@@ -4,7 +4,8 @@ from django.db.models import Q
 from django.contrib.auth.models import User # added for friendship
 from friendship.models import Friend, Follow, FriendshipRequest
 from api.models import *
-from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, UserProfile
+from .forms import PostForm, UploadImgForm, AddFriendForm, UnFriendUserForm, FriendRequestForm, CommentForm, \
+	UserProfile, PostEditForm
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, HttpResponseRedirect
 from api.serializers import PostSerializer
@@ -160,57 +161,77 @@ def get_posts(request):
         return latest_post_list.order_by('-published')
 
 def get_post_detail(request, id):
-        # returns a QuerySet
-        post_Q = Post.objects.filter(id=id)
-        comment = None
-        remote = False
-        if not post_Q:
-                post = get_remote(request, '/posts/'+id+'/')
-                comments = post['comments']
-                remote = True
-        else:
-                post = post_Q.values()[0]
-                comments = Comment.objects.select_related().filter(post=id)
-        if request.method == "POST":
-                # Hackyyy OMG
-                if not remote:
-                        form = PostForm(request.POST, instance=post_Q[0])
-                else:
-                        form = PostForm
+		# returns a QuerySet
+		post_Q = Post.objects.filter(id=id)
+		comment = None
+		remote = False
+		if not post_Q:
+			post = get_remote(request, '/posts/' + id + '/')
+			comments = post['comments']
+			remote = True
+		else:
+			post = post_Q.values()[0]
+			comments = Comment.objects.select_related().filter(post=id)
+		if request.method == "POST":
+			# Hackyyy OMG
+			if not remote:
+				form = PostForm(request.POST, instance=post_Q[0])
+			else:
+				form = PostForm
 
+			cform = CommentForm(request.POST)
+			postEditForm = PostEditForm(request.POST)
 
-                cform = CommentForm(request.POST)
-                print "sdfsd",request.POST,"sd"
-                if not remote and form.is_valid():
-                        post = form.save(commit=False)
-                        post.author = Author.objects.get(user=request.user)
-                        post.published_date = timezone.now()
-                        post.save()
-                        # the "id" part must be the same as the P<"id" in url.py
-                        #return redirect('posts:detail', id=post.pk)
-                elif cform.is_valid():
-                        if not remote:
-                                comment = cform.save(commit=False)
-                                comment.published = timezone.now()
-                                comment.author = Author.objects.get(user=request.user)
-                                comment.post=post_Q[0]
-                                comment.save()
-                        else:
-                                ext = "/posts/"+str(id)+"/comments"
-                                payload = {
-                                        "comment": request.POST['comment'],
-                                        "contentType": request.POST['contentType'],
-                                }
-                                post_remote(request, ext, payload)
-        else:
-            form = PostForm(initial={'content': post['content']})
-            cform = CommentForm()
+			if postEditForm.is_valid() and postEditForm.changed_data.__len__() > 0:
+				post1 = Post.objects.get(id=id)
+				post1.title = postEditForm.cleaned_data["title"]
+				post1.content = postEditForm.cleaned_data["content"]
+				post1.save()
+				return redirect('posts:detail', id=id)
+			if not remote and form.is_valid():
+				post = form.save(commit=False)
+				post.author = Author.objects.get(user=request.user)
+				post.published_date = timezone.now()
+				post.save()
+				# the "id" part must be the same as the P<"id" in url.py
+				# return redirect('posts:detail', id=post.pk)
+			elif cform.is_valid():
+				if not remote:
+					comment = cform.save(commit=False)
+					comment.published = timezone.now()
+					comment.author = Author.objects.get(user=request.user)
+					comment.post = post_Q[0]
+					comment.save()
+				else:
+					ext = "/posts/" + str(id) + "/comments"
+					payload = {
+						"comment": request.POST['comment'],
+						"contentType": request.POST['contentType'],
+					}
+					post_remote(request, ext, payload)
+		else:
+			form = PostForm(initial={'content': post['content']})
+			cform = CommentForm()
+			postEditForm = PostEditForm()
+			post1 = Post.objects.get(id=id)
+			postEditForm.fields["title"] = post1.title
+			postEditForm.fields["content"] = post1.content
+			postEditForm.fields["postId"] = post1.id
 
-        isAuthenticated = request.user.is_authenticated()
-        isAuthor = False
-        if isAuthenticated and not remote:
-            isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
-        return render(request, 'posts/detail.html', {'post': post, 'comments': comments, 'form': form, 'cform': cform, 'isAuthenticated': isAuthenticated, 'isAuthor': isAuthor})
+		isAuthenticated = request.user.is_authenticated()
+		isAuthor = False
+		if isAuthenticated and not remote:
+			isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
+		return render(request, 'posts/detail.html',
+					{
+						'post': post,
+						'comments': comments,
+						'form': form,
+						'cform': cform,
+						'isAuthenticated': isAuthenticated,
+						'isAuthor': isAuthor,
+						'postEditForm': postEditForm
+					})
 
 
 def create_post(request):
@@ -280,41 +301,53 @@ def delete_img(request, id):
 
 #----------------------------------------------------------------
 def get_profile(request):
-        if request.method == "POST":
-            formProfile = UserProfile(request.POST)
-            if formProfile.is_valid():
-                author = Author.objects.get(user=request.user)
-                author.displayName = formProfile.cleaned_data["displayname"]
-                author.host = formProfile.cleaned_data["host"]
-                author.url = formProfile.cleaned_data["url"]
-                author.github = formProfile.cleaned_data["github"]
-                author.id = formProfile.cleaned_data["id"]
-                author.save()
-            return redirect('posts:update_profile')
-        else:
-            formProfile = UserProfile()
+		if request.method == "POST":
+			# This request returns 2 dictionaries. The first one is to update the profile,
+			# the second one updates a particular post
+			formProfile = UserProfile(request.POST)
+			formPost = PostEditForm(request.POST)
+			if formProfile.is_valid() and formProfile.changed_data.__len__() > 0:
+				author = Author.objects.get(user=request.user)
+				author.displayName = formProfile.cleaned_data["displayname"]
+				author.host = formProfile.cleaned_data["host"]
+				author.url = formProfile.cleaned_data["url"]
+				author.github = formProfile.cleaned_data["github"]
+				author.save()
 
-            latest_post_list = Post.objects.filter(
-                    Q(author=Author.objects.get(user=request.user)))
-            latest_img_list = Image.objects.order_by('-published')[:5]
-            author = Author.objects.get(user=request.user)
+			if formPost.is_valid() and formPost.changed_data.__len__() > 0:
+				post = Post.objects.get(id=formPost.cleaned_data["postId"])
+				post.title = formPost.cleaned_data["title"]
+				post.content = formPost.cleaned_data["content"]
+				post.save()
 
-            formProfile.fields["username"] = request.user.username
-            formProfile.fields["displayname"] = author.displayName
-            formProfile.fields["host"] = author.host
-            formProfile.fields["url"] = author.url
-            formProfile.fields["github"] = author.github
-            formProfile.fields["id"] = author.id
+			return redirect('posts:update_profile')
+		else:
+			formPost = PostEditForm()
+			formProfile = UserProfile()
 
-            context = {
-                'latest_image_list': latest_img_list,
-                'latest_post_list': latest_post_list,
-                'can_add_psot': False,
-                'formProfile': formProfile,
-            }
-            return render(request, 'posts/profile.html', context)
+			latest_post_list = Post.objects.filter(
+				Q(author=Author.objects.get(user=request.user)))
+			latest_img_list = Image.objects.order_by('-published')[:5]
+			author = Author.objects.get(user=request.user)
+	
+			formProfile.fields["username"] = request.user.username
+			formProfile.fields["displayname"] = author.displayName
+			formProfile.fields["host"] = author.host
+			formProfile.fields["url"] = author.url
+			formProfile.fields["github"] = author.github
+			formProfile.fields["id"] = author.id
+
+			context = {
+				'latest_image_list': latest_img_list,
+				'latest_post_list': latest_post_list,
+				'formPost': formPost,
+				'formProfile': formProfile,
+			}
+			return render(request, 'posts/profile.html', context)
+
 
 #----------------------------------------------------------------
+
 def get_nodes(request):
         nodes_list = Node.objects.all()
         context = {'nodes_list': nodes_list}

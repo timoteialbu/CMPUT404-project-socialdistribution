@@ -1,125 +1,164 @@
 {% extends 'posts/base.html' %}
 
 {% block content1 %}
-{% block content %}
+    {% block content %}
 
-<script>
- function edit(){
-     var n = 0;
-     var flip = function(){
-     if(n % 2){
-         document.getElementById('edit').style.display="none";
-     }
-     else{
-         document.getElementById('edit').style.display="block";
-     }
-    ++n;
-     }
-     return flip;
- }
- function comment(){
-     var n = 0;
-     var flip = function(){
-     if(n % 2){
-         document.getElementById('comment').style.display="none";
-     }
-     else{
-         document.getElementById('comment').style.display="block";
-     }
-    ++n;
-     }
-     return flip;
- }
- var nextE = edit();
- var nextC = comment();
-</script>
+        <script>
+            function edit() {
+                var n = 0;
+                var flip = function () {
+                    if (n % 2) {
+                        document.getElementById('edit').style.display = "none";
+                    }
+                    else {
+                        document.getElementById('edit').style.display = "block";
+                    }
+                    ++n;
+                }
+                return flip;
+            }
+            function comment() {
+                var n = 0;
+                var flip = function () {
+                    if (n % 2) {
+                        document.getElementById('comment').style.display = "none";
+                    }
+                    else {
+                        document.getElementById('comment').style.display = "block";
+                    }
+                    ++n;
+                }
+                return flip;
+            }
+            var nextE = edit();
+            var nextC = comment();
+        </script>
 
 
-<div class="modal-content">
-<div class="post">
-    {% if post.pub_date %}
-    <div class="date">
-        {{ post.pub_date }}
-    </div>
-    {% endif %}
+        <div class="modal-content">
+            <div class="post">
+                {% if post.pub_date %}
+                    <div class="date">
+                        {{ post.pub_date }}
+                    </div>
+                {% endif %}
 
-    <div class="modal-header">
-        <h2>{{ post.title}}</h2>
-        <h3>{{ post.content|urlize|linebreaks }}</h3>
-        <h3>{{ post.get_privacy_display }}</h3>
-    </div>
+                <div class="modal-header">
+                    <h2>{{ post.title }}</h2>
+                    <h3>{{ post.content|urlize|linebreaks }}</h3>
+                    <h3>{{ post.get_privacy_display }}</h3>
+                </div>
 
-    <div class="modal-body">
-        <div class="comments">
-        {% for comment in comments %}
-            <p>{{ comment.comment|urlize|linebreaks }}</p>
-        {% endfor %}
+                <div class="modal-body">
+                    <div class="comments">
+                        {% for comment in comments %}
+                            <p>{{ comment.comment|urlize|linebreaks }}</p>
+                        {% endfor %}
+                    </div>
+                    {% if isAuthenticated %}
+                        <td>
+                            <button class="btn btn-default" type=button id=f2 onclick="nextC();">Comment</button>
+                        </td>
+                    {% else %}
+                        <h2>Login to comment!</h2>
+                    {% endif %}
+                    <script>
+                        function comment() {
+                            var n = 0;
+                            var flip = function () {
+                                if (n % 2) {
+                                    document.getElementById('comment').style.display = "none";
+                                }
+                                else {
+                                    document.getElementById('comment').style.display = "block";
+                                }
+                                ++n;
+                            }
+                            return flip;
+                        }
+                        var nextC = comment();
+                    </script>
+
+                    {% if isAuthor %}
+                        <button id="myBtn" class="btn btn-default" onclick="open_modale();">Edit</button>
+
+                        <!-- The Modal -->
+                        <div id="myModal" class="modal">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="close" onclick="close_modle()">×</span>
+                                    <h2>Edit Content Here</h2>
+                                </div>
+
+                                <form method="POST" class="PostForm">{% csrf_token %}
+                                    <div class="modal-body">
+                                        <p><span style="font-size:12px;"><label
+                                                for="{{ postEditForm.title.id_for_label }}">Title:</label> &nbsp; &nbsp; <input
+                                                name="title"
+                                                type="text"
+                                                value="{{ postEditForm.fields.title }}"/></span>
+                                        </p>
+                                        <p>
+                                <span style="font-size:12px;"><label
+                                        for="{{ postEditForm.content.id_for_label }}">Content:</label> &nbsp;
+                                    <textarea cols="40" rows="5"
+                                              name="content">{{ postEditForm.fields.content }}</textarea>
+                                </span>
+                                        </p>
+                                        <input name="postId" value="{{ postEditForm.fields.postId }}"
+                                               hidden="true"/></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" value="save" class="btn btn-default">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div id="comment" style="display: none;">
+                        <h1>New Comment</h1>
+                        <form method="POST" class="comment-form">{% csrf_token %}
+                            {{ cform.as_p }}
+                            <input type="hidden" name="formType" value="comment"/>
+                            <button type="submit" value="save">Save</button>
+                        </form>
+                    </div>
+                    <br><br>
+
+                    {% if isAuthor %}
+                        <form action={% url 'posts:delete_post' post.id %} method="POST">{% csrf_token %}
+                            <button type="submit" name="id" value= {{ post.id }}>
+                                Delete Selected Post
+                            </button>
+                        </form>
+                        </td>
+                    {% endif %}
+                    </tr></table>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="modal-footer">
-    <table style="float: right;"><tr>
-        {% if isAuthor %}
-        <td>
-            <button class="btn btn-default" type=button id = f1 onclick="nextE();">Edit</button>
-        </td>
-        {% endif %}
-
-        {% if isAuthenticated %}
-        <td>
-            <button class="btn btn-default" type=button id = f2 onclick="nextC();">Comment</button>
-        </td>
-        {% else %}
-        <td>
-            <h2>Login to comment!</h2>
-        </td>
-        {% endif %}
-
-        {%if isAuthor %}
-        <td>
-            <form action = {% url 'posts:delete_post' post.id %} method = "POST">{% csrf_token %}
-            <button class="btn btn-default" type="submit" name = "id" value = {{post.id}}>Delete</button>
+        <div id="edit" style="display: none;">
+            <h1>New Content</h1>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ form.as_p }}
+                {{ form.get_privacy_display }}
+                <input type="hidden" name="formType" value="post"></input>
+                <button type="submit" value="save">Save</button>
             </form>
-        </td>
-        {% endif %}
-    </tr></table>
-    </div>
-</div>
-</div>
+        </div>
 
 
+        <div id="comment" style="display: none;">
+            <h1>New Comment</h1>
+            <form method="POST" class="comment-form">{% csrf_token %}
+                {{ cform.as_p }}
+                <input type="hidden" name="formType" value="comment"></input>
+                <button type="submit" value="save">Save</button>
+            </form>
+        </div>
+        <br><br>
 
-
-
-
-
-
-
-
-<div id="edit" style="display: none;">
-    <h1>New Content</h1>
-    <form method="POST" class="post-form">{% csrf_token %}
-	{{ form.as_p }}
-	{{ form.get_privacy_display}}
-	<input type="hidden" name="formType" value="post"></input>
-	<button type="submit" value="save">Save</button>
-    </form>
-</div>
-
-
-<div id="comment" style="display: none;">
-    <h1>New Comment</h1>
-    <form method="POST" class="comment-form">{% csrf_token %}
-	{{ cform.as_p }}
-	<input type="hidden" name="formType" value="comment"></input>
-	<button type="submit" value="save">Save</button>
-    </form>
-</div>
-<br><br>
-
-
-
-
-
-{% endblock %}
+    {% endblock %}
 {% endblock %}
