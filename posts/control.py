@@ -175,12 +175,9 @@ def visibility_filter(request, sel):
 def get_posts(request): # Return QuerySet
     # Returns all posts unless the user is anonymous (then only public)
         if request.user.is_anonymous():
-            print("Anonymous")
             latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
         else:
-            print("Is User")
             latest_post_list = Post.objects.all()
-            print(latest_post_list)
         return latest_post_list.order_by('-published')
 
 def filter_posts(request, selection):
@@ -280,6 +277,7 @@ def get_post_detail(request, id):
 def create_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
+        print("TESTING CREATE")
         if form.is_valid():
             post = form.save(commit=False)
             post.author = Author.objects.get(user=request.user)
@@ -318,7 +316,24 @@ def post_mgmt(request):
 #----------------------------------------------------------------
 # GITHUB
 def get_github_posts(request):
-    github_posts = list()
+    select = Author.objects.get(user=request.user)
+    #user = "aaclark"
+    user = str(select.github)
+    github_posts = list()   # fallback
+    if(user!=""):
+        url = "https://api.github.com/users/"+user+"/events/public"
+        headers = {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Accept': 'application/vnd.github.v3+json'
+        }
+        activity_unparsed=list()
+        try:
+            activity = requests.get(url, headers=headers)
+            print("GITHUB CONNECTED")
+        except:
+            print("GITHUB API ERROR")
+
+        print(activity) # response 200
     return github_posts
 
 #----------------------------------------------------------------
@@ -450,25 +465,25 @@ def post_remote(request, ext, payload):
 
 #----------------------------------------------------------------
 def process_form(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            try:
-                post = Post()
-                post.author = Author.objects.get(user=request.user)
-                post.title = form.cleaned_data["title"]
-                post.content = form.cleaned_data["content"]
-                post.contentType = form.cleaned_data["contentType"]
-                post.visibility = form.cleaned_data["visibility"]
-                test = form.cleaned_data["privateAuthor"]
-                do_debug( test + "<---------------- test")
-                post.privateAuthor = User.objects.all().filter(id=test.id)
-                do_debug (User.objects.all().filter(id=test.id) + "<---------------- after filter")
-                do_debug (post.privateAuthor + "<----------------------- post.privateAuthor when created")
-                post.save()
-                return redirect('posts:index')
-            except:
-                return 400
+    print("TESTING")
+    form = PostForm(request.POST)
+    if form.is_valid():
+        try:
+            post = Post()
+            post.author = Author.objects.get(user=request.user)
+            post.title = form.cleaned_data["title"]
+            post.content = form.cleaned_data["content"]
+            post.contentType = form.cleaned_data["contentType"]
+            post.visibility = form.cleaned_data["visibility"]
+            test = form.cleaned_data["privateAuthor"]
+            post.privateAuthor = User.objects.all().filter(id=test.id)
+            print(User.objects.all().filter(id=test.id) + "<---------------- after filter")
+            print(post.privateAuthor + "<----------------------- post.privateAuthor when created")
+            post.save()
+            return redirect('posts:index')
+        except:
+            print("PROBLEM PROCESSING FORM")
+            return redirect('posts:index')
     return None # BAD DEFAULT
 
 #----------------------------------------------------------------
@@ -504,7 +519,9 @@ def index(request):
     # Fallback on empty form
     # THIS SHOULDN'T EVEN BE HERE
         form = PostForm()
-        process_form(request) # Handles properly
+        if request.method == "POST":
+            print("MORE DEBUGGING")
+            process_form(request) # Handles properly
 
         if not (request.user.is_anonymous()):
             my_posts, other_posts = [], []

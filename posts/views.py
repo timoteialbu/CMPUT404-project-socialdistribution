@@ -77,21 +77,6 @@ def add_friend(request, context):
             context['addform'] = AddFriendForm()
 
 #----------------------------------------------------------------
-def friend_requests(request, context, users):
-        requests_valid = context['friendrequestform'].is_valid(),
-        if requests_valid:
-            for user in users:
-                req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=User.objects.get(username=user))
-                if request.POST[user] == "A":
-                    req_id.accept()
-                elif request.POST[user] == "R":
-                    req_id.reject()
-                    try_remove_friend(request.user, user)
-
-            #friend = context['friendrequestform'].cleaned_data['user_choice_field']
-            #context['addfriend'] = friend
-
-#----------------------------------------------------------------
 def try_remove_friend(user, friend):
         try:
             friend_name = User.objects.get(username=friend)
@@ -124,6 +109,21 @@ def remove_friend(request, context):
             context['unfrienduserform'] = UnFriendUserForm
 
 #----------------------------------------------------------------
+def friend_requests(request, context, users):
+        requests_valid = context['friendrequestform'].is_valid(),
+        if requests_valid:
+            for user in users:
+                req_id = FriendshipRequest.objects.get(to_user=request.user,from_user=User.objects.get(username=user))
+                if request.POST[user] == "A":
+                    req_id.accept()
+                elif request.POST[user] == "R":
+                    req_id.reject()
+                    try_remove_friend(request.user, user)
+
+            #friend = context['friendrequestform'].cleaned_data['user_choice_field']
+            #context['addfriend'] = friend
+
+#----------------------------------------------------------------
 def friend_mgmt(request):
     users = list(map(lambda x:
                      str(x.from_user),
@@ -154,10 +154,9 @@ def friend_mgmt(request):
     print ("all_friends:" , all_friends)
     return render(request, 'posts/friend_mgmt.html', context)
 
-
 #================================================================
 #----------------------------- Posts ----------------------------
-def visibility_filter(request, sel):
+def visibility_filter(request, label):
     # Python's version of a Switch-Case:
     # We can return functions, including
     # defaults and empty functions.
@@ -169,16 +168,8 @@ def visibility_filter(request, sel):
         "FOAF": lambda: None,
         "SERVERONLY": lambda: None,
     }
-    function = vis.get(sel, lambda: None)
+    function = vis.get(label, lambda: None)
     return function
-
-def get_posts(request): # Return QuerySet
-    # Returns all posts unless the user is anonymous (then only public)
-        if request.user.is_anonymous():
-            latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
-        else:
-            latest_post_list = Post.objects.all()
-        return latest_post_list.order_by('-published')
 
 def filter_posts(request, selection):
     # Returns True if the selection can be seen by the current user
@@ -200,6 +191,15 @@ def filter_posts(request, selection):
                 return False
         else:
             return True
+
+#----------------------------------------------------------------
+def get_posts(request): # Return QuerySet
+    # Returns all posts unless the user is anonymous (then only public)
+        if request.user.is_anonymous():
+            latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
+        else:
+            latest_post_list = Post.objects.all()
+        return latest_post_list.order_by('-published')
 
 def get_post_detail(request, id):
         # returns a QuerySet
@@ -274,6 +274,29 @@ def get_post_detail(request, id):
                         'postEditForm': postEditForm
                     })
 
+#----------------------------------------------------------------
+def process_form(request):
+    print("TESTING")
+    form = PostForm(request.POST)
+    if form.is_valid():
+        try:
+            post = Post()
+            post.author = Author.objects.get(user=request.user)
+            post.title = form.cleaned_data["title"]
+            post.content = form.cleaned_data["content"]
+            post.contentType = form.cleaned_data["contentType"]
+            post.visibility = form.cleaned_data["visibility"]
+            test = form.cleaned_data["privateAuthor"]
+            post.privateAuthor = User.objects.all().filter(id=test.id)
+            #print(User.objects.all().filter(id=test.id) + "<---------------- after filter")
+            #print(post.privateAuthor + "<----------------------- post.privateAuthor when created")
+            post.save()
+            return redirect('posts:index')
+        except:
+            print("PROBLEM PROCESSING FORM")
+            return redirect('posts:index')
+    return None # BAD DEFAULT
+
 def create_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -285,7 +308,7 @@ def create_post(request):
             post.save()
             # future ref make to add the namespace ie "posts"
             return redirect('posts:detail', id=post.pk)
-    return None
+    return render(request, 'posts/post_mgmt.html', context)
 
 def delete_post(request, id):
         post_list = get_posts(request)
@@ -296,6 +319,7 @@ def delete_post(request, id):
             return redirect('posts:index')
         return render(request, 'posts/index.html')
 
+#----------------------------------------------------------------
 def post_mgmt(request):
         latest_post_list = get_posts(request).filter(
             Q(author=Author.objects.get(user=request.user)))
@@ -313,28 +337,6 @@ def post_mgmt(request):
         }
         return render(request, 'posts/post_mgmt.html', context)
 
-#----------------------------------------------------------------
-# GITHUB
-def get_github_posts(request):
-    select = Author.objects.get(user=request.user)
-    #user = "aaclark"
-    user = str(select.github)
-    github_posts = list()   # fallback
-    if(user!=""):
-        url = "https://api.github.com/users/"+user+"/events/public"
-        headers = {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Accept': 'application/vnd.github.v3+json'
-        }
-        activity_unparsed=list()
-        try:
-            activity = requests.get(url, headers=headers)
-            print("GITHUB CONNECTED")
-        except:
-            print("GITHUB API ERROR")
-
-        print(activity) # response 200
-    return github_posts
 
 #----------------------------------------------------------------
 def get_imgs(request):  # Return QuerySet
@@ -363,7 +365,31 @@ def delete_img(request, id):
             return redirect('posts:index')
         return render(request, 'posts/index.html')
 
-#----------------------------------------------------------------
+#================================================================
+#-------------------------- Github API --------------------------
+def get_github_posts(request):
+    select = Author.objects.get(user=request.user)
+    #user = "aaclark"
+    user = str(select.github)
+    github_posts = list()   # fallback
+    if(user!=""):
+        url = "https://api.github.com/users/"+user+"/events/public"
+        headers = {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Accept': 'application/vnd.github.v3+json'
+        }
+        activity_unparsed=list()
+        try:
+            activity = requests.get(url, headers=headers)
+            print("GITHUB CONNECTED")
+        except:
+            print("GITHUB API ERROR")
+
+        print(activity) # response 200
+    return github_posts
+
+#================================================================
+#---------------------------- Profile ---------------------------
 def get_profile(request):
         if request.method == "POST":
             # This request returns 2 dictionaries. The first one is to update the profile,
@@ -410,15 +436,14 @@ def get_profile(request):
             return render(request, 'posts/profile.html', context)
 
 
-#----------------------------------------------------------------
-
+#================================================================
+#------------------------- Remote Hosts -------------------------
 def get_nodes(request):
         nodes_list = Node.objects.all()
         context = {'nodes_list': nodes_list}
         return render(request, 'posts/nodes.html', context)
 
 #----------------------------------------------------------------
-
 def get_remote(request, ext):
         nodes = Node.objects.all()
         r = list()
@@ -463,31 +488,8 @@ def post_remote(request, ext, payload):
             r = requests.post(url, headers=headers, json=payload)
         return r.status_code
 
-#----------------------------------------------------------------
-def process_form(request):
-    print("TESTING")
-    form = PostForm(request.POST)
-    if form.is_valid():
-        try:
-            post = Post()
-            post.author = Author.objects.get(user=request.user)
-            post.title = form.cleaned_data["title"]
-            post.content = form.cleaned_data["content"]
-            post.contentType = form.cleaned_data["contentType"]
-            post.visibility = form.cleaned_data["visibility"]
-            test = form.cleaned_data["privateAuthor"]
-            post.privateAuthor = User.objects.all().filter(id=test.id)
-            print(User.objects.all().filter(id=test.id) + "<---------------- after filter")
-            print(post.privateAuthor + "<----------------------- post.privateAuthor when created")
-            post.save()
-            return redirect('posts:index')
-        except:
-            print("PROBLEM PROCESSING FORM")
-            return redirect('posts:index')
-    return None # BAD DEFAULT
-
-#----------------------------------------------------------------
-# prob should change this to a form view
+#================================================================
+#-------------------------- Main Render -------------------------
 def index(request):
 
         remote_posts = list()
@@ -501,6 +503,11 @@ def index(request):
             pass
 
         try:
+            latest_img_list = list(get_imgs(request))
+        except:
+            pass
+
+        try:
             remote_posts = list(get_remote(request, '/posts/')['posts'])
         except:
             pass
@@ -509,12 +516,6 @@ def index(request):
             github_posts = list(get_github_posts(request))
         except:
             pass
-
-        try:
-            latest_img_list = list(get_imgs(request))
-        except:
-            pass
-
 
     # Fallback on empty form
     # THIS SHOULDN'T EVEN BE HERE
@@ -526,7 +527,7 @@ def index(request):
         if not (request.user.is_anonymous()):
             my_posts, other_posts = [], []
 
-            # Splits into two lists based on authorship and cantidacy
+            # Splits into two lists based on authorship and candidacy
             for x in latest_post_list:
                 if (x.author.user == request.user):
                     my_posts.append(x)
