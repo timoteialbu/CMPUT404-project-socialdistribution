@@ -7,7 +7,10 @@ import uuid
 # i dont know what meta does ?
 class PostForm(forms.ModelForm):
     title = forms.CharField(widget=forms.Textarea(attrs={'cols': 40, 'rows': 1, 'size': 40, 'maxlength': 40}))
-    privateAuthor = forms.CharField(widget=forms.Textarea(attrs={'cols': 40, 'rows': 1, 'size': 40, 'maxlength': 20, 'placeholder': 'AuthorID (Private to an Author)'}))   
+    privateAuthor = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+    )
     privateAuthor.label='Private Author'
 
     class Meta:
@@ -16,9 +19,9 @@ class PostForm(forms.ModelForm):
 
 
 class PostEditForm(forms.Form):
-	title = forms.CharField(label='Title', required=False)
-	content = forms.CharField(label='Content', required=False)
-	postId = forms.UUIDField(label='Id')
+    title = forms.CharField(label='Title', required=False)
+    content = forms.CharField(label='Content', required=False)
+    postId = forms.UUIDField(label='Id')
 
 
 class CommentForm(forms.ModelForm):
