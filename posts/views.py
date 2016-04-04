@@ -155,7 +155,7 @@ def get_posts(request):
             latest_post_list = Post.objects.filter(
                 Q(visibility='PUBLIC')) 
         else:
-            latest_post_list = Post.objects
+            latest_post_list = Post.objects.all()
         return latest_post_list.order_by('-published')
 
 
@@ -441,17 +441,21 @@ def index(request):
 
                 elif latest_post_list[length-1-i].visibility == "AUTHOR":
                     print latest_post_list[length-1-i].privateAuthor
+                    if (latest_post_list[length-1-i].privateAuthor == request.user) or (latest_post_list[length-1-i].author.user == request.user):
+                        pass
+                    else:
+                        latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
                     print "Private to an Author"
 
                 elif latest_post_list[length-1-i].visibility == 'FOAF':
+                    if latest_post_list[length-1-i].author.user == request.user:
+                        pass
                     print 'Friend of a Friend'
 
                 elif latest_post_list[length-1-i].visibility == 'FRIENDS':
-                    if (latest_post_list[length-1-i].author.user in all_friends) or latest_post_list[length-1-i].author.user == request.user:
-                        print "You can see this"
+                    if (latest_post_list[length-1-i].author.user in all_friends) or (latest_post_list[length-1-i].author.user == request.user):
                         pass
                     else:
-                        print "yufei3 should not see this ------------------------------"
                         latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
                     print 'Private To My Friends'
 
