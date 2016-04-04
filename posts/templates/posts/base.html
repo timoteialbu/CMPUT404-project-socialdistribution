@@ -139,8 +139,8 @@
             <div class="navbar-header navbar-brand">SQUANCH</div>
             <ul class="nav navbar-nav">
                 <li><a href='/posts/'><span>Home</span></a></li>
-                <li><a href='/posts/post_mgmt/'><span>Posts</span></a></li>
                 {% if user.is_authenticated %}
+                    <li><a href='/posts/post_mgmt/'><span>Posts</span></a></li>
                     <li><a href='/posts/friend_mgmt/'><span>Friends</span></a></li>
                     <li><a href='/posts/profile/'><span>Profile</span></a></li>
                     </ul>
@@ -217,7 +217,6 @@
         <nav class="navbar navbar-inverse navbar-fixed-bottom">
             {% if can_add_psot %}
                 <ul class="nav nav-pills nav-justified">
-
                     <li>
 
                         <!-- Trigger/Open The Modal -->
@@ -253,61 +252,131 @@
                     </li>
                 </ul>
             {% endif %}
-
         </nav>
 
+
+
     {% else %}
+        <form class="signup" id="signup_form" method="post" action="/account/signup/">{% csrf_token %}
+            <div class="modal-content">
+            
+            <div class="modal-header">
+            <h2>Why not Register?</h2>
+            </div>
 
-        <form class="signup form-group jumbotron" id="signup_form" method="post"
-              action="/account/signup/">{% csrf_token %}
-            <h1>Why not Register?</h1>
+            <div class="modal-body">
             <table class="table-condensed">
-                <div class="input-group">
-                    <tr>
-                        <td><label class="sr-only" for="id_first_name">First name:</label></td>
-                        <td><input id="id_first_name" maxlength="30" name="first_name" type="text"
-                                   placeholder="First Name"/></td>
-                    </tr>
+                <tr>
+                    <td><label for="id_first_name">First name:</label></td>
+                    <td><input id="id_first_name" maxlength="30" name="first_name" type="text" /></td>
+                </tr>
 
-                    <tr>
-                        <td><label class="sr-only" for="id_last_name">Last name:</label></td>
-                        <td><input id="id_last_name" maxlength="30" name="last_name" type="text"
-                                   placeholder="Last Name"/></td>
-                    </tr>
-                </div>
+                <tr>
+                    <td><label for="id_last_name">Last name:</label></td> 
+                    <td><input id="id_last_name" maxlength="30" name="last_name" type="text" /></td>
+                </tr>
 
-                <div class="input-group">
-                    <tr>
-                        <td><label class="sr-only" for="id_username">Username:</label></td>
-                        <td><input autofocus="autofocus" id="id_username" name="username" placeholder="Username"
-                                   type="text"/></td>
-                    </tr>
 
-                    <tr>
-                        <td><label class="sr-only" for="id_email">E-mail (optional):</label></td>
-                        <td><input id="id_email" name="email" placeholder="E-mail address" type="email"/></td>
-                    </tr>
-                </div>
+                <tr>
+                    <td><label for="id_username">Username:</label></td>
+                    <td><input autofocus="autofocus" id="id_username" name="username" placeholder="Username" type="text" /></td>
+                </tr>
 
-                <div class="input-group">
-                    <tr>
-                        <td><label class="sr-only" for="id_password1">Password:</label></td>
-                        <td><input id="id_password1" name="password1" placeholder="Password" type="password"/></td>
-                    </tr>
+                <tr>
+                    <td><label for="id_email">E-mail (optional):</label></td>
+                    <td><input id="id_email" name="email" placeholder="E-mail address" type="email" /></td>
+                </tr>
 
-                    <tr>
-                        <td><label class="sr-only" for="id_password2">Password (again):</label></td>
-                        <td><input id="id_password2" name="password2" placeholder="Password (again)" type="password"/>
-                        </td>
-                        <td><input id="id_confirmation_key" maxlength="40" name="confirmation_key" type="hidden"/></td>
-                    </tr>
-                </div>
+                <tr>
+                    <td><label for="id_password1">Password:</label></td>
+                    <td><input id="id_password1" name="password1" placeholder="Password" type="password" /></td>
+                </tr>
 
+                <tr>
+                    <td>
+                    <label for="id_password2">Password (again):</label>
+                    </td>
+                    <td>
+                     <input id="id_password2" name="password2" placeholder="Password (again)" type="password" />
+                     <input id="id_confirmation_key" maxlength="40" name="confirmation_key" type="hidden" />
+                    </td>
+                </tr>
             </table>
+            </div>
 
-            <button type="submit">Sign Up &raquo;</button>
-
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-default">Sign Up &raquo;</button>
+            </div>
+        </div>
         </form>
+
+        <hr>
+
+    {% if latest_post_list %}
+        {% for post in latest_post_list %}
+        <div class="modal-content">
+
+        {% if post.contentType == 'text/plain' %}
+            <div class="modal-header">
+            <h3> {{ post.author.user }}:&nbsp;{{post.title}}</h3>
+            </div>
+
+            <div class="modal-body">
+                <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                <div class="modal-content">
+                <div class="modal-header">
+                    <label>Comments:</label>
+                </div>
+                {% for comment in comments_dict|get_item:post.id %}
+                    <p>{{comment.comment}}</p>
+                {% endfor%}
+                </div>
+            </div>
+
+            <div class="modal-footer"></div>   
+
+
+        {% else %}
+            <div class="modal-header">
+            <h3> {{ post.author.user }}:&nbsp;{{post.title}}</h3>
+            </div>
+
+            <div class="modal-body">
+                <h4>{{ post.content|linebreaks }}</h4>
+                <br>
+                <div class="modal-content">
+                <div class="modal-header">
+                    <label>Comments:</label>
+                </div>
+                {% for comment in comments_dict|get_item:post.id %}
+                    <p>{{comment.comment}}</p>
+                {% endfor%}
+                </div>
+            </div>
+
+            <div class="modal-footer"></div>
+        {% endif %}
+
+        </div> 
+        <br>
+        {% endfor %}
+
+    {% else %}
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>No posts are available!</h2>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+
+
+
+
+
 
     {% endif %}
 </center>
