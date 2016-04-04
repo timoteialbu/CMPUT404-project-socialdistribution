@@ -175,10 +175,8 @@ def visibility_filter(request, sel):
 def get_posts(request): # Return QuerySet
     # Returns all posts unless the user is anonymous (then only public)
         if request.user.is_anonymous():
-            print("Anonymous")
             latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
         else:
-            print("Is User")
             latest_post_list = Post.objects.all()
             print(latest_post_list)
         return latest_post_list.order_by('-published')
@@ -318,7 +316,24 @@ def post_mgmt(request):
 #----------------------------------------------------------------
 # GITHUB
 def get_github_posts(request):
-    github_posts = list()
+    select = Author.objects.get(user=request.user)
+    #user = "aaclark"
+    user = str(select.github)
+    github_posts = list()   # fallback
+    if(user!=""):
+        url = "https://api.github.com/users/"+user+"/events/public"
+        headers = {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Accept': 'application/vnd.github.v3+json'
+        }
+        activity_unparsed=list()
+        try:
+            activity = requests.get(url, headers=headers)
+            print("GITHUB CONNECTED")
+        except:
+            print("GITHUB API ERROR")
+
+        print(activity) # response 200
     return github_posts
 
 #----------------------------------------------------------------
