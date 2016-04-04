@@ -419,7 +419,10 @@ def index(request):
                 post.contentType = form.cleaned_data["contentType"]
                 post.visibility = form.cleaned_data["visibility"]
                 test = form.cleaned_data["privateAuthor"]
+                print test, "<---------------- test"
                 post.privateAuthor = User.objects.all().filter(id=test.id)
+                print User.objects.all().filter(id=test.id), "<---------------- after filter"
+                print post.privateAuthor, "<----------------------- post.privateAuthor when created"
                 post.save()
                 return redirect('posts:index')
         else:
@@ -436,8 +439,9 @@ def index(request):
             for i in range(length):
                 print latest_post_list[length-1-i].author.user
                 if latest_post_list[length-1-i].visibility == "PUBLIC":
-                    print "public"
                     pass
+
+
 
                 elif latest_post_list[length-1-i].visibility == "AUTHOR":
                     print latest_post_list[length-1-i].privateAuthor
@@ -447,39 +451,35 @@ def index(request):
                         latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
                     print "Private to an Author"
 
+
                 elif latest_post_list[length-1-i].visibility == 'FOAF':
                     flag = True
-
                     for friend in all_friends:
                         if flag:
                             friend_list = Friend.objects.friends(friend)
                             if (request.user in friend_list) or (latest_post_list[length-1-i].author.user == request.user):
                                 flag = False
-
                     if flag:
                         latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-
-                    print 'Friend of a Friend'
 
                 elif latest_post_list[length-1-i].visibility == 'FRIENDS':
                     if (latest_post_list[length-1-i].author.user in all_friends) or (latest_post_list[length-1-i].author.user == request.user):
                         pass
                     else:
                         latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-                    print 'Private To My Friends'
 
                 elif latest_post_list[length-1-i].visibility == 'PRIVATE':
                     if latest_post_list[length-1-i].author.user != request.user:
                         latest_post_list = latest_post_list.exclude(id=latest_post_list[length-1-i].id)
-                    print 'Private To Me'
 
                 elif latest_post_list[length-1-i].visibility == 'SERVERONLY':
-                    print 'Private To Friends On My Host'
+                    pass
                 print '\n'
 
 
         comments_dict = {}
         for p in latest_post_list:
+            print p.privateAuthor
             comments = Comment.objects.filter(post=p.id)
             comments_dict[p.id] = comments
         
