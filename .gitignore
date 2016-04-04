@@ -9,8 +9,5 @@ venv
 passwords.txt
 media/*
 */migrations/
-timotei-project
-project
 *#
 .idea/
-wsgi
