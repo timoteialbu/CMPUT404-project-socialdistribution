@@ -168,30 +168,33 @@ def visibility_filter(request, label):
 
 
 def filter_posts(request, selection):
-	# Returns True if the selection can be seen by the current user
-	myuser = selection.author.user
+    # Returns True if the selection can be seen by the current user
+        myuser = selection.author.user
+        all_friends = Friend.objects.friends(request.user)
 
-	all_friends = Friend.objects.friends(request.user)
-	if myuser == request.user:  # REDUNDANT AS HELL
-		return True
-	elif selection.visibility == 'FOAF':
-		for friend in Friend.objects.friends(request.user):
-			friend_list = Friend.objects.friends(friend)
-			if (request.user in friend_list):
-				return True
-		return False
-	elif (
-						(selection.visibility == 'AUTHOR' and selection.privateAuthor != request.user)
-					or (selection.visibility == 'FRIENDS' and myuser not in all_friends)
-				or (selection.visibility == 'PRIVATE' and myuser != request.user)
-			or (selection.visibility == 'SERVERONLY')
-	):
-		return False
-	else:
-		return True
+        if myuser == request.user:  # REDUNDANT AS HELL
+            return True
+        elif selection.visibility == 'FOAF':
+            for friend in Friend.objects.friends(request.user):
+                friend_list = Friend.objects.friends(friend)
+                if (request.user in friend_list):
+                    return True
+            return False
+        elif (
+                (selection.visibility == 'AUTHOR' and selection.privateAuthor != request.user)
+            or  (selection.visibility == 'FRIENDS' and myuser not in all_friends)
+            or  (selection.visibility == 'PRIVATE' and myuser!= request.user)
+            ):
+                return False
+        elif (selection.visibility == 'SERVERONLY'):
+            if (Author.objects.get(user=request.user).host != selection.author.host) or myuser not in all_friends:
+                return False
+            else:
+                return True
+        else:
+            return True
 
 
-# ----------------------------------------------------------------
 def get_posts(request):  # Return QuerySet
 	# Returns all posts unless the user is anonymous (then only public)
 	if request.user.is_anonymous():
@@ -202,7 +205,6 @@ def get_posts(request):  # Return QuerySet
 
 
 def get_post_detail(request, id):
-
         # returns a QuerySet
         post_Q = Post.objects.filter(id=id)
         comment = None
@@ -293,7 +295,6 @@ def get_post_detail(request, id):
                     })
 
 #----------------------------------------------------------------
-
 def process_form(request):
 	print("TESTING")
 	form = PostForm(request.POST)
@@ -493,6 +494,7 @@ def comment_remote(request, ext, payload):
                 do_debug(response)
         return response
     
+
 def get_remote_posts(request, ext):
         nodes = Node.objects.all()
         r = list()
@@ -541,7 +543,6 @@ def get_remote_post_detail(request, ext):
                 do_debug(r)
         do_debug(r)
         return None
-
 
 
 def post_remote(request, ext, payload):
