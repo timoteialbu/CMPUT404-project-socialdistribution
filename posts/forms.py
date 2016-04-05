@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from friendship.models import Friend, Follow, FriendshipRequest
-from api.models import Post, Image, Comment
+from api.models import Post, Image, Comment, Node
 import uuid
 
 # i dont know what meta does ?
@@ -44,6 +44,7 @@ class UploadImgForm(forms.ModelForm):
 #     fields = ('username',)
 class AddFriendForm(forms.Form):
     add_username = forms.CharField(label='add_username', required=False)
+
 
 class UserProfile(forms.Form):
     username = forms.CharField(label='Username', required=False)

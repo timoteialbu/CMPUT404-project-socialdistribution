@@ -15,7 +15,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="submit" class="btn btn-default">Add friend</button>
+                <button type="submit" name="add_sub" class="btn btn-default">Add friend</button>
             </div>
 
         </div>
@@ -38,14 +38,16 @@
 		    <input type="checkbox" name="remove" value={{friend}}>
 		</p>
 		{% endfor %}
-		<p>{{ unfriend_msg }}</p> 
+		{% for error in unfriend_msg %}
+		<p>{{ error }}</p>
+		{% endfor %}
 		{% else %}
 		<p> No one :( </p>
 		{% endif %}
             </div>
 
             <div class="modal-footer">
-                <button type="submit" class="btn btn-default">Apply Changes</button>
+                <button type="submit" name="remove_sub" class="btn btn-default">Apply Changes</button>
             </div>
 
         </div>
@@ -66,7 +68,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-default">Apply Changes</button>
+                    <button type="submit" name="request_sub" class="btn btn-default">Apply Changes</button>
                 </div>
 
             </div>

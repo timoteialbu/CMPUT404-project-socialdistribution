@@ -53,6 +53,7 @@
                     <div class="comments">
                         {% for comment in comments %}
                             <p>{{ comment.comment|urlize|linebreaks }}</p>
+                            <hr>
                         {% endfor %}
                     </div>
                     {% if isAuthenticated %}
