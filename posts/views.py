@@ -518,6 +518,7 @@ def get_remote_posts(request, ext):
                     do_debug("Unkown API Format!")
                     do_debug(r)
         do_debug(r)
+        print(r)
         return r
 def get_remote_post_detail(request, ext):
         nodes = Node.objects.all()
@@ -587,7 +588,7 @@ def index(request):
 		pass
 
 	try:
-		remote_posts = list(get_remote(request, '/posts/'))
+		remote_posts = list(get_remote_posts(request, '/posts/'))
 	except:
 		pass
 
