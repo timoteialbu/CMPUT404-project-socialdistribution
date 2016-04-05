@@ -202,7 +202,6 @@ def get_posts(request):  # Return QuerySet
 
 
 def get_post_detail(request, id):
-
         # returns a QuerySet
         post_Q = Post.objects.filter(id=id)
         comment = None
@@ -210,7 +209,15 @@ def get_post_detail(request, id):
         if not post_Q:
             if request.method == "POST":
                     ext = "/posts/" + id + "/comments"
+                    authID = request.user.id
                     payload = {
+                        "author": {
+                            "id": authID,
+                            "host": "http://murmuring-lowlands-80126.herokuapp.com/api",
+                            "displayName": str(authID),
+                            "url": "http://murmuring-lowlands-80126.herokuapp.com/api",
+                            "github": ""
+                        },
                         "comment": request.POST['comment'],
                         "contentType": request.POST['contentType'],
                     }
@@ -471,11 +478,11 @@ def get_nodes(request):
 def comment_remote(request, ext, payload):
         nodes = Node.objects.all()
         for node in nodes:
-            url = node.location + ext
+            url = node.location + ext + "/"
             authToken = node.auth_token
             if(authToken == None):
                 author = Author.objects.get(user=request.user)
-                authStr = str(author.id)+"@team5:team5"
+                authStr = str(author.id)+"@team5:team5team5"
                 authToken = "Basic " + str(base64.b64encode(authStr))
             headers = {
                     'Authorization': authToken,
@@ -486,6 +493,7 @@ def comment_remote(request, ext, payload):
             #payload = JSON.stringify(payload)
             try:
                 response = requests.post(url, headers=headers, json=payload)
+                print(url)
                 print(response.json())
             except:
                 print("Error on Remote Comment")
@@ -535,7 +543,8 @@ def get_remote_post_detail(request, ext):
             do_debug(authToken)
             try:
                 r = requests.get(url, headers=headers).json()
-                return r
+                if 'id' in r:
+                    return r
             except:
                 do_debug("Unkown API Format!")
                 do_debug(r)
