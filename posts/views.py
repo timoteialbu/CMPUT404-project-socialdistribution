@@ -177,9 +177,19 @@ def filter_posts(request, selection):
                 (selection.visibility == 'AUTHOR' and selection.privateAuthor != request.user)
             or  (selection.visibility == 'FRIENDS' and myuser not in all_friends)
             or  (selection.visibility == 'PRIVATE' and myuser!= request.user)
-            or  (selection.visibility == 'SERVERONLY' and Author.objects.get(user=request.user).host != selection.author.host)
             ):
                 return False
+        elif (selection.visibility == 'SERVERONLY'):
+            print "---------------------------------"
+            print myuser
+            print all_friends
+            print Author.objects.get(user=request.user).host
+            print selection.author.host
+            print "_________________________________"
+            if (Author.objects.get(user=request.user).host != selection.author.host) or myuser not in all_friends:
+                return False
+            else:
+                return True
         else:
             return True
 
