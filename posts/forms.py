@@ -44,7 +44,7 @@ class UploadImgForm(forms.ModelForm):
 #     fields = ('username',)
 class AddFriendForm(forms.Form):
     add_username = forms.CharField(label='add_username', required=False)
-    host = forms.ModelChoiceField(queryset=Node.objects.all())
+
 
 class UserProfile(forms.Form):
     username = forms.CharField(label='Username', required=False)

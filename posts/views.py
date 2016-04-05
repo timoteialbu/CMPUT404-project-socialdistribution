@@ -110,10 +110,10 @@ def friend_requests(request, context, users):
 		for user in users:
 			userId = User.objects.get(username=user)
 			req_id = FriendshipRequest.objects.get(to_user=request.user, from_user=userId)
-			if request.POST[user] == "A":
+			if request.POST.get(user) == "A":
 				req_id.accept()
 				Follow.objects.add_follower(request.user, userId)
-			elif request.POST[user] == "R":
+			elif request.POST.get(user) == "R":
 				req_id.reject()
 				Friend.objects.remove_friend(userId, request.user)
 				try_remove_friend(request.user, user)
@@ -139,8 +139,20 @@ def friend_mgmt(request):
             add_friend(request, context)
         elif 'remove_sub' in request.POST:
             remove_friend(request, context)
+            context.update({
+                    'unfriendlist': Friend.objects.friends(request.user),
+            })
         elif 'request_sub' in request.POST:
             friend_requests(request, context, usersRequest)
+
+            usersRequest = list(map(lambda x:
+                                    str(x.from_user),
+                                    Friend.objects.unrejected_requests(user=request.user)))
+            context.update({
+                    'unfriendlist': Friend.objects.friends(request.user),
+                    'friendrequestform': FriendRequestForm(names=usersRequest),
+            })
+
     else:
         context.update({
             'addform': AddFriendForm(),
