@@ -117,28 +117,27 @@ def friend_requests(request, context, users):
 
 
 def friend_mgmt(request):
-    users = list(map(lambda x:
+    usersRequest = list(map(lambda x:
                      str(x.from_user),
                      Friend.objects.unrejected_requests(user=request.user)))
-    all_friends = Friend.objects.friends(request.user)
     context = {
-        'friendrequestform': FriendRequestForm(names=users),
-        'all_friends': all_friends
+        'friendrequestform': FriendRequestForm(names=usersRequest),
     }
 
     if request.method == "POST":
         context.update({
             'addform': AddFriendForm(request.POST),
-            #'unfrienduserform': UnFriendUserForm(request.POST),
             'unfriendlist': Friend.objects.friends(request.user),
         })
-        remove_friend(request, context)
-        add_friend(request, context)
-        friend_requests(request, context, users)
+        if 'add_sub' in request.POST:
+            add_friend(request, context)
+        elif 'remove_sub' in request.POST:
+            remove_friend(request, context)
+        elif 'request_sub' in request.POST:
+            friend_requests(request, context, usersRequest)
     else:
         context.update({
             'addform': AddFriendForm(),
-            #'unfrienduserform': UnFriendUserForm(),
             'unfriendlist': Friend.objects.friends(request.user),
         })
     return render(request, 'posts/friend_mgmt.html', context)
