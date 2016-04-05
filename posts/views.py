@@ -20,7 +20,6 @@ from api.serializers import *
 import json
 from django.template.defaulttags import register
 
-
 @register.filter
 def get_item(dictionary, key):
 	return dictionary.get(key)
@@ -195,90 +194,107 @@ def filter_posts(request, selection):
         else:
             return True
 
-#----------------------------------------------------------------
-def get_posts(request): # Return QuerySet
-    # Returns all posts unless the user is anonymous (then only public)
-        if request.user.is_anonymous():
-            latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
-        else:
-            latest_post_list = Post.objects.all()
-        return latest_post_list.order_by('-published')
+
+def get_posts(request):  # Return QuerySet
+	# Returns all posts unless the user is anonymous (then only public)
+	if request.user.is_anonymous():
+		latest_post_list = Post.objects.filter(Q(visibility='PUBLIC'))
+	else:
+		latest_post_list = Post.objects.all()
+	return latest_post_list.order_by('-published')
+
 
 def get_post_detail(request, id):
-	# returns a QuerySet
-	post_Q = Post.objects.filter(id=id)
-	comment = None
-	remote = False
-	if not post_Q:
-		post = get_remote(request, '/posts/' + id + '/')
-		comments = post['comments']
-		remote = True
-	else:
-		post = post_Q.values()[0]
-		comments = Comment.objects.select_related().filter(post=id)
-	if request.method == "POST":
-		# Hackyyy OMG
-		if not remote:
-			form = PostForm(request.POST, instance=post_Q[0])
-		else:
-			form = PostForm
+        # returns a QuerySet
+        post_Q = Post.objects.filter(id=id)
+        comment = None
+        remote = False
+        if not post_Q:
+            if request.method == "POST":
+                    ext = "/posts/" + id + "/comments"
+                    payload = {
+                        "comment": request.POST['comment'],
+                        "contentType": request.POST['contentType'],
+                    }
+                    response = comment_remote(request, ext, payload)
+            post = get_remote_post_detail(request, '/posts/' + id + '/')
+            comments = post['comments']
+            remote = True
+            cform = CommentForm(request.POST)
+            isAuthenticated = request.user.is_authenticated()
+            return render(request, 'posts/detail.html',
+                        {
+                            'post': post,
+                            'comments': comments,
+                            'remote': remote,
+                            'cform': cform,
+                            'isAuthenticated': isAuthenticated
+                        })
+        else:
+            post = post_Q.values()[0]
+            comments = Comment.objects.select_related().filter(post=id)
+        if request.method == "POST":
+            # Hackyyy OMG
+            if not remote:
+                form = PostForm(request.POST, instance=post_Q[0])
+            else:
+                form = PostForm
 
-		cform = CommentForm(request.POST)
-		postEditForm = PostEditForm(request.POST)
+            cform = CommentForm(request.POST)
+            postEditForm = PostEditForm(request.POST)
 
-		if postEditForm.is_valid() and postEditForm.changed_data.__len__() > 0:
-			post1 = Post.objects.get(id=id)
-			post1.title = postEditForm.cleaned_data["title"]
-			post1.content = postEditForm.cleaned_data["content"]
-			post1.save()
-			return redirect('posts:detail', id=id)
-		if not remote and form.is_valid():
-			post = form.save(commit=False)
-			post.author = Author.objects.get(user=request.user)
-			post.published_date = timezone.now()
-			post.save()
-			# the "id" part must be the same as the P<"id" in url.py
-			# return redirect('posts:detail', id=post.pk)
-		elif cform.is_valid():
-			if not remote:
-				comment = cform.save(commit=False)
-				comment.published = timezone.now()
-				comment.author = Author.objects.get(user=request.user)
-				comment.post = post_Q[0]
-				comment.save()
-			else:
-				ext = "/posts/" + str(id) + "/comments"
-				payload = {
-					"comment": request.POST['comment'],
-					"contentType": request.POST['contentType'],
-				}
-				post_remote(request, ext, payload)
-	else:
-		form = PostForm(initial={'content': post['content']})
-		cform = CommentForm()
-		postEditForm = PostEditForm()
-		post1 = Post.objects.get(id=id)
-		postEditForm.fields["title"] = post1.title
-		postEditForm.fields["content"] = post1.content
-		postEditForm.fields["postId"] = post1.id
+            if postEditForm.is_valid() and postEditForm.changed_data.__len__() > 0:
+                post1 = Post.objects.get(id=id)
+                post1.title = postEditForm.cleaned_data["title"]
+                post1.content = postEditForm.cleaned_data["content"]
+                post1.save()
+                return redirect('posts:detail', id=id)
+            if not remote and form.is_valid():
+                post = form.save(commit=False)
+                post.author = Author.objects.get(user=request.user)
+                post.published_date = timezone.now()
+                post.save()
+                # the "id" part must be the same as the P<"id" in url.py
+                # return redirect('posts:detail', id=post.pk)
+            elif cform.is_valid():
+                if not remote:
+                    comment = cform.save(commit=False)
+                    comment.published = timezone.now()
+                    comment.author = Author.objects.get(user=request.user)
+                    comment.post = post_Q[0]
+                    comment.save()
+                else:
+                    ext = "/posts/" + str(id) + "/comments"
+                    payload = {
+                        "comment": request.POST['comment'],
+                        "contentType": request.POST['contentType'],
+                    }
+                    post_remote(request, ext, payload)
+        else:
+            form = PostForm(initial={'content': post['content']})
+            cform = CommentForm()
+            postEditForm = PostEditForm()
+            post1 = Post.objects.get(id=id)
+            postEditForm.fields["title"] = post1.title
+            postEditForm.fields["content"] = post1.content
+            postEditForm.fields["postId"] = post1.id
 
-	isAuthenticated = request.user.is_authenticated()
-	isAuthor = False
-	if isAuthenticated and not remote:
-		isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
-	return render(request, 'posts/detail.html',
-				  {
-					  'post': post,
-					  'comments': comments,
-					  'form': form,
-					  'cform': cform,
-					  'isAuthenticated': isAuthenticated,
-					  'isAuthor': isAuthor,
-					  'postEditForm': postEditForm
-				  })
+        isAuthenticated = request.user.is_authenticated()
+        isAuthor = False
+        if isAuthenticated and not remote:
+            isAuthor = Author.objects.get(user=request.user).user == post_Q[0].author.user
+        return render(request, 'posts/detail.html',
+                    {
+                        'post': post,
+                        'comments': comments,
+                        'form': form,
+                        'cform': cform,
+                        'isAuthenticated': isAuthenticated,
+                        'isAuthor': isAuthor,
+                        'postEditForm': postEditForm
+                    })
 
-
-# ----------------------------------------------------------------
+#----------------------------------------------------------------
 def process_form(request):
 	print("TESTING")
 	form = PostForm(request.POST)
@@ -452,32 +468,81 @@ def get_nodes(request):
 	return render(request, 'posts/nodes.html', context)
 
 
-# ----------------------------------------------------------------
-def get_remote(request, ext):
-	nodes = Node.objects.all()
-	r = list()
-	for node in nodes:
-		url = node.location + ext
-		authToken = node.auth_token
-		if (authToken == None):
-			author = Author.objects.get(user=request.user)
-			authStr = str(author.id) + "@team5:team5"
-			authToken = "Basic " + str(base64.b64encode(authStr))
-		headers = {
-			'Authorization': authToken,
-			'Content-Type': 'application/json',
-		}
-		do_debug(authToken)
-		try:
-			r = r + requests.get(url, headers=headers).json()['posts']
-		except:
-			try:
-				r = r + requests.get(url, headers=headers).json()['results']
-			except:
-				do_debug("Unkown API Format!")
-				do_debug(r)
-	do_debug(r)
-	return r
+#----------------------------------------------------------------
+def comment_remote(request, ext, payload):
+        nodes = Node.objects.all()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            do_debug(authToken)
+            print(payload)
+            #payload = JSON.stringify(payload)
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.json())
+            except:
+                print("Error on Remote Comment")
+                do_debug("Error on Remote Comment")
+                do_debug(response)
+        return response
+    
+
+def get_remote_posts(request, ext):
+        nodes = Node.objects.all()
+        r = list()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            do_debug(authToken)
+            try:
+                r = r + requests.get(url, headers=headers).json()['posts']
+            except:
+                try:
+                    r = r + requests.get(url, headers=headers).json()['results']
+                except:
+                    do_debug("Unkown API Format!")
+                    do_debug(r)
+        do_debug(r)
+        print(r)
+        return r
+def get_remote_post_detail(request, ext):
+        nodes = Node.objects.all()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            do_debug(authToken)
+            try:
+                r = requests.get(url, headers=headers).json()
+                return r
+            except:
+                do_debug("Unkown API Format!")
+                do_debug(r)
+        do_debug(r)
+        return None
 
 
 def post_remote(request, ext, payload):
@@ -523,7 +588,7 @@ def index(request):
 		pass
 
 	try:
-		remote_posts = list(get_remote(request, '/posts/'))
+		remote_posts = list(get_remote_posts(request, '/posts/'))
 	except:
 		pass
 
