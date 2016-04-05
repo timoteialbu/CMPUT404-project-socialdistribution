@@ -20,7 +20,6 @@ from api.serializers import *
 import json
 from django.template.defaulttags import register
 
-
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
@@ -207,9 +206,26 @@ def get_post_detail(request, id):
         comment = None
         remote = False
         if not post_Q:
-            post = get_remote(request, '/posts/' + id + '/')
+            if request.method == "POST":
+                    ext = "/posts/" + id + "/comments"
+                    payload = {
+                        "comment": request.POST['comment'],
+                        "contentType": request.POST['contentType'],
+                    }
+                    response = comment_remote(request, ext, payload)
+            post = get_remote_post_detail(request, '/posts/' + id + '/')
             comments = post['comments']
             remote = True
+            cform = CommentForm(request.POST)
+            isAuthenticated = request.user.is_authenticated()
+            return render(request, 'posts/detail.html',
+                        {
+                            'post': post,
+                            'comments': comments,
+                            'remote': remote,
+                            'cform': cform,
+                            'isAuthenticated': isAuthenticated
+                        })
         else:
             post = post_Q.values()[0]
             comments = Comment.objects.select_related().filter(post=id)
@@ -442,7 +458,32 @@ def get_nodes(request):
         return render(request, 'posts/nodes.html', context)
 
 #----------------------------------------------------------------
-def get_remote(request, ext):
+def comment_remote(request, ext, payload):
+        nodes = Node.objects.all()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            do_debug(authToken)
+            print(payload)
+            #payload = JSON.stringify(payload)
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.json())
+            except:
+                print("Error on Remote Comment")
+                do_debug("Error on Remote Comment")
+                do_debug(response)
+        return response
+    
+def get_remote_posts(request, ext):
         nodes = Node.objects.all()
         r = list()
         for node in nodes:
@@ -467,6 +508,29 @@ def get_remote(request, ext):
                     do_debug(r)
         do_debug(r)
         return r
+def get_remote_post_detail(request, ext):
+        nodes = Node.objects.all()
+        for node in nodes:
+            url = node.location + ext
+            authToken = node.auth_token
+            if(authToken == None):
+                author = Author.objects.get(user=request.user)
+                authStr = str(author.id)+"@team5:team5"
+                authToken = "Basic " + str(base64.b64encode(authStr))
+            headers = {
+                    'Authorization': authToken,
+                    'Content-Type': 'application/json',
+            }
+            do_debug(authToken)
+            try:
+                r = requests.get(url, headers=headers).json()
+                return r
+            except:
+                do_debug("Unkown API Format!")
+                do_debug(r)
+        do_debug(r)
+        return None
+
 
 
 def post_remote(request, ext, payload):
@@ -512,7 +576,7 @@ def index(request):
             pass
 
         try:
-            remote_posts = list(get_remote(request, '/posts/'))
+            remote_posts = list(get_remote_posts(request, '/posts/'))
         except:
             pass
 
