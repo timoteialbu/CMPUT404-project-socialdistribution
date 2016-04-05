@@ -24,6 +24,12 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 		print("Token Created")
 		Token.objects.create(user=instance)
 
+#@receiver(post_save, sender=Author)
+#def generate_token(sender, **kw):
+#	author= kw["instance"]
+#	if kw["created"]:
+#		author.host = "http://127.0.0.1:8000/"
+#		author.save()
 
 post_save.connect(create_auth_token, sender=User, dispatch_uid="user-auth")
 
