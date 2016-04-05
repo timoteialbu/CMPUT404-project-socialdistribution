@@ -164,7 +164,7 @@ def filter_posts(request, selection):
     # Returns True if the selection can be seen by the current user
         myuser = selection.author.user
         all_friends = Friend.objects.friends(request.user)
-        
+
         if myuser == request.user:  # REDUNDANT AS HELL
             return True
         elif selection.visibility == 'FOAF':
@@ -179,6 +179,7 @@ def filter_posts(request, selection):
             or  (selection.visibility == 'PRIVATE' and myuser!= request.user)
             or  (selection.visibility == 'SERVERONLY')
             ):
+                print selection.privateAuthor
                 return False
         else:
             return True
