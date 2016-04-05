@@ -36,13 +36,14 @@ class UploadImgForm(forms.ModelForm):
         fields = ('title', 'img')
 
 
+# class AddFriendForm(forms.Form):
+#     user_choice_field = forms.ModelChoiceField(
+#         queryset=User.objects.all(),
+#         required=False,
+#     )
+#     fields = ('username',)
 class AddFriendForm(forms.Form):
-    user_choice_field = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        required=False,
-    )
-    fields = ('username',)
-
+    add_username = forms.CharField(label='add_username', required=False)
 
 class UserProfile(forms.Form):
     username = forms.CharField(label='Username', required=False)
@@ -53,8 +54,6 @@ class UserProfile(forms.Form):
     id = forms.CharField(label='Id', required=False)
 
 
-class UnFriendUserForm(forms.Form):
-    username = forms.CharField(label='username', required=False)
 
 
 class FriendRequestForm(forms.Form):
