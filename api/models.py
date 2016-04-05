@@ -45,7 +45,7 @@ class Post(models.Model):
         ('text/plain', 'Plain text'),
         ('text/x-markdown', 'Markdown'),
     )
-    privateAuthor = User
+    privateAuthor = models.ForeignKey(User, blank=True, null=True)
     contentType = models.CharField(
         max_length=16, choices=CONTENT_CHOICES, default='text/plain')
     visibility = models.CharField(

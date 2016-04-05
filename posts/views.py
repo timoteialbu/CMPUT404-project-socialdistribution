@@ -223,20 +223,22 @@ def get_post_detail(request, id):
         remote = False
         if not post_Q:
             if request.method == "POST":
-                    ext = "/posts/" + id + "/comments"
-                    authID = request.user.id
-                    payload = {
-                        "author": {
-                            "id": authID,
-                            "host": "http://murmuring-lowlands-80126.herokuapp.com/api",
-                            "displayName": str(authID),
-                            "url": "http://murmuring-lowlands-80126.herokuapp.com/api",
-                            "github": ""
-                        },
-                        "comment": request.POST['comment'],
-                        "contentType": request.POST['contentType'],
-                    }
-                    response = comment_remote(request, ext, payload)
+				ext = "/posts/" + id + "/comments"
+				test2 = request.user.id
+				test = Author.objects.get(user_id=request.user.id)
+				authID = test.id
+				payload = {
+					"author": {
+						"id": str(authID),
+						"host": "http://murmuring-lowlands-80126.herokuapp.com/api",
+						"displayName": str(authID),
+						"url": "http://murmuring-lowlands-80126.herokuapp.com/api",
+						"github": ""
+					},
+					"comment": request.POST['comment'],
+					"contentType": request.POST['contentType']
+				}
+				response = comment_remote(request, ext, payload)
             post = get_remote_post_detail(request, '/posts/' + id + '/')
             comments = post['comments']
             remote = True
@@ -325,8 +327,10 @@ def process_form(request):
 			post.title = form.cleaned_data["title"]
 			post.content = form.cleaned_data["content"]
 			post.contentType = form.cleaned_data["contentType"]
-			post.visibility = form.cleaned_data["visibility"]
-			post.privateAuthor = form.cleaned_data["privateAuthor"]
+			visibility = form.cleaned_data["visibility"]
+			post.visibility = visibility
+			if visibility == 'AUTHOR':
+				post.privateAuthor = form.cleaned_data["privateAuthor"]
 			# print(User.objects.all().filter(id=test.id) + "<---------------- after filter")
 			# print(post.privateAuthor + "<----------------------- post.privateAuthor when created")
 			post.save()
@@ -490,81 +494,95 @@ def get_nodes(request):
 
 #----------------------------------------------------------------
 def comment_remote(request, ext, payload):
-        nodes = Node.objects.all()
-        for node in nodes:
-            url = node.location + ext + "/"
-            authToken = node.auth_token
-            if(authToken == None):
-                author = Author.objects.get(user=request.user)
-                authStr = str(author.id)+"@team5:team5team5"
-                authToken = "Basic " + str(base64.b64encode(authStr))
-            headers = {
-                    'Authorization': authToken,
-                    'Content-Type': 'application/json',
-            }
-            do_debug(authToken)
-            print(payload)
-            #payload = JSON.stringify(payload)
-            try:
-                response = requests.post(url, headers=headers, json=payload)
-                print(url)
-                print(response.json())
-            except:
-                print("Error on Remote Comment")
-                do_debug("Error on Remote Comment")
-                do_debug(response)
-        return response
-    
+	nodes = Node.objects.all()
+	for node in nodes:
+		url = node.location + ext + "/"
+		authToken = node.auth_token
+		if (node.title == "team6"):
+			author = Author.objects.get(user=request.user)
+
+			authStr = str(author.id) + "@team5:team5team5"
+			authToken = "Basic " + str(base64.b64encode(authStr))
+		elif (node.title == "team4"):
+			authStr = "team55:team5team5"
+			authToken = "Basic " + str(base64.b64encode(authStr))
+		headers = {
+				'Authorization': authToken,
+				'Content-Type': 'application/json',
+		}
+		do_debug(authToken)
+		print(payload)
+		#payload = JSON.stringify(payload)
+		try:
+			response = requests.post(url, headers=headers, json=payload)
+			print(url)
+			print(response.json())
+		except:
+			print("Error on Remote Comment")
+			do_debug("Error on Remote Comment")
+			do_debug(response)
+	return response
+
 
 def get_remote_posts(request, ext):
-        nodes = Node.objects.all()
-        r = list()
-        for node in nodes:
-            url = node.location + ext
-            authToken = node.auth_token
-            if(authToken == None):
-                author = Author.objects.get(user=request.user)
-                authStr = str(author.id)+"@team5:team5"
-                authToken = "Basic " + str(base64.b64encode(authStr))
-            headers = {
-                    'Authorization': authToken,
-                    'Content-Type': 'application/json',
-            }
-            do_debug(authToken)
-            try:
-                r = r + requests.get(url, headers=headers).json()['posts']
-            except:
-                try:
-                    r = r + requests.get(url, headers=headers).json()['results']
-                except:
-                    do_debug("Unkown API Format!")
-                    do_debug(r)
-        do_debug(r)
-        print(r)
-        return r
+	nodes = Node.objects.all()
+	r = list()
+	for node in nodes:
+		url = node.location + ext
+		authToken = node.auth_token
+		if(authToken == None):
+			if (node.title == "team6"):
+				author = Author.objects.get(user=request.user)
+				authStr = str(author.id) + "@team5:team5team5"
+				authToken = "Basic " + str(base64.b64encode(authStr))
+			elif (node.title == "team4"):
+				authStr = "team55:team5team5"
+				authToken = "Basic " + str(base64.b64encode(authStr))
+
+		headers = {
+				'Authorization': authToken,
+				'Content-Type': 'application/json',
+		}
+		do_debug(authToken)
+		try:
+			r = r + requests.get(url, headers=headers).json()['posts']
+		except:
+			try:
+				r = r + requests.get(url, headers=headers).json()['results']
+			except:
+				do_debug("Unkown API Format!")
+				do_debug(r)
+	do_debug(r)
+	print(r)
+	return r
+
+
 def get_remote_post_detail(request, ext):
-        nodes = Node.objects.all()
-        for node in nodes:
-            url = node.location + ext
-            authToken = node.auth_token
-            if(authToken == None):
-                author = Author.objects.get(user=request.user)
-                authStr = str(author.id)+"@team5:team5"
-                authToken = "Basic " + str(base64.b64encode(authStr))
-            headers = {
-                    'Authorization': authToken,
-                    'Content-Type': 'application/json',
-            }
-            do_debug(authToken)
-            try:
-                r = requests.get(url, headers=headers).json()
-                if 'id' in r:
-                    return r
-            except:
-                do_debug("Unkown API Format!")
-                do_debug(r)
-        do_debug(r)
-        return None
+	nodes = Node.objects.all()
+	for node in nodes:
+		url = node.location + ext
+		authToken = node.auth_token
+		if (node.title == "team6"):
+			author = Author.objects.get(user=request.user)
+			authStr = str(author.id) + "@team5:team5team5"
+			authToken = "Basic " + str(base64.b64encode(authStr))
+		elif (node.title == "team4"):
+			authStr = "team55:team5team5"
+			authToken = "Basic " + str(base64.b64encode(authStr))
+		headers = {
+				'Authorization': authToken,
+				'Content-Type': 'application/json',
+		}
+		do_debug(authToken)
+		try:
+			r = requests.get(url, headers=headers).json()
+			if 'id' in r:
+				return r
+		except:
+			do_debug("Unkown API Format!")
+			do_debug(r)
+	do_debug(r)
+	return None
 
 
 def post_remote(request, ext, payload):
@@ -572,9 +590,12 @@ def post_remote(request, ext, payload):
 	for node in nodes:
 		url = node.location + ext
 		authToken = node.auth_token
-		if (authToken == None):
+		if (node.title == "team6"):
 			author = Author.objects.get(user=request.user)
-			authStr = str(author.id) + "@team5:team5"
+			authStr = str(author.id) + "@team5:team5team5"
+			authToken = "Basic " + str(base64.b64encode(authStr))
+		elif (node.title == "team4"):
+			authStr = "team55:team5team5"
 			authToken = "Basic " + str(base64.b64encode(authStr))
 		headers = {
 			'Authorization': authToken,
